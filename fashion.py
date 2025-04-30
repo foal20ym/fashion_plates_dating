@@ -1,40 +1,26 @@
 from keras.applications import NASNetLarge
-from keras.optimizers import SGD, Adam
+from keras.optimizers import Adam
+from keras.layers import Flatten, Dense, Dropout
+from keras.models import Model
 import random
 import pandas as pd
 import numpy as np
 import tensorflow as tf
-
-""" 
-Här först så väljer jag bara ut 9st av de 10 tillängliga folds 
-genom att välja 9st random nummer.
-"""
-fold_nums = [num for num in range(10)]
-print(fold_nums)
-
-test_fold = random.choice(fold_nums)
-print(f"Test fold: {test_fold}")
-
-train_folds = [fold for fold in fold_nums if fold != test_fold]
-print(f"Train folds: {train_folds}")
-
-train_files = [f"../datasets/fold{fold}.csv" for fold in train_folds]
-test_file = f"../datasets/fold{test_fold}.csv"
-
-fold_files = train_files
-test_files = [test_file]
+import sys
 
 image_size = (299, 299)
-#batch_size = 32 
+# batch_size = 32
+
 
 def create_dataset(files):
     image_paths = []
     labels = []
     for file in files:
         df = pd.read_csv(file)
-        image_paths.extend(df['file'].tolist())
-        labels.extend(df['year'].tolist())
+        image_paths.extend(df["file"].tolist())
+        labels.extend(df["year"].tolist())
     return image_paths, labels
+
 
 def load_and_preprocess_image(path, label):
     image = tf.io.read_file(path)
@@ -44,41 +30,87 @@ def load_and_preprocess_image(path, label):
     image = image / 255.0
     return image, label
 
-def get_tf_dataset(files):
+
+def get_tf_dataset(files, regression=False, class_to_idx=None):
     image_paths, labels = create_dataset(files)
     image_paths = tf.constant(image_paths)
-    labels = tf.constant(labels)
+    if regression:
+        labels = tf.constant(labels, dtype=tf.float32)
+    else:
+        # Map years to class indices for classification
+        labels = [class_to_idx[y] for y in labels]
+        labels = tf.constant(labels, dtype=tf.int32)
     ds = tf.data.Dataset.from_tensor_slices((image_paths, labels))
     ds = ds.map(load_and_preprocess_image, num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.shuffle(buffer_size=len(image_paths))
-    #ds = ds.batch(batch_size).prefetch(tf.data.AUTOTUNE)
+    # ds = ds.batch(batch_size).prefetch(tf.data.AUTOTUNE)
     return ds
 
-train_ds = get_tf_dataset(fold_files)
-val_ds = get_tf_dataset(test_files)
 
-print(train_ds)
-print(val_ds)
+def build_model(num_classes=None, regression=False):
+    base_model = NASNetLarge(include_top=False, weights="imagenet", input_shape=(299, 299, 3), pooling="avg")
+    x = base_model.output
+    x = Flatten(name="FLATTEN")(x)
+    x = Dense(256, activation="relu", name="last_FC1")(x)
+    x = Dropout(0.5, name="DROPOUT")(x)
+    if regression:
+        predictions = Dense(1, activation="linear", name="PREDICTIONS")(x)
+    else:
+        predictions = Dense(num_classes, activation="softmax", name="PREDICTIONS")(x)
+    model = Model(inputs=base_model.input, outputs=predictions)
+    for layer in base_model.layers:
+        layer.trainable = False
+    return model
 
 
-base_model = NASNetLarge(
-    include_top=True,
-    weights="imagenet",
-    classifier_activation="softmax",
-)
+def main(task="classification"):
+    # Fold selection
+    fold_nums = [num for num in range(10)]
+    print(fold_nums)
+    test_fold = random.choice(fold_nums)
+    print(f"Test fold: {test_fold}")
+    train_folds = [fold for fold in fold_nums if fold != test_fold]
+    print(f"Train folds: {train_folds}")
+    train_files = [f"data/datasets/fold{fold}.csv" for fold in train_folds]
+    test_file = f"data/datasets/fold{test_fold}.csv"
+    fold_files = train_files
+    test_files = [test_file]
 
-x = base_model.layers[-1].output
-x = Flatten(name='FLATTEN')(x)
-x = Dense(256, activation='relu', name='last_FC1')(x)
-x = Dropout(0.5, name='DROPOUT')(x)
-predictions = Dense(len(classes), activation='softmax', name='PREDICTIONS')(x)
-model = Model(input=base_model.input, outputs=predictions)
+    regression = task == "regression"
 
-for layer in model.layers[:]:
-    layer.trainable = False
+    # For classification, build class mapping
+    if not regression:
+        # Collect all unique years in training set
+        all_years = []
+        for file in fold_files:
+            df = pd.read_csv(file)
+            all_years.extend(df["year"].tolist())
+        classes = sorted(list(set(all_years)))
+        class_to_idx = {y: i for i, y in enumerate(classes)}
+        num_classes = len(classes)
+    else:
+        class_to_idx = None
+        num_classes = None
 
-model.compile(optimizer=Adam(lr=0.0001),
-                  loss='categorical_crossentropy',
-                  metrics=['accuracy'])
+    train_ds = get_tf_dataset(fold_files, regression=regression, class_to_idx=class_to_idx)
+    val_ds = get_tf_dataset(test_files, regression=regression, class_to_idx=class_to_idx)
 
-model.summary()
+    print(train_ds)
+    print(val_ds)
+
+    model = build_model(num_classes=num_classes, regression=regression)
+
+    if regression:
+        model.compile(optimizer=Adam(learning_rate=0.0001), loss="mean_squared_error", metrics=["mae"])
+    else:
+        model.compile(
+            optimizer=Adam(learning_rate=0.0001), loss="sparse_categorical_crossentropy", metrics=["accuracy"]
+        )
+
+    model.summary()
+
+
+if __name__ == "__main__":
+    # Usage: python fashion.py [classification|regression]
+    task = sys.argv[1] if len(sys.argv) > 1 else "classification"
+    main(task)
