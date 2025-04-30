@@ -10,8 +10,13 @@ import tensorflow as tf
 import sys
 import time
 import os
+import matplotlib.pyplot as plt
 
-image_size = (299, 299)
+image_size = (331, 331)
+input_shape = image_size + (3,)
+"""
+weights: None (random initialization) or imagenet (ImageNet weights). For loading imagenet weights, input_shape should be (331, 331, 3)
+"""
 
 
 def create_dataset(files):
@@ -49,12 +54,20 @@ def get_tf_dataset(files, regression=False, class_to_idx=None, min_year=None, ma
     return ds
 
 
-def build_model(num_classes=None, regression=False):
-    base_model = NASNetMobile(include_top=False, weights="imagenet", input_shape=(299, 299, 3), pooling="avg")
+def build_model(num_classes=None, regression=False, model="NASNetMobile", fine_tune=False):
+    base_model = None
+
+    if model == "NASNetMobile":
+        base_model = NASNetMobile(include_top=False, weights="imagenet", input_shape=input_shape, pooling="avg")
+    elif model == "ResNet101":
+        base_model = ResNet101(include_top=False, weights="imagenet", input_shape=input_shape, pooling="avg")
+    elif model == "InceptionV3":
+        base_model = InceptionV3(include_top=False, weights="imagenet", input_shape=input_shape, pooling="avg")
+
     x = base_model.output
     # pooling is used then this is not necessary
     # x = Flatten(name="FLATTEN")(x)
-    x = Dense(256, activation="relu", name="last_FC1")(x)
+    # x = Dense(1, activation="relu", name="last_FC1")(x)
     # x = Dropout(0.5, name="DROPOUT")(x)
     if regression:
         predictions = Dense(1, activation="sigmoid", name="PREDICTIONS")(x)
@@ -63,6 +76,27 @@ def build_model(num_classes=None, regression=False):
     model = Model(inputs=base_model.input, outputs=predictions)
     for layer in base_model.layers:
         layer.trainable = False
+
+    # !!--- This is what method says in report ---!!
+    # • Fine-tuning One additional layer
+    # • Transfer learning One additional layer
+    # • Fine-tuning A Dense classifier with a single unit
+    # • Transfer learning A Dense classifier with a single unit
+
+    # !!--- If we want to fine tune instead of transfer learning. ---!!
+    if fine_tune:
+        # Unfreeze one additional layer
+        for layer in base_model.layers[-1:]:
+            layer.trainable = True
+
+    # ??--- Optional way to do it. ---??
+
+    # freeze_base = True
+    # base_model.trainable = not freeze_base
+
+    # inputs = layers.Input(shape=input_shape)
+    # x = base_model(inputs, training=not freeze_base)  # if fine-tuning, allow BN layers to train
+    # x = layers.GlobalAveragePooling2D()(x)
     return model
 
 
@@ -131,8 +165,11 @@ def main(task="classification"):
 
     print(train_ds)
     print(val_ds)
+    fine_tune = True
+    if fine_tune:
+        print("Fine Tuning!")
 
-    model = build_model(num_classes=num_classes, regression=regression)
+    model = build_model(num_classes=num_classes, regression=regression, model="NASNetMobile", fine_tune=fine_tune)
 
     if regression:
         model.compile(optimizer=Adam(learning_rate=0.0001), loss="mean_squared_error", metrics=["mae", "mse"])
@@ -145,7 +182,7 @@ def main(task="classification"):
 
     # --- Callbacks ---
     callbacks = [EarlyStopping(monitor="val_loss", patience=4, restore_best_weights=True)]
-    log_dir = os.path.join("logs", time.strftime("fit_%Y%m%d-%H%M%S"))
+    log_dir = os.path.join("logs", time.strftime("fit_%Y-%m-%d-%H:%M:%S"))
     tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
     callbacks.append(tensorboard_callback)
 
@@ -153,7 +190,7 @@ def main(task="classification"):
     print("To visualize, run: tensorboard --logdir logs")
 
     # --- Fit the model ---
-    EPOCHS = 10
+    EPOCHS = 100
     BATCH_SIZE = 16
 
     train_ds_batched = train_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
@@ -170,7 +207,68 @@ def main(task="classification"):
         preds = model.predict(val_ds_batched)
         # Denormalize predictions
         preds_years = preds * (max_year - min_year) + min_year
-        print("Sample denormalized predictions (years):", preds_years[:10].flatten())
+        preds_years_rounded = np.round(preds_years).astype(int)
+
+        # Get true labels from the dataset
+        y_true = []
+        for _, label in val_ds_batched.unbatch():
+            y_true.append(label.numpy())
+        y_true = np.array(y_true)
+        # Denormalize and round true labels
+        y_true_years = y_true * (max_year - min_year) + min_year
+        y_true_years_rounded = np.round(y_true_years).astype(int)
+
+        # Count exactly correct predictions
+        exact_matches = np.sum(preds_years_rounded.flatten() == y_true_years_rounded.flatten())
+        total = len(y_true_years_rounded)
+        print(f"Exactly correct year predictions: {exact_matches} out of {total}")
+
+        # Calculate final MAE
+        mae = np.mean(np.abs(preds_years_rounded.flatten() - y_true_years_rounded.flatten()))
+        print(f"Final MAE (rounded to years): {mae:.2f}")
+
+        print("Sample denormalized predictions (years):", preds_years_rounded[:10].flatten())
+
+    # --- Plot and save training history ---
+    # Create plots directory if it doesn't exist
+    os.makedirs("plots", exist_ok=True)
+
+    # Plot loss and val_loss
+    plt.figure(figsize=(10, 5))
+    plt.plot(history.history["loss"], label="loss")
+    plt.plot(history.history["val_loss"], label="val_loss")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.title("Training and Validation Loss")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("plots/loss_val_loss.png")
+    plt.close()
+
+    # Plot MAE and MSE if regression
+    if regression:
+        plt.figure(figsize=(10, 5))
+        plt.plot(history.history["mae"], label="mae")
+        plt.plot(history.history["mse"], label="mse")
+        plt.xlabel("Epoch")
+        plt.ylabel("Metric")
+        plt.title("Training MAE and MSE")
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig("plots/train_mae_mse.png")
+        plt.close()
+
+        if "val_mae" in history.history and "val_mse" in history.history:
+            plt.figure(figsize=(10, 5))
+            plt.plot(history.history["val_mae"], label="val_mae")
+            plt.plot(history.history["val_mse"], label="val_mse")
+            plt.xlabel("Epoch")
+            plt.ylabel("Metric")
+            plt.title("Validation MAE and MSE")
+            plt.legend()
+            plt.tight_layout()
+            plt.savefig("plots/val_mae_mse.png")
+            plt.close()
 
     end_time = time.time()
     running_time = end_time - start_time
