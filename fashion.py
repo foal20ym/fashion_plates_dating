@@ -1,6 +1,6 @@
 from tensorflow.keras.applications import InceptionV3, ResNet101, NASNetMobile
 from tensorflow.keras.optimizers import Adam
-from keras.layers import Flatten, Dense, Dropout
+from keras.layers import Dense, Dropout
 from keras.callbacks import EarlyStopping, TensorBoard, ReduceLROnPlateau
 from keras.models import Model
 import random
@@ -12,11 +12,7 @@ import time
 import os
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import label_binarize
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, roc_curve, auc, classification_report
-
-"""
-weights: None (random initialization) or imagenet (ImageNet weights). For loading imagenet weights, input_shape should be (331, 331, 3)
-"""
+from sklearn.metrics import roc_curve, auc, classification_report
 
 
 data_augmentation = tf.keras.Sequential(
@@ -61,7 +57,9 @@ def get_tf_dataset(
         labels = [class_to_idx[y] for y in labels]
         labels = tf.constant(labels, dtype=tf.int32)
     ds = tf.data.Dataset.from_tensor_slices((image_paths, labels))
-    ds = ds.map(lambda x, y: load_and_preprocess_image(x, y, augment=augment), num_parallel_calls=tf.data.AUTOTUNE)
+    ds = ds.map(
+        lambda x, y: load_and_preprocess_image(x, y, image_size, augment=augment), num_parallel_calls=tf.data.AUTOTUNE
+    )
     ds = ds.shuffle(buffer_size=len(image_paths))
     return ds
 
@@ -76,6 +74,7 @@ def train_and_evaluate(
     max_year,
     model_name,
     fine_tune,
+    input_shape,
     fold_idx=None,
 ):
     # Prepare datasets
@@ -86,6 +85,7 @@ def train_and_evaluate(
         min_year=min_year,
         max_year=max_year,
         augment=True,
+        image_size=input_shape[:2],
     )
     val_ds = get_tf_dataset(
         [test_file],
@@ -94,13 +94,20 @@ def train_and_evaluate(
         min_year=min_year,
         max_year=max_year,
         augment=False,
+        image_size=input_shape[:2],
     )
     BATCH_SIZE = 16
     train_ds_batched = train_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
     val_ds_batched = val_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
     # Build and compile model
-    model = build_model(num_classes=num_classes, regression=regression, model=model_name, fine_tune=fine_tune)
+    model = build_model(
+        num_classes=num_classes,
+        regression=regression,
+        model_name=model_name,
+        fine_tune=fine_tune,
+        input_shape=input_shape,
+    )
     if regression:
         model.compile(optimizer=Adam(learning_rate=0.0001), loss="mean_squared_error", metrics=["mae", "mse"])
     else:
@@ -122,7 +129,7 @@ def train_and_evaluate(
     callbacks.append(tensorboard_callback)
 
     # Train
-    history = model.fit(train_ds_batched, validation_data=val_ds_batched, epochs=10, callbacks=callbacks, verbose=2)
+    history = model.fit(train_ds_batched, validation_data=val_ds_batched, epochs=100, callbacks=callbacks, verbose=2)
 
     # Evaluate
     results = model.evaluate(val_ds_batched)
@@ -235,13 +242,15 @@ def train_and_evaluate(
     return metrics
 
 
-def build_model(num_classes=None, regression=False, model="NASNetMobile", fine_tune=False):
+def build_model(
+    num_classes=None, regression=False, model_name="NASNetMobile", fine_tune=False, input_shape=(224, 224, 3)
+):
     base_model = None
-    if model == "NASNetMobile":
+    if model_name == "NASNetMobile":
         base_model = NASNetMobile(include_top=False, weights="imagenet", input_shape=input_shape, pooling="avg")
-    elif model == "ResNet101":
+    elif model_name == "ResNet101":
         base_model = ResNet101(include_top=False, weights="imagenet", input_shape=input_shape, pooling="avg")
-    elif model == "InceptionV3":
+    elif model_name == "InceptionV3":
         base_model = InceptionV3(include_top=False, weights="imagenet", input_shape=input_shape, pooling="avg")
 
     x = base_model.output
@@ -279,18 +288,7 @@ def build_model(num_classes=None, regression=False, model="NASNetMobile", fine_t
     return model
 
 
-def main(task="classification", ten_fold_cv=False, fine_tune=False, model="NASNetMobile"):
-    print(f"Using model: {model}.")
-    start_time = time.time()
-
-    if model == "NASNetMobile":
-        image_size = (331, 331)
-    elif model == "ResNet101":
-        image_size = (224, 224)
-    elif model == "InceptionV3":
-        image_size = (299, 299)
-
-    input_shape = image_size + (3,)
+def main(task="classification", ten_fold_cv=True, fine_tune=False, model_name="NASNetMobile"):
 
     # --- GPU Configuration for Optimal Utilization ---
     print("TensorFlow Version:", tf.__version__)
@@ -304,6 +302,19 @@ def main(task="classification", ten_fold_cv=False, fine_tune=False, model="NASNe
             print(e)
     else:
         print("No GPU detected. Training will run on CPU.")
+
+    start_time = time.time()
+
+    print(f"Using model: {model_name}.")
+
+    if model_name == "NASNetMobile":
+        image_size = (331, 331)
+    elif model_name == "ResNet101":
+        image_size = (224, 224)
+    elif model_name == "InceptionV3":
+        image_size = (299, 299)
+
+    input_shape = image_size + (3,)
 
     fold_nums = [num for num in range(10)]
     regression = task == "regression"
@@ -346,7 +357,8 @@ def main(task="classification", ten_fold_cv=False, fine_tune=False, model="NASNe
                 max_year,
                 model_name,
                 fine_tune,
-                fold_idx=test_fold,
+                input_shape,
+                fold_idx=None,
             )
             all_metrics.append(metrics)
 
@@ -399,6 +411,7 @@ def main(task="classification", ten_fold_cv=False, fine_tune=False, model="NASNe
             max_year,
             model_name,
             fine_tune,
+            input_shape,
             fold_idx=None,
         )
         print("Metrics:", metrics)
@@ -414,4 +427,4 @@ def main(task="classification", ten_fold_cv=False, fine_tune=False, model="NASNe
 if __name__ == "__main__":
     # Usage: python fashion.py [classification|regression]
     task = sys.argv[1] if len(sys.argv) > 1 else "classification"
-    main(task, model="InceptionV3")
+    main(task)
