@@ -1,5 +1,5 @@
 from tensorflow.keras.applications import InceptionV3, ResNet101, NASNetMobile
-from keras.optimizers import Adam
+from tensorflow.keras.optimizers import Adam
 from keras.layers import Flatten, Dense, Dropout
 from keras.callbacks import EarlyStopping, TensorBoard, ReduceLROnPlateau
 from keras.models import Model
@@ -14,8 +14,6 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, roc_curve, auc, classification_report
 
-image_size = (331, 331)
-input_shape = image_size + (3,)
 """
 weights: None (random initialization) or imagenet (ImageNet weights). For loading imagenet weights, input_shape should be (331, 331, 3)
 """
@@ -40,7 +38,7 @@ def create_dataset(files):
     return image_paths, labels
 
 
-def load_and_preprocess_image(path, label, augment=False):
+def load_and_preprocess_image(path, label, image_size, augment=False):
     image = tf.io.read_file(path)
     image = tf.image.decode_jpeg(image, channels=3)
     image = tf.cast(image, tf.float32)
@@ -51,7 +49,9 @@ def load_and_preprocess_image(path, label, augment=False):
     return image, label
 
 
-def get_tf_dataset(files, regression=False, class_to_idx=None, min_year=None, max_year=None, augment=False):
+def get_tf_dataset(
+    files, regression=False, class_to_idx=None, min_year=None, max_year=None, augment=False, image_size=(224, 224)
+):
     image_paths, labels = create_dataset(files)
     image_paths = tf.constant(image_paths)
     if regression:
@@ -147,6 +147,7 @@ def train_and_evaluate(
         print(f"Fold {fold_idx} Final MAE (rounded to years): {mae:.2f}")
         metrics = {"mae": mae, "exact": exact_matches, "total": total}
 
+        run_id = time.strftime("%Y%m%d-%H%M%S")
         os.makedirs("plots", exist_ok=True)
         plt.figure(figsize=(10, 5))
         plt.plot(history.history["loss"], label="loss")
@@ -156,8 +157,21 @@ def train_and_evaluate(
         plt.title(f"Regression: Training and Validation Loss (Fold {fold_idx})")
         plt.legend()
         plt.tight_layout()
-        plt.savefig(f"plots/loss_val_loss_regression_fold{fold_idx}.png")
+        plt.savefig(f"plots/loss_val_loss_regression_{model_name}_fold{fold_idx}_{run_id}.png")
         plt.close()
+
+        if "val_mae" in history.history and "val_mse" in history.history:
+            plt.figure(figsize=(10, 5))
+            plt.plot(history.history["val_mae"], label="val_mae")
+            plt.plot(history.history["val_mse"], label="val_mse")
+            plt.xlabel("Epoch")
+            plt.ylabel("Metric")
+            plt.title("Validation MAE and MSE")
+            plt.legend()
+            plt.tight_layout()
+            plt.savefig(f"plots/train_mae_mse_{model_name}_fold{fold_idx}_{run_id}.png")
+            plt.close()
+
     else:
         y_true = []
         y_pred = []
@@ -223,7 +237,6 @@ def train_and_evaluate(
 
 def build_model(num_classes=None, regression=False, model="NASNetMobile", fine_tune=False):
     base_model = None
-
     if model == "NASNetMobile":
         base_model = NASNetMobile(include_top=False, weights="imagenet", input_shape=input_shape, pooling="avg")
     elif model == "ResNet101":
@@ -232,15 +245,14 @@ def build_model(num_classes=None, regression=False, model="NASNetMobile", fine_t
         base_model = InceptionV3(include_top=False, weights="imagenet", input_shape=input_shape, pooling="avg")
 
     x = base_model.output
-    # pooling is used then this is not necessary
-    # x = Flatten(name="FLATTEN")(x)
-    # x = Dense(1, activation="relu", name="last_FC1")(x)
-    # x = Dropout(0.5, name="DROPOUT")(x)
+
     if regression:
         predictions = Dense(1, activation="sigmoid", name="PREDICTIONS")(x)
     else:
         predictions = Dense(num_classes, activation="softmax", name="PREDICTIONS")(x)
+
     model = Model(inputs=base_model.input, outputs=predictions)
+
     for layer in base_model.layers:
         layer.trainable = False
 
@@ -267,8 +279,18 @@ def build_model(num_classes=None, regression=False, model="NASNetMobile", fine_t
     return model
 
 
-def main(task="classification", ten_fold_cv=False, fine_tune=False, model_name="NASNetMobile"):
+def main(task="classification", ten_fold_cv=False, fine_tune=False, model="NASNetMobile"):
+    print(f"Using model: {model}.")
     start_time = time.time()
+
+    if model == "NASNetMobile":
+        image_size = (331, 331)
+    elif model == "ResNet101":
+        image_size = (224, 224)
+    elif model == "InceptionV3":
+        image_size = (299, 299)
+
+    input_shape = image_size + (3,)
 
     # --- GPU Configuration for Optimal Utilization ---
     print("TensorFlow Version:", tf.__version__)
@@ -392,4 +414,4 @@ def main(task="classification", ten_fold_cv=False, fine_tune=False, model_name="
 if __name__ == "__main__":
     # Usage: python fashion.py [classification|regression]
     task = sys.argv[1] if len(sys.argv) > 1 else "classification"
-    main(task)
+    main(task, model="InceptionV3")
