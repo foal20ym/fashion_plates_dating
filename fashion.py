@@ -168,10 +168,6 @@ def main(task="classification", model="InceptionV3"):
         test_files, regression=regression, class_to_idx=class_to_idx, min_year=min_year, max_year=max_year, image_size=image_size
     )
 
-    # Kanske ta bort dessa? De printar shape mm <ShuffleDataset shapes: ((299, 299, 3), ()), types: (tf.float32, tf.int32)> 
-    print(train_ds)
-    print(val_ds)
-
     fine_tune = True
     if fine_tune:
         print("Fine Tuning!")
