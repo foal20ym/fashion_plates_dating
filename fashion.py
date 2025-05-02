@@ -12,7 +12,7 @@ import time
 import os
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import label_binarize
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, roc_curve, auc
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, roc_curve, auc, classification_report
 
 image_size = (331, 331)
 input_shape = image_size + (3,)
@@ -166,12 +166,22 @@ def train_and_evaluate(
             y_true.extend(labels.numpy())
             y_pred.extend(np.argmax(preds, axis=1))
 
-        cm = confusion_matrix(y_true, y_pred)
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm)
-        disp.plot(cmap=plt.cm.Blues)
-        plt.title(f"Classification: Confusion Matrix (Fold {fold_idx})")
-        plt.savefig(f"plots/confusion_matrix_classification_fold{fold_idx}.png")
-        plt.close()
+            # Print classification report
+            target_names = [str(k) for k in sorted(class_to_idx.keys(), key=lambda x: class_to_idx[x])]
+            report = classification_report(y_true, y_pred, target_names=target_names, output_dict=True)
+            print(classification_report(y_true, y_pred, target_names=target_names))
+
+            # Plot bar chart of per-class F1-score
+            f1_scores = [report[str(i)]["f1-score"] for i in range(len(target_names))]
+            plt.figure(figsize=(10, 6))
+            plt.bar(target_names, f1_scores, color="skyblue")
+            plt.xlabel("Class")
+            plt.ylabel("F1-score")
+            plt.title(f"Per-Class F1-score (Fold {fold_idx})")
+            plt.ylim(0, 1)
+            plt.tight_layout()
+            plt.savefig(f"plots/f1_score_bar_fold{fold_idx}.png")
+            plt.close()
 
         if class_to_idx is not None:
             idx_to_class = {v: k for k, v in class_to_idx.items()}
@@ -180,30 +190,33 @@ def train_and_evaluate(
             mae_years = np.mean(np.abs(y_true_years - y_pred_years))
             print(f"Classification MAE (in years): {mae_years:.2f}")
 
-        n_classes = num_classes
-        y_true_bin = label_binarize(y_true, classes=list(range(n_classes)))
+        # Binarize labels for ROC computation
+        y_true_bin = label_binarize(y_true, classes=list(range(num_classes)))
+
+        # Collect predictions
         y_score = []
         for images, _ in val_ds_batched:
             preds = model.predict(images)
             y_score.extend(preds)
         y_score = np.array(y_score)
-        fpr = dict()
-        tpr = dict()
-        roc_auc = dict()
-        for i in range(n_classes):
-            fpr[i], tpr[i], _ = roc_curve(y_true_bin[:, i], y_score[:, i])
-            roc_auc[i] = auc(fpr[i], tpr[i])
-        plt.figure(figsize=(10, 8))
-        for i in range(n_classes):
-            plt.plot(fpr[i], tpr[i], label=f"Class {i} (AUC = {roc_auc[i]:.2f})")
-        plt.plot([0, 1], [0, 1], "k--")
+
+        # Compute micro-average ROC
+        fpr_micro, tpr_micro, _ = roc_curve(y_true_bin.ravel(), y_score.ravel())
+        roc_auc_micro = auc(fpr_micro, tpr_micro)
+
+        # Plot micro-average ROC
+        plt.figure(figsize=(8, 6))
+        plt.plot(fpr_micro, tpr_micro, color="blue", lw=2, label=f"Micro-average ROC (AUC = {roc_auc_micro:.2f})")
+        plt.plot([0, 1], [0, 1], "k--", lw=1)
         plt.xlabel("False Positive Rate")
         plt.ylabel("True Positive Rate")
-        plt.title(f"Classification: ROC Curve (Fold {fold_idx})")
+        plt.title(f"Micro-average ROC Curve (Fold {fold_idx})")
         plt.legend(loc="lower right")
         plt.tight_layout()
-        plt.savefig(f"plots/roc_curve_classification_fold{fold_idx}.png")
+        plt.savefig(f"plots/micro_avg_roc_curve_fold{fold_idx}.png")
         plt.close()
+
+        # Return metrics
         metrics = {"mae": results[0], "accuracy": results[1]}
     return metrics
 
