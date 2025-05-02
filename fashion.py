@@ -98,14 +98,14 @@ def main(task="classification", model="InceptionV3"):
     start_time = time.time()
 
     if model == "NASNetMobile":
-        image_size = (224, 224)
+        image_size = (331, 331)
     elif model == "ResNet101":
         image_size = (224, 224)
     elif model == "InceptionV3":
         image_size = (299, 299)
     else:
         model = "NASNetMobile"
-        image_size = (224, 224)
+        image_size = (331, 331)
     input_shape = image_size + (3,)
 
     # --- GPU Configuration for Optimal Utilization ---
