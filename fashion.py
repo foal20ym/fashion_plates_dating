@@ -1,5 +1,5 @@
 from tensorflow.keras.applications import InceptionV3, ResNet101, NASNetMobile
-from keras.optimizers import Adam
+from tensorflow.keras.optimizers import Adam
 from keras.layers import Flatten, Dense, Dropout
 from keras.callbacks import EarlyStopping, TensorBoard
 from keras.models import Model
@@ -12,12 +12,9 @@ import time
 import os
 import matplotlib.pyplot as plt
 
-image_size = (331, 331)
-input_shape = image_size + (3,)
 """
 weights: None (random initialization) or imagenet (ImageNet weights). For loading imagenet weights, input_shape should be (331, 331, 3)
 """
-
 
 def create_dataset(files):
     image_paths = []
@@ -28,8 +25,7 @@ def create_dataset(files):
         labels.extend(df["year"].tolist())
     return image_paths, labels
 
-
-def load_and_preprocess_image(path, label):
+def load_and_preprocess_image(path, label, image_size):
     image = tf.io.read_file(path)
     image = tf.image.decode_jpeg(image, channels=3)
     image = tf.cast(image, tf.float32)
@@ -37,8 +33,7 @@ def load_and_preprocess_image(path, label):
     image = image / 255.0
     return image, label
 
-
-def get_tf_dataset(files, regression=False, class_to_idx=None, min_year=None, max_year=None):
+def get_tf_dataset(files, regression=False, class_to_idx=None, min_year=None, max_year=None, image_size=(224,224)):
     image_paths, labels = create_dataset(files)
     image_paths = tf.constant(image_paths)
     if regression:
@@ -49,14 +44,12 @@ def get_tf_dataset(files, regression=False, class_to_idx=None, min_year=None, ma
         labels = [class_to_idx[y] for y in labels]
         labels = tf.constant(labels, dtype=tf.int32)
     ds = tf.data.Dataset.from_tensor_slices((image_paths, labels))
-    ds = ds.map(load_and_preprocess_image, num_parallel_calls=tf.data.AUTOTUNE)
+    ds = ds.map(lambda p, l: load_and_preprocess_image(p, l, image_size), num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.shuffle(buffer_size=len(image_paths))
     return ds
 
-
-def build_model(num_classes=None, regression=False, model="NASNetMobile", fine_tune=False):
+def build_model(num_classes=None, regression=False, model="InceptionV3", fine_tune=False, input_shape=(224,224,3)):
     base_model = None
-
     if model == "NASNetMobile":
         base_model = NASNetMobile(include_top=False, weights="imagenet", input_shape=input_shape, pooling="avg")
     elif model == "ResNet101":
@@ -65,15 +58,14 @@ def build_model(num_classes=None, regression=False, model="NASNetMobile", fine_t
         base_model = InceptionV3(include_top=False, weights="imagenet", input_shape=input_shape, pooling="avg")
 
     x = base_model.output
-    # pooling is used then this is not necessary
-    # x = Flatten(name="FLATTEN")(x)
-    # x = Dense(1, activation="relu", name="last_FC1")(x)
-    # x = Dropout(0.5, name="DROPOUT")(x)
+
     if regression:
         predictions = Dense(1, activation="sigmoid", name="PREDICTIONS")(x)
     else:
         predictions = Dense(num_classes, activation="softmax", name="PREDICTIONS")(x)
+
     model = Model(inputs=base_model.input, outputs=predictions)
+
     for layer in base_model.layers:
         layer.trainable = False
 
@@ -100,8 +92,21 @@ def build_model(num_classes=None, regression=False, model="NASNetMobile", fine_t
     return model
 
 
-def main(task="classification"):
+def main(task="classification", model="InceptionV3"):
+    print(f"Using model: {model}.")
+    model_name = model
     start_time = time.time()
+
+    if model == "NASNetMobile":
+        image_size = (331, 331)
+    elif model == "ResNet101":
+        image_size = (224, 224)
+    elif model == "InceptionV3":
+        image_size = (299, 299)
+    else:
+        model = "NASNetMobile"
+        image_size = (331, 331)
+    input_shape = image_size + (3,)
 
     # --- GPU Configuration for Optimal Utilization ---
     print("TensorFlow Version:", tf.__version__)
@@ -157,19 +162,17 @@ def main(task="classification"):
         num_classes = None
 
     train_ds = get_tf_dataset(
-        fold_files, regression=regression, class_to_idx=class_to_idx, min_year=min_year, max_year=max_year
+        fold_files, regression=regression, class_to_idx=class_to_idx, min_year=min_year, max_year=max_year, image_size=image_size
     )
     val_ds = get_tf_dataset(
-        test_files, regression=regression, class_to_idx=class_to_idx, min_year=min_year, max_year=max_year
+        test_files, regression=regression, class_to_idx=class_to_idx, min_year=min_year, max_year=max_year, image_size=image_size
     )
 
-    print(train_ds)
-    print(val_ds)
     fine_tune = True
     if fine_tune:
         print("Fine Tuning!")
 
-    model = build_model(num_classes=num_classes, regression=regression, model="NASNetMobile", fine_tune=fine_tune)
+    model = build_model(num_classes=num_classes, regression=regression, model=model, fine_tune=fine_tune, input_shape=input_shape)
 
     if regression:
         model.compile(optimizer=Adam(learning_rate=0.0001), loss="mean_squared_error", metrics=["mae", "mse"])
@@ -232,6 +235,7 @@ def main(task="classification"):
     # --- Plot and save training history ---
     # Create plots directory if it doesn't exist
     os.makedirs("plots", exist_ok=True)
+    run_id = time.strftime("%Y%m%d-%H%M%S")
 
     # Plot loss and val_loss
     plt.figure(figsize=(10, 5))
@@ -242,7 +246,7 @@ def main(task="classification"):
     plt.title("Training and Validation Loss")
     plt.legend()
     plt.tight_layout()
-    plt.savefig("plots/loss_val_loss.png")
+    plt.savefig(f"plots/loss_val_loss_{model_name}_{run_id}.png")
     plt.close()
 
     # Plot MAE and MSE if regression
@@ -255,7 +259,7 @@ def main(task="classification"):
         plt.title("Training MAE and MSE")
         plt.legend()
         plt.tight_layout()
-        plt.savefig("plots/train_mae_mse.png")
+        plt.savefig(f"plots/train_mae_mse_{model_name}_{run_id}.png")
         plt.close()
 
         if "val_mae" in history.history and "val_mse" in history.history:
@@ -267,7 +271,7 @@ def main(task="classification"):
             plt.title("Validation MAE and MSE")
             plt.legend()
             plt.tight_layout()
-            plt.savefig("plots/val_mae_mse.png")
+            plt.savefig(f"plots/val_mae_mse_{model_name}_{run_id}.png")
             plt.close()
 
     end_time = time.time()
@@ -281,4 +285,4 @@ def main(task="classification"):
 if __name__ == "__main__":
     # Usage: python fashion.py [classification|regression]
     task = sys.argv[1] if len(sys.argv) > 1 else "classification"
-    main(task)
+    main(task, model="InceptionV3")
