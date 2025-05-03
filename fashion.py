@@ -196,8 +196,9 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
 
             # Print classification report
             target_names = [str(k) for k in sorted(class_to_idx.keys(), key=lambda x: class_to_idx[x])]
-            report = classification_report(y_true, y_pred, target_names=target_names, output_dict=True)
-            print(classification_report(y_true, y_pred, target_names=target_names))
+            all_labels = [class_to_idx[k] for k in sorted(class_to_idx.keys(), key=lambda x: class_to_idx[x])]
+            report = classification_report(y_true, y_pred, labels=all_labels, target_names=target_names, output_dict=True)
+            print(classification_report(y_true, y_pred, labels=all_labels, target_names=target_names))
 
             # Plot bar chart of per-class F1-score
             f1_scores = [report[str(i)]["f1-score"] for i in range(len(target_names))]
@@ -302,9 +303,7 @@ def main():
     config = load_config("config.yaml")
     regression = config['task'] == 'regression'
     model_name = config['model']['name']
-    fine_tune = config['model']['fine_tune']
     fold_nums = [num for num in range(10)]
-    input_shape = get_input_shape(config['model']['name'])
     print(f"Using model: {model_name}.")
 
     # --- GPU Configuration for Optimal Utilization ---
