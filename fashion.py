@@ -9,19 +9,16 @@ import numpy as np
 import tensorflow as tf
 import sys
 import time
+import yaml
 import os
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import roc_curve, auc, classification_report
 
 
-data_augmentation = tf.keras.Sequential(
-    [
-        tf.keras.layers.RandomFlip("horizontal_and_vertical"),
-        tf.keras.layers.RandomRotation(0.1),
-        tf.keras.layers.RandomContrast(0.1),
-    ]
-)
+def load_config(config_path="config.yaml"):
+    with open(config_path, "r") as f:
+        return yaml.safe_load(f)
 
 
 def create_dataset(files):
@@ -32,6 +29,15 @@ def create_dataset(files):
         image_paths.extend([p if p.startswith("data/") else os.path.join("data", p) for p in df["file"].tolist()])
         labels.extend(df["year"].tolist())
     return image_paths, labels
+
+
+data_augmentation = tf.keras.Sequential(
+        [
+            tf.keras.layers.RandomFlip("horizontal_and_vertical"),
+            tf.keras.layers.RandomRotation(0.1),
+            tf.keras.layers.RandomContrast(0.1),
+        ]
+)
 
 
 def load_and_preprocess_image(path, label, image_size, augment=False):
@@ -63,20 +69,22 @@ def get_tf_dataset(
     ds = ds.shuffle(buffer_size=len(image_paths))
     return ds
 
+def get_input_shape(model_name):
+    if model_name == "NASNetMobile":
+        return (331, 331, 3)
+    elif model_name == "ResNet101":
+        return (224, 224, 3)
+    elif model_name == "InceptionV3":
+        return (299, 299, 3)
+    else:
+        raise ValueError(f"Unsupported model name: {model_name}")
 
-def train_and_evaluate(
-    train_files,
-    test_file,
-    regression,
-    class_to_idx,
-    num_classes,
-    min_year,
-    max_year,
-    model_name,
-    fine_tune,
-    input_shape,
-    fold_idx=None,
-):
+
+def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_year, max_year, config, fold_idx=None):
+    input_shape = get_input_shape(config['model']['name'])
+    model_name = config['model']['name']
+    regression = config['task'] == 'regression'
+
     # Prepare datasets
     train_ds = get_tf_dataset(
         train_files,
@@ -87,6 +95,7 @@ def train_and_evaluate(
         augment=True,
         image_size=input_shape[:2],
     )
+
     val_ds = get_tf_dataset(
         [test_file],
         regression=regression,
@@ -96,27 +105,25 @@ def train_and_evaluate(
         augment=False,
         image_size=input_shape[:2],
     )
-    BATCH_SIZE = 16
+
+    BATCH_SIZE = config['training']['batch_size']
     train_ds_batched = train_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
     val_ds_batched = val_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
     # Build and compile model
     model = build_model(
+        config,
         num_classes=num_classes,
-        regression=regression,
-        model_name=model_name,
-        fine_tune=fine_tune,
-        input_shape=input_shape,
+        input_shape=input_shape
     )
-    if regression:
-        model.compile(optimizer=Adam(learning_rate=0.0001), loss="mean_squared_error", metrics=["mae", "mse"])
-    else:
-        model.compile(
-            optimizer=Adam(learning_rate=0.0001), loss="sparse_categorical_crossentropy", metrics=["accuracy"]
-        )
+
+    optimizer = tf.keras.optimizers.Adam(learning_rate=config['training']['learning_rate'])
+    loss = 'mean_squared_error' if regression else 'sparse_categorical_crossentropy'
+    metrics = ['mae', 'mse'] if regression else ['accuracy']
+    model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
 
     # Callbacks
-    callbacks = [EarlyStopping(monitor="val_loss", patience=4, restore_best_weights=True, verbose=1)]
+    callbacks = [EarlyStopping(monitor="val_loss", patience=config['training']['early_stopping_patience'], restore_best_weights=True, verbose=1)]
     log_dir = os.path.join(
         "logs",
         (
@@ -129,7 +136,7 @@ def train_and_evaluate(
     callbacks.append(tensorboard_callback)
 
     # Train
-    history = model.fit(train_ds_batched, validation_data=val_ds_batched, epochs=100, callbacks=callbacks, verbose=2)
+    history = model.fit(train_ds_batched, validation_data=val_ds_batched, epochs=config['training']['epochs'], callbacks=callbacks, verbose=2)
 
     # Evaluate
     results = model.evaluate(val_ds_batched)
@@ -242,9 +249,12 @@ def train_and_evaluate(
     return metrics
 
 
-def build_model(
-    num_classes=None, regression=False, model_name="NASNetMobile", fine_tune=False, input_shape=(224, 224, 3)
-):
+def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
+    
+    regression = config['task'] == 'regression'
+    model_name = config['model']['name']
+    fine_tune = config['model']['fine_tune']
+
     base_model = None
     if model_name == "NASNetMobile":
         base_model = NASNetMobile(include_top=False, weights="imagenet", input_shape=input_shape, pooling="avg")
@@ -288,7 +298,14 @@ def build_model(
     return model
 
 
-def main(task="classification", ten_fold_cv=True, fine_tune=False, model_name="NASNetMobile"):
+def main():
+    config = load_config("config.yaml")
+    regression = config['task'] == 'regression'
+    model_name = config['model']['name']
+    fine_tune = config['model']['fine_tune']
+    fold_nums = [num for num in range(10)]
+    input_shape = get_input_shape(config['model']['name'])
+    print(f"Using model: {model_name}.")
 
     # --- GPU Configuration for Optimal Utilization ---
     print("TensorFlow Version:", tf.__version__)
@@ -305,21 +322,7 @@ def main(task="classification", ten_fold_cv=True, fine_tune=False, model_name="N
 
     start_time = time.time()
 
-    print(f"Using model: {model_name}.")
-
-    if model_name == "NASNetMobile":
-        image_size = (331, 331)
-    elif model_name == "ResNet101":
-        image_size = (224, 224)
-    elif model_name == "InceptionV3":
-        image_size = (299, 299)
-
-    input_shape = image_size + (3,)
-
-    fold_nums = [num for num in range(10)]
-    regression = task == "regression"
-
-    if ten_fold_cv:
+    if config['cross_validation']:
         all_metrics = []
         for test_fold in fold_nums:
             print(f"\n=== Fold {test_fold} ===")
@@ -350,14 +353,11 @@ def main(task="classification", ten_fold_cv=True, fine_tune=False, model_name="N
             metrics = train_and_evaluate(
                 train_files,
                 test_file,
-                regression,
                 class_to_idx,
                 num_classes,
                 min_year,
                 max_year,
-                model_name,
-                fine_tune,
-                input_shape,
+                config,
                 fold_idx=None,
             )
             all_metrics.append(metrics)
@@ -404,14 +404,11 @@ def main(task="classification", ten_fold_cv=True, fine_tune=False, model_name="N
         metrics = train_and_evaluate(
             train_files,
             test_file,
-            regression,
             class_to_idx,
             num_classes,
             min_year,
             max_year,
-            model_name,
-            fine_tune,
-            input_shape,
+            config,
             fold_idx=None,
         )
         print("Metrics:", metrics)
@@ -425,6 +422,4 @@ def main(task="classification", ten_fold_cv=True, fine_tune=False, model_name="N
 
 
 if __name__ == "__main__":
-    # Usage: python fashion.py [classification|regression]
-    task = sys.argv[1] if len(sys.argv) > 1 else "classification"
-    main(task)
+    main()

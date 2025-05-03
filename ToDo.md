@@ -24,3 +24,9 @@ ToDo / Future Work:
 7. **Expand Timeframe of Study**
    - Extend the period of study beyond 1820-1880 to include more artifacts.
    - Address challenges such as data sparsity and reduced accuracy with a broader historical range.
+
+Todo i koden: 
+   - Fixa så man kan spara ner modellerna
+   - FIxa så alla parameterar ligger i en JSON eller txt fil som läses in
+   
+
