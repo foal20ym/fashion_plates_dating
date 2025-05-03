@@ -12,7 +12,8 @@ import time
 import os
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import label_binarize
-from sklearn.metrics import roc_auc_score, roc_curve, classification_report
+from sklearn.metrics import roc_auc_score, roc_curve, classification_report, confusion_matrix, f1_score
+import seaborn as sns
 
 
 data_augmentation = tf.keras.Sequential(
@@ -62,6 +63,11 @@ def get_tf_dataset(
     )
     ds = ds.shuffle(buffer_size=len(image_paths))
     return ds
+
+
+def top_n_accuracy(y_true, y_score, n=3):
+    top_n = np.argsort(y_score, axis=1)[:, -n:]
+    return np.mean([y in top_n_row for y, top_n_row in zip(y_true, top_n)])
 
 
 def train_and_evaluate(
@@ -129,21 +135,21 @@ def train_and_evaluate(
     callbacks.append(tensorboard_callback)
 
     # Train
-    history = model.fit(train_ds_batched, validation_data=val_ds_batched, epochs=1, callbacks=callbacks, verbose=2)
+    history = model.fit(train_ds_batched, validation_data=val_ds_batched, epochs=100, callbacks=callbacks, verbose=2)
 
     # Helper for fold-specific naming
     fold_str = f"_fold{fold_idx}" if fold_idx is not None else ""
     fold_print = f"Fold {fold_idx} " if fold_idx is not None else ""
 
     # Evaluate
-    results = model.evaluate(val_ds_batched)
+    results = model.evaluate(val_ds_batched, verbose=2)
     print(f"{fold_print}Evaluation results:", results)
 
     # Collect predictions and metrics for reporting
     metrics = {}
     run_id = time.strftime("%Y-%m-%d_%H:%M:%S")
     if regression:
-        preds = model.predict(val_ds_batched)
+        preds = model.predict(val_ds_batched, verbose=2)
         preds_years = preds * (max_year - min_year) + min_year
         preds_years_rounded = np.round(preds_years).astype(int)
         y_true = []
@@ -189,19 +195,51 @@ def train_and_evaluate(
         y_true = []
         y_pred = []
         for images, labels in val_ds_batched:
-            preds = model.predict(images)
+            preds = model.predict(images, verbose=2)
             y_true.extend(labels.numpy())
             y_pred.extend(np.argmax(preds, axis=1))
             y_score.extend(preds)
         y_score = np.array(y_score)
 
-        # Print classification report
         target_names = [str(k) for k in sorted(class_to_idx.keys(), key=lambda x: class_to_idx[x])]
         all_labels = [class_to_idx[k] for k in sorted(class_to_idx.keys(), key=lambda x: class_to_idx[x])]
+
+        # Confusion Matrix
+        cm = confusion_matrix(y_true, y_pred, labels=all_labels)
+        plt.figure(figsize=(12, 10))
+        sns.heatmap(cm, annot=False, fmt="d", cmap="viridis", xticklabels=target_names, yticklabels=target_names)
+        plt.xlabel("Predicted")
+        plt.ylabel("True")
+        plt.title(f"Confusion Matrix{fold_str}")
+        plt.tight_layout()
+        plt.savefig(f"plots/confusion_matrix_{model_name}{fold_str}_{run_id}.png")
+        plt.close()
+
+        cm_norm = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
+        plt.figure(figsize=(12, 10))
+        sns.heatmap(cm_norm, annot=False, fmt=".2f", cmap="Blues", xticklabels=target_names, yticklabels=target_names)
+        plt.xlabel("Predicted")
+        plt.ylabel("True")
+        plt.title(f"Normalized Confusion Matrix{fold_str}")
+        plt.tight_layout()
+        plt.savefig(f"plots/confusion_matrix_normalized_{model_name}{fold_str}_{run_id}.png")
+        plt.close()
+
+        # Print classification report
         report = classification_report(
             y_true, y_pred, labels=all_labels, target_names=target_names, output_dict=True, zero_division=0
         )
         print(classification_report(y_true, y_pred, labels=all_labels, target_names=target_names, zero_division=0))
+
+        print(f"Macro avg F1: {report['macro avg']['f1-score']:.3f}")
+        print(f"Weighted avg F1: {report['weighted avg']['f1-score']:.3f}")
+        micro_f1 = f1_score(y_true, y_pred, average="micro")
+        print(f"Micro avg F1: {micro_f1:.3f}")
+
+        top3_acc = top_n_accuracy(y_true, y_score, n=3)
+        top5_acc = top_n_accuracy(y_true, y_score, n=5)
+        print(f"Top-3 Accuracy: {top3_acc:.3f}")
+        print(f"Top-5 Accuracy: {top5_acc:.3f}")
 
         # Plot bar chart of per-class F1-score
         f1_scores = [report[name]["f1-score"] for name in target_names]
@@ -224,14 +262,25 @@ def train_and_evaluate(
             mae_years = np.mean(np.abs(y_true_years - y_pred_years))
             print(f"Classification MAE (in years): {mae_years:.2f}")
 
-        # Use all classes for ROC AUC calculation
         y_true_bin = label_binarize(y_true, classes=all_labels)  # shape (n_samples, n_classes)
+
+        # Find classes present in y_true
+        present_classes = [i for i, label in enumerate(all_labels) if label in y_true]
 
         # Compute scalar AUCs with roc_auc_score
         roc_auc_micro = roc_auc_score(y_true_bin, y_score, average="micro", multi_class="ovr")
-        roc_auc_macro = roc_auc_score(y_true_bin, y_score, average="macro", multi_class="ovr")
         print(f"Micro ROC AUC  = {roc_auc_micro:.2f}")
-        print(f"Macro ROC AUC  = {roc_auc_macro:.2f}")
+        # Compute macro AUC only for present classes
+        if len(present_classes) > 1:
+            roc_auc_macro = roc_auc_score(
+                label_binarize(y_true, classes=[all_labels[i] for i in present_classes]),
+                y_score[:, present_classes],
+                average="macro",
+                multi_class="ovr",
+            )
+            print(f"Macro ROC AUC (present classes) = {roc_auc_macro:.2f}")
+        else:
+            print("Macro ROC AUC not defined (less than 2 classes present in y_true)")
 
         # Build the ROC curves for plotting
 
@@ -314,7 +363,7 @@ def build_model(
     return model
 
 
-def main(task="classification", ten_fold_cv=False, fine_tune=False, model_name="NASNetMobile"):
+def main(task="classification", ten_fold_cv=True, fine_tune=False, model_name="NASNetMobile"):
 
     # --- GPU Configuration for Optimal Utilization ---
     print("TensorFlow Version:", tf.__version__)
