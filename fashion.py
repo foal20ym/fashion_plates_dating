@@ -12,7 +12,7 @@ import time
 import os
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import label_binarize
-from sklearn.metrics import roc_curve, auc, classification_report
+from sklearn.metrics import roc_auc_score, roc_curve, classification_report
 
 
 data_augmentation = tf.keras.Sequential(
@@ -120,23 +120,28 @@ def train_and_evaluate(
     log_dir = os.path.join(
         "logs",
         (
-            time.strftime(f"fit_fold{fold_idx}_%Y-%m-%d-%H:%M:%S")
+            time.strftime(f"fit_fold{fold_idx}_%Y-%m-%d_%H:%M:%S")
             if fold_idx is not None
-            else time.strftime("fit_%Y-%m-%d-%H:%M:%S")
+            else time.strftime("fit_%Y-%m-%d_%H:%M:%S")
         ),
     )
     tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
     callbacks.append(tensorboard_callback)
 
     # Train
-    history = model.fit(train_ds_batched, validation_data=val_ds_batched, epochs=100, callbacks=callbacks, verbose=2)
+    history = model.fit(train_ds_batched, validation_data=val_ds_batched, epochs=1, callbacks=callbacks, verbose=2)
+
+    # Helper for fold-specific naming
+    fold_str = f"_fold{fold_idx}" if fold_idx is not None else ""
+    fold_print = f"Fold {fold_idx} " if fold_idx is not None else ""
 
     # Evaluate
     results = model.evaluate(val_ds_batched)
-    print(f"Fold {fold_idx} Evaluation results:", results)
+    print(f"{fold_print}Evaluation results:", results)
 
     # Collect predictions and metrics for reporting
     metrics = {}
+    run_id = time.strftime("%Y-%m-%d_%H:%M:%S")
     if regression:
         preds = model.predict(val_ds_batched)
         preds_years = preds * (max_year - min_year) + min_year
@@ -150,21 +155,20 @@ def train_and_evaluate(
         exact_matches = np.sum(preds_years_rounded.flatten() == y_true_years_rounded.flatten())
         total = len(y_true_years_rounded)
         mae = np.mean(np.abs(preds_years_rounded.flatten() - y_true_years_rounded.flatten()))
-        print(f"Fold {fold_idx} Exactly correct year predictions: {exact_matches} out of {total}")
-        print(f"Fold {fold_idx} Final MAE (rounded to years): {mae:.2f}")
+        print(f"{fold_print}Exactly correct year predictions: {exact_matches} out of {total}")
+        print(f"{fold_print}Final MAE (rounded to years): {mae:.2f}")
         metrics = {"mae": mae, "exact": exact_matches, "total": total}
 
-        run_id = time.strftime("%Y%m%d-%H%M%S")
         os.makedirs("plots", exist_ok=True)
         plt.figure(figsize=(10, 5))
         plt.plot(history.history["loss"], label="loss")
         plt.plot(history.history["val_loss"], label="val_loss")
         plt.xlabel("Epoch")
         plt.ylabel("Loss")
-        plt.title(f"Regression: Training and Validation Loss (Fold {fold_idx})")
+        plt.title(f"Regression: Training and Validation Loss{fold_str}")
         plt.legend()
         plt.tight_layout()
-        plt.savefig(f"plots/loss_val_loss_regression_{model_name}_fold{fold_idx}_{run_id}.png")
+        plt.savefig(f"plots/loss_val_loss_regression_{model_name}{fold_str}_{run_id}.png")
         plt.close()
 
         if "val_mae" in history.history and "val_mse" in history.history:
@@ -173,36 +177,45 @@ def train_and_evaluate(
             plt.plot(history.history["val_mse"], label="val_mse")
             plt.xlabel("Epoch")
             plt.ylabel("Metric")
-            plt.title("Validation MAE and MSE")
+            plt.title(f"Validation MAE and MSE{fold_str}")
             plt.legend()
             plt.tight_layout()
-            plt.savefig(f"plots/train_mae_mse_{model_name}_fold{fold_idx}_{run_id}.png")
+            plt.savefig(f"plots/train_mae_mse_{model_name}{fold_str}_{run_id}.png")
             plt.close()
 
     else:
+        # Collect predictions
+        y_score = []
         y_true = []
         y_pred = []
         for images, labels in val_ds_batched:
             preds = model.predict(images)
             y_true.extend(labels.numpy())
             y_pred.extend(np.argmax(preds, axis=1))
+            y_score.extend(preds)
+        y_score = np.array(y_score)
 
-            # Print classification report
-            target_names = [str(k) for k in sorted(class_to_idx.keys(), key=lambda x: class_to_idx[x])]
-            report = classification_report(y_true, y_pred, target_names=target_names, output_dict=True)
-            print(classification_report(y_true, y_pred, target_names=target_names))
+        # Print classification report
+        target_names = [str(k) for k in sorted(class_to_idx.keys(), key=lambda x: class_to_idx[x])]
+        all_labels = [class_to_idx[k] for k in sorted(class_to_idx.keys(), key=lambda x: class_to_idx[x])]
+        report = classification_report(
+            y_true, y_pred, labels=all_labels, target_names=target_names, output_dict=True, zero_division=0
+        )
+        print(classification_report(y_true, y_pred, labels=all_labels, target_names=target_names, zero_division=0))
 
-            # Plot bar chart of per-class F1-score
-            f1_scores = [report[str(i)]["f1-score"] for i in range(len(target_names))]
-            plt.figure(figsize=(10, 6))
-            plt.bar(target_names, f1_scores, color="skyblue")
-            plt.xlabel("Class")
-            plt.ylabel("F1-score")
-            plt.title(f"Per-Class F1-score (Fold {fold_idx})")
-            plt.ylim(0, 1)
-            plt.tight_layout()
-            plt.savefig(f"plots/f1_score_bar_fold{fold_idx}.png")
-            plt.close()
+        # Plot bar chart of per-class F1-score
+        f1_scores = [report[name]["f1-score"] for name in target_names]
+        plt.figure(figsize=(max(10, len(target_names) * 0.5), 6))
+        bar_positions = np.arange(len(target_names))
+        plt.bar(bar_positions, f1_scores, color="green", width=0.6, align="center")
+        plt.xticks(bar_positions, target_names, rotation=45, ha="center")
+        plt.xlabel("Class")
+        plt.ylabel("F1-score")
+        plt.title(f"Per-Class F1-score{fold_str}")
+        plt.ylim(0, 1)
+        plt.tight_layout()
+        plt.savefig(f"plots/f1_score_bar_{model_name}{fold_str}_{run_id}.png")
+        plt.close()
 
         if class_to_idx is not None:
             idx_to_class = {v: k for k, v in class_to_idx.items()}
@@ -211,30 +224,43 @@ def train_and_evaluate(
             mae_years = np.mean(np.abs(y_true_years - y_pred_years))
             print(f"Classification MAE (in years): {mae_years:.2f}")
 
-        # Binarize labels for ROC computation
-        y_true_bin = label_binarize(y_true, classes=list(range(num_classes)))
+        # Use all classes for ROC AUC calculation
+        y_true_bin = label_binarize(y_true, classes=all_labels)  # shape (n_samples, n_classes)
 
-        # Collect predictions
-        y_score = []
-        for images, _ in val_ds_batched:
-            preds = model.predict(images)
-            y_score.extend(preds)
-        y_score = np.array(y_score)
+        # Compute scalar AUCs with roc_auc_score
+        roc_auc_micro = roc_auc_score(y_true_bin, y_score, average="micro", multi_class="ovr")
+        roc_auc_macro = roc_auc_score(y_true_bin, y_score, average="macro", multi_class="ovr")
+        print(f"Micro ROC AUC  = {roc_auc_micro:.2f}")
+        print(f"Macro ROC AUC  = {roc_auc_macro:.2f}")
 
-        # Compute micro-average ROC
+        # Build the ROC curves for plotting
+
+        # Micro-average ROC curve
         fpr_micro, tpr_micro, _ = roc_curve(y_true_bin.ravel(), y_score.ravel())
-        roc_auc_micro = auc(fpr_micro, tpr_micro)
 
-        # Plot micro-average ROC
+        # Macro-average ROC curve (average of per-class curves)
+        fpr_dict = {}
+        tpr_dict = {}
+        for i in range(len(all_labels)):
+            fpr_dict[i], tpr_dict[i], _ = roc_curve(y_true_bin[:, i], y_score[:, i])
+
+        all_fpr = np.unique(np.concatenate([fpr_dict[i] for i in range(len(all_labels))]))
+        mean_tpr = np.zeros_like(all_fpr)
+        for i in range(len(all_labels)):
+            mean_tpr += np.interp(all_fpr, fpr_dict[i], tpr_dict[i])
+        mean_tpr /= len(all_labels)
+
+        # Plot both curves
         plt.figure(figsize=(8, 6))
         plt.plot(fpr_micro, tpr_micro, color="blue", lw=2, label=f"Micro-average ROC (AUC = {roc_auc_micro:.2f})")
+        plt.plot(all_fpr, mean_tpr, color="green", lw=2, label=f"Macro-average ROC (AUC = {roc_auc_macro:.2f})")
         plt.plot([0, 1], [0, 1], "k--", lw=1)
         plt.xlabel("False Positive Rate")
         plt.ylabel("True Positive Rate")
-        plt.title(f"Micro-average ROC Curve (Fold {fold_idx})")
+        plt.title(f"Micro & Macro-average ROC Curve{fold_str}")
         plt.legend(loc="lower right")
         plt.tight_layout()
-        plt.savefig(f"plots/micro_avg_roc_curve_fold{fold_idx}.png")
+        plt.savefig(f"plots/micro_macro_avg_roc_curve_{model_name}{fold_str}_{run_id}.png")
         plt.close()
 
         # Return metrics
@@ -288,7 +314,7 @@ def build_model(
     return model
 
 
-def main(task="classification", ten_fold_cv=True, fine_tune=False, model_name="NASNetMobile"):
+def main(task="classification", ten_fold_cv=False, fine_tune=False, model_name="NASNetMobile"):
 
     # --- GPU Configuration for Optimal Utilization ---
     print("TensorFlow Version:", tf.__version__)
