@@ -1,6 +1,6 @@
 #!/bin/bash -l
 
-#SBATCH --job-name=all_experiments
+#SBATCH --job-name=dating_fashion_classification
 
 # Resource Allocation
 
@@ -9,7 +9,7 @@
 # force-stopped by the server. If you make the expected time too long, it will
 # take longer for the job to start. Here, we say the job will take 20 minutes
 #              d-hh:mm:ss
-#SBATCH --time=0-40:00:00
+#SBATCH --time=0-4:00:00
 # Define resources to use for the defined job. Resources, which are not defined
 # will not be provided.
 
@@ -30,11 +30,13 @@
 
 # you may not place bash commands before the last SBATCH directive
 
+NOW=$(date +"%Y-%m-%d_%H:%M:%S")
+TXTFILE="logs/output_${SLURM_JOB_ID}_${NOW}.txt"
+
 echo "now processing task id:: ${SLURM_JOB_ID} on ${SLURMD_NODENAME}"
 mkdir -p logs
 mkdir "logs/log_${SLURM_JOB_ID}"
-python fashion.py classification "logs/log_${SLURM_JOB_ID}" --epochs 20 > logs/output_${SLURM_JOB_ID}.txt
+python fashion.py classification "logs/log_${SLURM_JOB_ID}" --epochs 20 > $TXTFILE
 
 echo "finished task with id:: ${SLURM_JOB_ID}"
-# happy end
 exit 0
