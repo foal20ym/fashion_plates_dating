@@ -135,7 +135,7 @@ def train_and_evaluate(
     callbacks.append(tensorboard_callback)
 
     # Train
-    history = model.fit(train_ds_batched, validation_data=val_ds_batched, epochs=100, callbacks=callbacks, verbose=2)
+    history = model.fit(train_ds_batched, validation_data=val_ds_batched, epochs=1, callbacks=callbacks, verbose=2)
 
     # Helper for fold-specific naming
     fold_str = f"_fold{fold_idx}" if fold_idx is not None else ""
@@ -207,22 +207,12 @@ def train_and_evaluate(
         # Confusion Matrix
         cm = confusion_matrix(y_true, y_pred, labels=all_labels)
         plt.figure(figsize=(12, 10))
-        sns.heatmap(cm, annot=False, fmt="d", cmap="viridis", xticklabels=target_names, yticklabels=target_names)
+        sns.heatmap(cm, annot=False, fmt="d", cmap="blues", xticklabels=target_names, yticklabels=target_names)
         plt.xlabel("Predicted")
         plt.ylabel("True")
         plt.title(f"Confusion Matrix{fold_str}")
         plt.tight_layout()
         plt.savefig(f"plots/confusion_matrix_{model_name}{fold_str}_{run_id}.png")
-        plt.close()
-
-        cm_norm = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
-        plt.figure(figsize=(12, 10))
-        sns.heatmap(cm_norm, annot=False, fmt=".2f", cmap="Blues", xticklabels=target_names, yticklabels=target_names)
-        plt.xlabel("Predicted")
-        plt.ylabel("True")
-        plt.title(f"Normalized Confusion Matrix{fold_str}")
-        plt.tight_layout()
-        plt.savefig(f"plots/confusion_matrix_normalized_{model_name}{fold_str}_{run_id}.png")
         plt.close()
 
         # Print classification report
