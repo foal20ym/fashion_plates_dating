@@ -1,27 +1,24 @@
-from tensorflow.keras.applications import InceptionV3, ResNet101, NASNetMobile
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.layers import Dense, Dropout, RandomRotation, RandomFlip, RandomContrast
+from tensorflow.keras.callbacks import EarlyStopping, TensorBoard, ReduceLROnPlateau
 from tensorflow.keras.optimizers import Adam
-from keras.layers import Dense, Dropout
-from keras.callbacks import EarlyStopping, TensorBoard, ReduceLROnPlateau
-from keras.models import Model
+from tensorflow.keras.applications import InceptionV3, ResNet101, NASNetMobile
 import random
 import pandas as pd
 import numpy as np
 import tensorflow as tf
-import sys
 import time
 import os
+import yaml
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import label_binarize
-from sklearn.metrics import roc_auc_score, roc_curve, classification_report
+from sklearn.metrics import roc_auc_score, roc_curve, classification_report, confusion_matrix, f1_score
+import seaborn as sns
 
 
-data_augmentation = tf.keras.Sequential(
-    [
-        tf.keras.layers.RandomFlip("horizontal_and_vertical"),
-        tf.keras.layers.RandomRotation(0.1),
-        tf.keras.layers.RandomContrast(0.1),
-    ]
-)
+def load_config(config_path="config.yaml"):
+    with open(config_path, "r") as f:
+        return yaml.safe_load(f)
 
 
 def create_dataset(files):
@@ -32,6 +29,15 @@ def create_dataset(files):
         image_paths.extend([p if p.startswith("data/") else os.path.join("data", p) for p in df["file"].tolist()])
         labels.extend(df["year"].tolist())
     return image_paths, labels
+
+
+data_augmentation = Sequential(
+    [
+        RandomFlip("horizontal_and_vertical"),
+        RandomRotation(0.1),
+        RandomContrast(0.1),
+    ]
+)
 
 
 def load_and_preprocess_image(path, label, image_size, augment=False):
@@ -64,19 +70,49 @@ def get_tf_dataset(
     return ds
 
 
-def train_and_evaluate(
-    train_files,
-    test_file,
-    regression,
-    class_to_idx,
-    num_classes,
-    min_year,
-    max_year,
-    model_name,
-    fine_tune,
-    input_shape,
-    fold_idx=None,
-):
+def get_input_shape(model_name, include_top):
+    if model_name == "NASNetMobile":
+        return (224, 224, 3)
+    elif model_name == "ResNet101":
+        return (224, 224, 3)
+    elif model_name == "InceptionV3":
+        return (299, 299, 3)
+    else:
+        raise ValueError(f"Unsupported model name: {model_name}")
+
+
+def get_highest_version_for_saved_model(model_name):
+    model_dir = "trained_models"
+    if not os.path.exists(model_dir):
+        os.makedirs(model_dir)
+        return 1
+
+    model_files = [f for f in os.listdir(model_dir) if f.startswith(f"{model_name}_version_") and f.endswith(".keras")]
+
+    if not model_files:
+        return 1
+
+    versions = []
+    for file in model_files:
+        try:
+            version = int(file.split("_version_")[-1].split(".")[0])
+            versions.append(version)
+        except (ValueError, IndexError):
+            continue
+
+    return max(versions) + 1 if versions else 1
+
+
+def top_n_accuracy(y_true, y_score, n=3):
+    top_n = np.argsort(y_score, axis=1)[:, -n:]
+    return np.mean([y in top_n_row for y, top_n_row in zip(y_true, top_n)])
+
+
+def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_year, max_year, config, fold_idx=None):
+    input_shape = get_input_shape(config["model"]["name"], config["model"]["include_top"])
+    model_name = config["model"]["name"]
+    regression = config["task"] == "regression"
+
     # Prepare datasets
     train_ds = get_tf_dataset(
         train_files,
@@ -96,27 +132,32 @@ def train_and_evaluate(
         augment=False,
         image_size=input_shape[:2],
     )
-    BATCH_SIZE = 16
+
+    BATCH_SIZE = config["training"]["batch_size"]
     train_ds_batched = train_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
     val_ds_batched = val_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
     # Build and compile model
     model = build_model(
+        config,
         num_classes=num_classes,
-        regression=regression,
-        model_name=model_name,
-        fine_tune=fine_tune,
         input_shape=input_shape,
     )
-    if regression:
-        model.compile(optimizer=Adam(learning_rate=0.0001), loss="mean_squared_error", metrics=["mae", "mse"])
-    else:
-        model.compile(
-            optimizer=Adam(learning_rate=0.0001), loss="sparse_categorical_crossentropy", metrics=["accuracy"]
-        )
+
+    optimizer = Adam(learning_rate=config["training"]["learning_rate"])
+    loss = "mean_squared_error" if regression else "sparse_categorical_crossentropy"
+    metrics = ["mae", "mse"] if regression else ["accuracy"]
+    model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
 
     # Callbacks
-    callbacks = [EarlyStopping(monitor="val_loss", patience=4, restore_best_weights=True, verbose=1)]
+    callbacks = [
+        EarlyStopping(
+            monitor="val_loss",
+            patience=config["training"]["early_stopping_patience"],
+            restore_best_weights=True,
+            verbose=1,
+        )
+    ]
     log_dir = os.path.join(
         "logs",
         (
@@ -129,21 +170,33 @@ def train_and_evaluate(
     callbacks.append(tensorboard_callback)
 
     # Train
-    history = model.fit(train_ds_batched, validation_data=val_ds_batched, epochs=1, callbacks=callbacks, verbose=2)
+    history = model.fit(
+        train_ds_batched,
+        validation_data=val_ds_batched,
+        epochs=config["training"]["epochs"],
+        callbacks=callbacks,
+        verbose=2,
+    )
+
+    if config["model"]["save_model"]:
+        if not os.path.exists("trained_models"):
+            os.makedirs("trained_models")
+        version = get_highest_version_for_saved_model(model_name)
+        model.save(f"trained_models/{model_name}_version_{version}.keras")
 
     # Helper for fold-specific naming
     fold_str = f"_fold{fold_idx}" if fold_idx is not None else ""
     fold_print = f"Fold {fold_idx} " if fold_idx is not None else ""
 
     # Evaluate
-    results = model.evaluate(val_ds_batched)
+    results = model.evaluate(val_ds_batched, verbose=2)
     print(f"{fold_print}Evaluation results:", results)
 
     # Collect predictions and metrics for reporting
     metrics = {}
     run_id = time.strftime("%Y-%m-%d_%H:%M:%S")
     if regression:
-        preds = model.predict(val_ds_batched)
+        preds = model.predict(val_ds_batched, verbose=2)
         preds_years = preds * (max_year - min_year) + min_year
         preds_years_rounded = np.round(preds_years).astype(int)
         y_true = []
@@ -189,19 +242,41 @@ def train_and_evaluate(
         y_true = []
         y_pred = []
         for images, labels in val_ds_batched:
-            preds = model.predict(images)
+            preds = model.predict(images, verbose=2)
             y_true.extend(labels.numpy())
             y_pred.extend(np.argmax(preds, axis=1))
             y_score.extend(preds)
         y_score = np.array(y_score)
 
-        # Print classification report
         target_names = [str(k) for k in sorted(class_to_idx.keys(), key=lambda x: class_to_idx[x])]
         all_labels = [class_to_idx[k] for k in sorted(class_to_idx.keys(), key=lambda x: class_to_idx[x])]
+
+        # Confusion Matrix
+        cm = confusion_matrix(y_true, y_pred, labels=all_labels)
+        plt.figure(figsize=(12, 10))
+        sns.heatmap(cm, annot=False, fmt="d", cmap="Blues", xticklabels=target_names, yticklabels=target_names)
+        plt.xlabel("Predicted")
+        plt.ylabel("True")
+        plt.title(f"Confusion Matrix{fold_str}")
+        plt.tight_layout()
+        plt.savefig(f"plots/confusion_matrix_{model_name}{fold_str}_{run_id}.png")
+        plt.close()
+
+        # Print classification report
         report = classification_report(
             y_true, y_pred, labels=all_labels, target_names=target_names, output_dict=True, zero_division=0
         )
         print(classification_report(y_true, y_pred, labels=all_labels, target_names=target_names, zero_division=0))
+
+        print(f"Macro avg F1: {report['macro avg']['f1-score']:.3f}")
+        print(f"Weighted avg F1: {report['weighted avg']['f1-score']:.3f}")
+        micro_f1 = f1_score(y_true, y_pred, average="micro")
+        print(f"Micro avg F1: {micro_f1:.3f}")
+
+        top3_acc = top_n_accuracy(y_true, y_score, n=3)
+        top5_acc = top_n_accuracy(y_true, y_score, n=5)
+        print(f"Top-3 Accuracy: {top3_acc:.3f}")
+        print(f"Top-5 Accuracy: {top5_acc:.3f}")
 
         # Plot bar chart of per-class F1-score
         f1_scores = [report[name]["f1-score"] for name in target_names]
@@ -224,14 +299,25 @@ def train_and_evaluate(
             mae_years = np.mean(np.abs(y_true_years - y_pred_years))
             print(f"Classification MAE (in years): {mae_years:.2f}")
 
-        # Use all classes for ROC AUC calculation
         y_true_bin = label_binarize(y_true, classes=all_labels)  # shape (n_samples, n_classes)
+
+        # Find classes present in y_true
+        present_classes = [i for i, label in enumerate(all_labels) if label in y_true]
 
         # Compute scalar AUCs with roc_auc_score
         roc_auc_micro = roc_auc_score(y_true_bin, y_score, average="micro", multi_class="ovr")
-        roc_auc_macro = roc_auc_score(y_true_bin, y_score, average="macro", multi_class="ovr")
         print(f"Micro ROC AUC  = {roc_auc_micro:.2f}")
-        print(f"Macro ROC AUC  = {roc_auc_macro:.2f}")
+        # Compute macro AUC only for present classes
+        if len(present_classes) > 1:
+            roc_auc_macro = roc_auc_score(
+                label_binarize(y_true, classes=[all_labels[i] for i in present_classes]),
+                y_score[:, present_classes],
+                average="macro",
+                multi_class="ovr",
+            )
+            print(f"Macro ROC AUC (present classes) = {roc_auc_macro:.2f}")
+        else:
+            print("Macro ROC AUC not defined (less than 2 classes present in y_true)")
 
         # Build the ROC curves for plotting
 
@@ -268,16 +354,26 @@ def train_and_evaluate(
     return metrics
 
 
-def build_model(
-    num_classes=None, regression=False, model_name="NASNetMobile", fine_tune=False, input_shape=(224, 224, 3)
-):
+def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
+    regression = config["task"] == "regression"
+    model_name = config["model"]["name"]
+    fine_tune = config["model"]["fine_tune"]
+    print("model_name:", model_name)
+    print("input_shape:", input_shape)
+
     base_model = None
     if model_name == "NASNetMobile":
-        base_model = NASNetMobile(include_top=False, weights="imagenet", input_shape=input_shape, pooling="avg")
+        base_model = NASNetMobile(
+            include_top=config["model"]["include_top"], weights="imagenet", input_shape=input_shape, pooling="avg"
+        )
     elif model_name == "ResNet101":
-        base_model = ResNet101(include_top=False, weights="imagenet", input_shape=input_shape, pooling="avg")
+        base_model = ResNet101(
+            include_top=config["model"]["include_top"], weights="imagenet", input_shape=input_shape, pooling="avg"
+        )
     elif model_name == "InceptionV3":
-        base_model = InceptionV3(include_top=False, weights="imagenet", input_shape=input_shape, pooling="avg")
+        base_model = InceptionV3(
+            include_top=config["model"]["include_top"], weights="imagenet", input_shape=input_shape, pooling="avg"
+        )
 
     x = base_model.output
 
@@ -314,7 +410,12 @@ def build_model(
     return model
 
 
-def main(task="classification", ten_fold_cv=False, fine_tune=False, model_name="NASNetMobile"):
+def main():
+    config = load_config("config.yaml")
+    regression = config["task"] == "regression"
+    model_name = config["model"]["name"]
+    fold_nums = [num for num in range(10)]
+    print(f"Using model: {model_name}.")
 
     # --- GPU Configuration for Optimal Utilization ---
     print("TensorFlow Version:", tf.__version__)
@@ -331,21 +432,7 @@ def main(task="classification", ten_fold_cv=False, fine_tune=False, model_name="
 
     start_time = time.time()
 
-    print(f"Using model: {model_name}.")
-
-    if model_name == "NASNetMobile":
-        image_size = (331, 331)
-    elif model_name == "ResNet101":
-        image_size = (224, 224)
-    elif model_name == "InceptionV3":
-        image_size = (299, 299)
-
-    input_shape = image_size + (3,)
-
-    fold_nums = [num for num in range(10)]
-    regression = task == "regression"
-
-    if ten_fold_cv:
+    if config["cross_validation"]:  # if ten_fold_cv:
         all_metrics = []
         for test_fold in fold_nums:
             print(f"\n=== Fold {test_fold} ===")
@@ -376,14 +463,11 @@ def main(task="classification", ten_fold_cv=False, fine_tune=False, model_name="
             metrics = train_and_evaluate(
                 train_files,
                 test_file,
-                regression,
                 class_to_idx,
                 num_classes,
                 min_year,
                 max_year,
-                model_name,
-                fine_tune,
-                input_shape,
+                config,
                 fold_idx=None,
             )
             all_metrics.append(metrics)
@@ -430,14 +514,11 @@ def main(task="classification", ten_fold_cv=False, fine_tune=False, model_name="
         metrics = train_and_evaluate(
             train_files,
             test_file,
-            regression,
             class_to_idx,
             num_classes,
             min_year,
             max_year,
-            model_name,
-            fine_tune,
-            input_shape,
+            config,
             fold_idx=None,
         )
         print("Metrics:", metrics)
@@ -451,6 +532,4 @@ def main(task="classification", ten_fold_cv=False, fine_tune=False, model_name="
 
 
 if __name__ == "__main__":
-    # Usage: python fashion.py [classification|regression]
-    task = sys.argv[1] if len(sys.argv) > 1 else "classification"
-    main(task)
+    main()

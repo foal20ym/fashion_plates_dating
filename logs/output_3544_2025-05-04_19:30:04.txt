@@ -1,0 +1,167 @@
+Using model: NASNetMobile.
+TensorFlow Version: 2.19.0
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+Test fold: 8
+model_name: NASNetMobile
+input_shape: (224, 224, 3)
+707/707 - 191s - 271ms/step - accuracy: 0.1603 - loss: 3.2332 - val_accuracy: 0.2229 - val_loss: 3.0140
+Restoring model weights from the end of the best epoch: 1.
+79/79 - 12s - 152ms/step - accuracy: 0.2229 - loss: 3.0140
+Evaluation results: [3.014014482498169, 0.2229299396276474]
+1/1 - 10s - 10s/step
+1/1 - 0s - 135ms/step
+1/1 - 0s - 135ms/step
+1/1 - 0s - 123ms/step
+1/1 - 0s - 132ms/step
+1/1 - 0s - 132ms/step
+1/1 - 0s - 136ms/step
+1/1 - 0s - 134ms/step
+1/1 - 0s - 143ms/step
+1/1 - 0s - 127ms/step
+1/1 - 0s - 146ms/step
+1/1 - 0s - 144ms/step
+1/1 - 0s - 145ms/step
+1/1 - 0s - 128ms/step
+1/1 - 0s - 132ms/step
+1/1 - 0s - 131ms/step
+1/1 - 0s - 135ms/step
+1/1 - 0s - 126ms/step
+1/1 - 0s - 126ms/step
+1/1 - 0s - 133ms/step
+1/1 - 0s - 131ms/step
+1/1 - 0s - 125ms/step
+1/1 - 0s - 125ms/step
+1/1 - 0s - 126ms/step
+1/1 - 0s - 124ms/step
+1/1 - 0s - 127ms/step
+1/1 - 0s - 126ms/step
+1/1 - 0s - 130ms/step
+1/1 - 0s - 126ms/step
+1/1 - 0s - 156ms/step
+1/1 - 0s - 135ms/step
+1/1 - 0s - 131ms/step
+1/1 - 0s - 135ms/step
+1/1 - 0s - 133ms/step
+1/1 - 0s - 143ms/step
+1/1 - 0s - 140ms/step
+1/1 - 0s - 134ms/step
+1/1 - 0s - 137ms/step
+1/1 - 0s - 149ms/step
+1/1 - 0s - 135ms/step
+1/1 - 0s - 136ms/step
+1/1 - 0s - 138ms/step
+1/1 - 0s - 124ms/step
+1/1 - 0s - 124ms/step
+1/1 - 0s - 127ms/step
+1/1 - 0s - 139ms/step
+1/1 - 0s - 140ms/step
+1/1 - 0s - 142ms/step
+1/1 - 0s - 140ms/step
+1/1 - 0s - 138ms/step
+1/1 - 0s - 138ms/step
+1/1 - 0s - 125ms/step
+1/1 - 0s - 138ms/step
+1/1 - 0s - 130ms/step
+1/1 - 0s - 134ms/step
+1/1 - 0s - 140ms/step
+1/1 - 0s - 136ms/step
+1/1 - 0s - 139ms/step
+1/1 - 0s - 131ms/step
+1/1 - 0s - 139ms/step
+1/1 - 0s - 134ms/step
+1/1 - 0s - 138ms/step
+1/1 - 0s - 134ms/step
+1/1 - 0s - 139ms/step
+1/1 - 0s - 131ms/step
+1/1 - 0s - 122ms/step
+1/1 - 0s - 138ms/step
+1/1 - 0s - 146ms/step
+1/1 - 0s - 127ms/step
+1/1 - 0s - 150ms/step
+1/1 - 0s - 135ms/step
+1/1 - 0s - 128ms/step
+1/1 - 0s - 134ms/step
+1/1 - 0s - 128ms/step
+1/1 - 0s - 124ms/step
+1/1 - 0s - 129ms/step
+1/1 - 0s - 127ms/step
+1/1 - 0s - 139ms/step
+1/1 - 10s - 10s/step
+              precision    recall  f1-score   support
+
+        1820       0.32      0.32      0.32        62
+        1821       0.24      0.16      0.19        57
+        1822       0.00      0.00      0.00         2
+        1823       0.00      0.00      0.00         1
+        1824       0.00      0.00      0.00         1
+        1825       0.00      0.00      0.00         2
+        1826       0.00      0.00      0.00         2
+        1827       0.00      0.00      0.00        25
+        1828       0.00      0.00      0.00         2
+        1829       0.00      0.00      0.00         4
+        1830       0.14      0.39      0.20        56
+        1831       0.33      0.89      0.48       135
+        1832       0.33      0.37      0.35        68
+        1833       0.00      0.00      0.00        19
+        1834       0.00      0.00      0.00        29
+        1835       0.00      0.00      0.00         2
+        1836       0.00      0.00      0.00         4
+        1837       0.00      0.00      0.00         6
+        1838       0.00      0.00      0.00         4
+        1839       0.00      0.00      0.00         1
+        1840       0.17      0.12      0.14        42
+        1841       0.11      0.06      0.07       107
+        1842       0.00      0.00      0.00         6
+        1843       0.00      0.00      0.00         5
+        1844       0.00      0.00      0.00         0
+        1845       0.00      0.00      0.00         1
+        1846       0.00      0.00      0.00         6
+        1847       0.00      0.00      0.00         2
+        1848       0.00      0.00      0.00         5
+        1849       0.00      0.00      0.00         5
+        1850       0.00      0.00      0.00        48
+        1851       0.50      0.16      0.24        77
+        1852       0.00      0.00      0.00         8
+        1853       0.00      0.00      0.00         7
+        1854       0.00      0.00      0.00         3
+        1855       0.00      0.00      0.00        23
+        1856       0.00      0.00      0.00        12
+        1857       0.00      0.00      0.00        31
+        1858       0.00      0.00      0.00         2
+        1859       0.00      0.00      0.00         2
+        1860       0.11      0.51      0.18        65
+        1861       0.22      0.18      0.20        85
+        1862       0.00      0.00      0.00        19
+        1863       0.00      0.00      0.00        19
+        1864       0.00      0.00      0.00        17
+        1865       0.00      0.00      0.00         7
+        1866       0.00      0.00      0.00         6
+        1867       0.00      0.00      0.00        10
+        1868       0.00      0.00      0.00         7
+        1869       0.00      0.00      0.00         6
+        1870       0.00      0.00      0.00        31
+        1871       0.28      0.27      0.27        49
+        1872       0.00      0.00      0.00         7
+        1873       0.00      0.00      0.00        11
+        1874       0.00      0.00      0.00         5
+        1875       0.00      0.00      0.00        13
+        1876       0.00      0.00      0.00        10
+        1877       0.00      0.00      0.00         5
+        1878       0.00      0.00      0.00         9
+        1879       0.00      0.00      0.00         1
+
+    accuracy                           0.22      1256
+   macro avg       0.05      0.06      0.04      1256
+weighted avg       0.16      0.22      0.16      1256
+
+Macro avg F1: 0.044
+Weighted avg F1: 0.163
+Micro avg F1: 0.223
+Top-3 Accuracy: 0.432
+Top-5 Accuracy: 0.544
+Classification MAE (in years): 12.15
+Micro ROC AUC  = 0.87
+Macro ROC AUC (present classes) = 0.72
+Metrics: {'mae': 3.014014482498169, 'accuracy': 0.2229299396276474}
+Total running time: 0 hours, 4 minutes, 22 seconds
