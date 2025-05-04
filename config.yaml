@@ -1,0 +1,15 @@
+
+task: classification
+
+model:
+  name: NASNetMobile
+  include_top: false
+  fine_tune: false
+
+training:
+  batch_size: 16
+  epochs: 2
+  learning_rate: 0.0001
+  early_stopping_patience: 4
+
+cross_validation: false
