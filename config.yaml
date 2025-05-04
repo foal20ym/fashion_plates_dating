@@ -5,6 +5,7 @@ model:
   name: NASNetMobile
   include_top: false
   fine_tune: false
+  save_model: true
 
 training:
   batch_size: 16

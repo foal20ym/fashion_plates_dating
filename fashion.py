@@ -81,6 +81,30 @@ def get_input_shape(model_name, include_top):
         raise ValueError(f"Unsupported model name: {model_name}")
 
 
+def get_highest_version_for_saved_model(model_name):
+    model_dir = "trained_models"
+    if not os.path.exists(model_dir):
+        os.makedirs(model_dir)
+        return 1
+
+    model_files = [
+        f for f in os.listdir(model_dir)
+        if f.startswith(f"{model_name}_version_") and f.endswith(".keras")
+    ]
+
+    if not model_files: return 1
+
+    versions = []
+    for file in model_files:
+        try:
+            version = int(file.split("_version_")[-1].split(".")[0])
+            versions.append(version)
+        except (ValueError, IndexError):
+            continue
+
+    return max(versions) + 1 if versions else 1
+
+
 def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_year, max_year, config, fold_idx=None):
     input_shape = get_input_shape(config['model']['name'], config['model']['include_top'])
     model_name = config['model']['name']
@@ -137,6 +161,12 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
 
     # Train
     history = model.fit(train_ds_batched, validation_data=val_ds_batched, epochs=config['training']['epochs'], callbacks=callbacks, verbose=2)
+
+    if config['model']['save_model']:
+        if not os.path.exists("trained_models"):
+            os.makedirs("trained_models")
+        version = get_highest_version_for_saved_model(model_name)
+        model.save(f"trained_models/{model_name}_version_{version}.keras")
 
     # Helper for fold-specific naming
     fold_str = f"_fold{fold_idx}" if fold_idx is not None else ""
