@@ -219,3 +219,5 @@ Epoch 6/100
 Epoch 7/100
 707/707 - 126s - 179ms/step - loss: 0.0330 - mae: 0.1412 - mse: 0.0330 - val_loss: 0.0340 - val_mae: 0.1458 - val_mse: 0.0340
 Epoch 8/100
+707/707 - 128s - 181ms/step - loss: 0.0322 - mae: 0.1390 - mse: 0.0322 - val_loss: 0.0336 - val_mae: 0.1443 - val_mse: 0.0336
+Epoch 9/100
