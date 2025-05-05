@@ -359,3 +359,5 @@ Epoch 40/100
 Epoch 41/100
 707/707 - 128s - 181ms/step - accuracy: 0.6264 - loss: 1.2591 - val_accuracy: 0.4562 - val_loss: 1.9887
 Epoch 42/100
+707/707 - 126s - 178ms/step - accuracy: 0.6220 - loss: 1.2601 - val_accuracy: 0.4618 - val_loss: 1.9609
+Epoch 43/100
