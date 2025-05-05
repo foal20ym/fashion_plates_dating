@@ -1,0 +1,63 @@
+Using model: NASNetMobile.
+TensorFlow Version: 2.19.0
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+
+=== Fold 0 ===
+model_name: NASNetMobile
+input_shape: (224, 224, 3)
+Epoch 1/100
+707/707 - 179s - 253ms/step - loss: 0.0593 - mae: 0.2007 - mse: 0.0593 - val_loss: 0.0520 - val_mae: 0.1894 - val_mse: 0.0520
+Epoch 2/100
+707/707 - 118s - 166ms/step - loss: 0.0448 - mae: 0.1699 - mse: 0.0448 - val_loss: 0.0441 - val_mae: 0.1706 - val_mse: 0.0441
+Epoch 3/100
+707/707 - 125s - 176ms/step - loss: 0.0405 - mae: 0.1597 - mse: 0.0405 - val_loss: 0.0400 - val_mae: 0.1591 - val_mse: 0.0400
+Epoch 4/100
+707/707 - 111s - 158ms/step - loss: 0.0377 - mae: 0.1521 - mse: 0.0377 - val_loss: 0.0377 - val_mae: 0.1535 - val_mse: 0.0377
+Epoch 5/100
+707/707 - 111s - 157ms/step - loss: 0.0358 - mae: 0.1469 - mse: 0.0358 - val_loss: 0.0365 - val_mae: 0.1513 - val_mse: 0.0365
+Epoch 6/100
+707/707 - 110s - 156ms/step - loss: 0.0352 - mae: 0.1463 - mse: 0.0352 - val_loss: 0.0352 - val_mae: 0.1459 - val_mse: 0.0352
+Epoch 7/100
+707/707 - 120s - 169ms/step - loss: 0.0341 - mae: 0.1429 - mse: 0.0341 - val_loss: 0.0342 - val_mae: 0.1446 - val_mse: 0.0342
+Epoch 8/100
+707/707 - 120s - 169ms/step - loss: 0.0335 - mae: 0.1417 - mse: 0.0335 - val_loss: 0.0330 - val_mae: 0.1413 - val_mse: 0.0330
+Epoch 9/100
+707/707 - 119s - 168ms/step - loss: 0.0317 - mae: 0.1377 - mse: 0.0317 - val_loss: 0.0328 - val_mae: 0.1416 - val_mse: 0.0328
+Epoch 10/100
+707/707 - 121s - 171ms/step - loss: 0.0311 - mae: 0.1365 - mse: 0.0311 - val_loss: 0.0319 - val_mae: 0.1388 - val_mse: 0.0319
+Epoch 11/100
+707/707 - 121s - 172ms/step - loss: 0.0306 - mae: 0.1349 - mse: 0.0306 - val_loss: 0.0314 - val_mae: 0.1373 - val_mse: 0.0314
+Epoch 12/100
+707/707 - 123s - 174ms/step - loss: 0.0302 - mae: 0.1337 - mse: 0.0302 - val_loss: 0.0310 - val_mae: 0.1366 - val_mse: 0.0310
+Epoch 13/100
+707/707 - 121s - 171ms/step - loss: 0.0303 - mae: 0.1346 - mse: 0.0303 - val_loss: 0.0323 - val_mae: 0.1384 - val_mse: 0.0323
+Epoch 14/100
+707/707 - 121s - 171ms/step - loss: 0.0292 - mae: 0.1318 - mse: 0.0292 - val_loss: 0.0309 - val_mae: 0.1358 - val_mse: 0.0309
+Epoch 15/100
+707/707 - 121s - 172ms/step - loss: 0.0296 - mae: 0.1325 - mse: 0.0296 - val_loss: 0.0305 - val_mae: 0.1353 - val_mse: 0.0305
+Epoch 16/100
+707/707 - 120s - 170ms/step - loss: 0.0288 - mae: 0.1307 - mse: 0.0288 - val_loss: 0.0320 - val_mae: 0.1373 - val_mse: 0.0320
+Epoch 17/100
+707/707 - 121s - 171ms/step - loss: 0.0292 - mae: 0.1313 - mse: 0.0292 - val_loss: 0.0305 - val_mae: 0.1357 - val_mse: 0.0305
+Epoch 18/100
+707/707 - 121s - 171ms/step - loss: 0.0291 - mae: 0.1319 - mse: 0.0291 - val_loss: 0.0299 - val_mae: 0.1335 - val_mse: 0.0299
+Epoch 19/100
+707/707 - 120s - 170ms/step - loss: 0.0286 - mae: 0.1298 - mse: 0.0286 - val_loss: 0.0313 - val_mae: 0.1361 - val_mse: 0.0313
+Epoch 20/100
+707/707 - 121s - 172ms/step - loss: 0.0288 - mae: 0.1312 - mse: 0.0288 - val_loss: 0.0295 - val_mae: 0.1326 - val_mse: 0.0295
+Epoch 21/100
+707/707 - 121s - 172ms/step - loss: 0.0282 - mae: 0.1291 - mse: 0.0282 - val_loss: 0.0295 - val_mae: 0.1321 - val_mse: 0.0295
+Epoch 22/100
+707/707 - 120s - 169ms/step - loss: 0.0283 - mae: 0.1292 - mse: 0.0283 - val_loss: 0.0295 - val_mae: 0.1329 - val_mse: 0.0295
+Epoch 23/100
+707/707 - 120s - 170ms/step - loss: 0.0282 - mae: 0.1290 - mse: 0.0282 - val_loss: 0.0296 - val_mae: 0.1334 - val_mse: 0.0296
+Epoch 24/100
+707/707 - 128s - 181ms/step - loss: 0.0287 - mae: 0.1298 - mse: 0.0287 - val_loss: 0.0289 - val_mae: 0.1313 - val_mse: 0.0289
+Epoch 25/100
+707/707 - 130s - 183ms/step - loss: 0.0277 - mae: 0.1277 - mse: 0.0277 - val_loss: 0.0289 - val_mae: 0.1311 - val_mse: 0.0289
+Epoch 26/100
+707/707 - 128s - 182ms/step - loss: 0.0272 - mae: 0.1268 - mse: 0.0272 - val_loss: 0.0293 - val_mae: 0.1321 - val_mse: 0.0293
+Epoch 27/100
+707/707 - 125s - 176ms/step - loss: 0.0274 - mae: 0.1276 - mse: 0.0274 - val_loss: 0.0294 - val_mae: 0.1317 - val_mse: 0.0294
+Epoch 28/100

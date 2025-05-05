@@ -113,6 +113,23 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
     model_name = config["model"]["name"]
     regression = config["task"] == "regression"
 
+    # Helper for fold-specific naming
+    fold_str = f"_fold{fold_idx}" if fold_idx is not None else ""
+    fold_print = f"Fold {fold_idx} " if fold_idx is not None else ""
+    run_id = time.strftime("%Y-%m-%d_%H:%M:%S")
+
+    # Set up plot and log directories
+    if config.get("cross_validation", False) and fold_idx is not None:
+        plot_dir = os.path.join("plots", "10_fold_cv", run_id)
+        log_dir = os.path.join(
+            "logs", "tensorboard", "10_fold_cv", run_id, time.strftime(f"fit_fold{fold_idx}_%Y-%m-%d_%H:%M:%S")
+        )
+    else:
+        plot_dir = "plots"
+        log_dir = os.path.join("logs", "tensorboard", time.strftime("fit_%Y-%m-%d_%H:%M:%S"))
+
+    os.makedirs(plot_dir, exist_ok=True)
+
     # Prepare datasets
     train_ds = get_tf_dataset(
         train_files,
@@ -158,14 +175,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
             verbose=1,
         )
     ]
-    log_dir = os.path.join(
-        "logs",
-        (
-            time.strftime(f"fit_fold{fold_idx}_%Y-%m-%d_%H:%M:%S")
-            if fold_idx is not None
-            else time.strftime("fit_%Y-%m-%d_%H:%M:%S")
-        ),
-    )
+
     tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
     callbacks.append(tensorboard_callback)
 
@@ -184,19 +194,14 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         version = get_highest_version_for_saved_model(model_name)
         model.save(f"trained_models/{model_name}_version_{version}.keras")
 
-    # Helper for fold-specific naming
-    fold_str = f"_fold{fold_idx}" if fold_idx is not None else ""
-    fold_print = f"Fold {fold_idx} " if fold_idx is not None else ""
-
     # Evaluate
     results = model.evaluate(val_ds_batched, verbose=2)
     print(f"{fold_print}Evaluation results:", results)
 
     # Collect predictions and metrics for reporting
     metrics = {}
-    run_id = time.strftime("%Y-%m-%d_%H:%M:%S")
     if regression:
-        preds = model.predict(val_ds_batched, verbose=2)
+        preds = model.predict(val_ds_batched, verbose=0)
         preds_years = preds * (max_year - min_year) + min_year
         preds_years_rounded = np.round(preds_years).astype(int)
         y_true = []
@@ -221,7 +226,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         plt.title(f"Regression: Training and Validation Loss{fold_str}")
         plt.legend()
         plt.tight_layout()
-        plt.savefig(f"plots/loss_val_loss_regression_{model_name}{fold_str}_{run_id}.png")
+        plt.savefig(os.path.join(plot_dir, f"loss_val_loss_regression_{model_name}{fold_str}_{run_id}.png"))
         plt.close()
 
         if "val_mae" in history.history and "val_mse" in history.history:
@@ -233,7 +238,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
             plt.title(f"Validation MAE and MSE{fold_str}")
             plt.legend()
             plt.tight_layout()
-            plt.savefig(f"plots/train_mae_mse_{model_name}{fold_str}_{run_id}.png")
+            plt.savefig(os.path.join(plot_dir, f"train_mae_mse_{model_name}{fold_str}_{run_id}.png"))
             plt.close()
 
     else:
@@ -259,7 +264,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         plt.ylabel("True")
         plt.title(f"Confusion Matrix{fold_str}")
         plt.tight_layout()
-        plt.savefig(f"plots/confusion_matrix_{model_name}{fold_str}_{run_id}.png")
+        plt.savefig(os.path.join(plot_dir, f"confusion_matrix_{model_name}{fold_str}_{run_id}.png"))
         plt.close()
 
         # Print classification report
@@ -289,7 +294,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         plt.title(f"Per-Class F1-score{fold_str}")
         plt.ylim(0, 1)
         plt.tight_layout()
-        plt.savefig(f"plots/f1_score_bar_{model_name}{fold_str}_{run_id}.png")
+        plt.savefig(os.path.join(plot_dir, f"f1_score_bar_{model_name}{fold_str}_{run_id}.png"))
         plt.close()
 
         if class_to_idx is not None:
@@ -346,7 +351,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         plt.title(f"Micro & Macro-average ROC Curve{fold_str}")
         plt.legend(loc="lower right")
         plt.tight_layout()
-        plt.savefig(f"plots/micro_macro_avg_roc_curve_{model_name}{fold_str}_{run_id}.png")
+        plt.savefig(os.path.join(plot_dir, f"micro_macro_avg_roc_curve_{model_name}{fold_str}_{run_id}.png"))
         plt.close()
 
         # Return metrics
@@ -468,7 +473,7 @@ def main():
                 min_year,
                 max_year,
                 config,
-                fold_idx=None,
+                fold_idx=test_fold,
             )
             all_metrics.append(metrics)
 
