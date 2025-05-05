@@ -194,7 +194,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         model.save(f"trained_models/{model_name}_version_{version}.keras")
 
     # Evaluate
-    results = model.evaluate(val_ds_batched, verbose=2)
+    results = model.evaluate(val_ds_batched, verbose=0)
     print(f"{fold_print}Evaluation results:", results)
 
     # Collect predictions and metrics for reporting
