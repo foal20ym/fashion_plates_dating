@@ -61,3 +61,239 @@ Epoch 26/100
 Epoch 27/100
 707/707 - 125s - 177ms/step - accuracy: 0.5952 - loss: 1.3976 - val_accuracy: 0.4283 - val_loss: 2.0593
 Epoch 28/100
+707/707 - 127s - 179ms/step - accuracy: 0.5939 - loss: 1.3781 - val_accuracy: 0.4268 - val_loss: 2.0554
+Epoch 29/100
+707/707 - 126s - 179ms/step - accuracy: 0.5944 - loss: 1.3899 - val_accuracy: 0.4530 - val_loss: 2.0062
+Epoch 30/100
+707/707 - 127s - 180ms/step - accuracy: 0.5961 - loss: 1.3877 - val_accuracy: 0.4522 - val_loss: 1.9961
+Epoch 31/100
+707/707 - 127s - 180ms/step - accuracy: 0.6139 - loss: 1.3382 - val_accuracy: 0.4212 - val_loss: 2.0509
+Epoch 32/100
+707/707 - 125s - 176ms/step - accuracy: 0.6036 - loss: 1.3371 - val_accuracy: 0.4435 - val_loss: 1.9935
+Epoch 33/100
+707/707 - 125s - 177ms/step - accuracy: 0.6086 - loss: 1.3409 - val_accuracy: 0.4554 - val_loss: 1.9893
+Epoch 34/100
+707/707 - 126s - 178ms/step - accuracy: 0.6148 - loss: 1.3343 - val_accuracy: 0.4435 - val_loss: 1.9807
+Epoch 35/100
+707/707 - 124s - 175ms/step - accuracy: 0.6181 - loss: 1.3231 - val_accuracy: 0.4419 - val_loss: 1.9712
+Epoch 36/100
+707/707 - 123s - 174ms/step - accuracy: 0.6161 - loss: 1.3069 - val_accuracy: 0.4451 - val_loss: 1.9797
+Epoch 37/100
+707/707 - 126s - 178ms/step - accuracy: 0.6105 - loss: 1.3257 - val_accuracy: 0.4443 - val_loss: 1.9684
+Epoch 38/100
+707/707 - 126s - 179ms/step - accuracy: 0.6182 - loss: 1.3030 - val_accuracy: 0.4546 - val_loss: 1.9606
+Epoch 39/100
+707/707 - 126s - 178ms/step - accuracy: 0.6137 - loss: 1.3057 - val_accuracy: 0.4618 - val_loss: 1.9416
+Epoch 40/100
+707/707 - 127s - 180ms/step - accuracy: 0.6161 - loss: 1.2922 - val_accuracy: 0.4570 - val_loss: 1.9528
+Epoch 41/100
+707/707 - 125s - 177ms/step - accuracy: 0.6154 - loss: 1.3003 - val_accuracy: 0.4658 - val_loss: 1.9282
+Epoch 42/100
+707/707 - 127s - 179ms/step - accuracy: 0.6237 - loss: 1.2733 - val_accuracy: 0.4697 - val_loss: 1.9361
+Epoch 43/100
+707/707 - 126s - 179ms/step - accuracy: 0.6220 - loss: 1.2855 - val_accuracy: 0.4721 - val_loss: 1.9184
+Epoch 44/100
+707/707 - 127s - 179ms/step - accuracy: 0.6225 - loss: 1.2674 - val_accuracy: 0.4666 - val_loss: 1.9066
+Epoch 45/100
+707/707 - 128s - 181ms/step - accuracy: 0.6279 - loss: 1.2507 - val_accuracy: 0.4729 - val_loss: 1.8887
+Epoch 46/100
+707/707 - 124s - 175ms/step - accuracy: 0.6259 - loss: 1.2677 - val_accuracy: 0.4626 - val_loss: 1.9055
+Epoch 47/100
+707/707 - 127s - 180ms/step - accuracy: 0.6282 - loss: 1.2597 - val_accuracy: 0.4721 - val_loss: 1.8924
+Epoch 48/100
+707/707 - 127s - 179ms/step - accuracy: 0.6335 - loss: 1.2355 - val_accuracy: 0.4650 - val_loss: 1.8903
+Epoch 49/100
+707/707 - 126s - 178ms/step - accuracy: 0.6398 - loss: 1.2132 - val_accuracy: 0.4745 - val_loss: 1.8633
+Epoch 50/100
+707/707 - 126s - 179ms/step - accuracy: 0.6411 - loss: 1.2077 - val_accuracy: 0.4825 - val_loss: 1.8588
+Epoch 51/100
+707/707 - 126s - 178ms/step - accuracy: 0.6373 - loss: 1.2289 - val_accuracy: 0.4761 - val_loss: 1.8659
+Epoch 52/100
+707/707 - 127s - 180ms/step - accuracy: 0.6352 - loss: 1.1988 - val_accuracy: 0.4713 - val_loss: 1.8772
+Epoch 53/100
+707/707 - 127s - 180ms/step - accuracy: 0.6371 - loss: 1.2206 - val_accuracy: 0.4697 - val_loss: 1.8777
+Epoch 54/100
+707/707 - 125s - 177ms/step - accuracy: 0.6426 - loss: 1.2099 - val_accuracy: 0.4745 - val_loss: 1.8767
+Epoch 54: early stopping
+Restoring model weights from the end of the best epoch: 50.
+79/79 - 11s - 144ms/step - accuracy: 0.4825 - loss: 1.8588
+Fold 0 Evaluation results: [1.858776330947876, 0.4824840724468231]
+1/1 - 11s - 11s/step
+1/1 - 0s - 139ms/step
+1/1 - 0s - 133ms/step
+1/1 - 0s - 133ms/step
+1/1 - 0s - 139ms/step
+1/1 - 0s - 126ms/step
+1/1 - 0s - 128ms/step
+1/1 - 0s - 125ms/step
+1/1 - 0s - 134ms/step
+1/1 - 0s - 144ms/step
+1/1 - 0s - 144ms/step
+1/1 - 0s - 138ms/step
+1/1 - 0s - 136ms/step
+1/1 - 0s - 141ms/step
+1/1 - 0s - 143ms/step
+1/1 - 0s - 129ms/step
+1/1 - 0s - 130ms/step
+1/1 - 0s - 129ms/step
+1/1 - 0s - 133ms/step
+1/1 - 0s - 130ms/step
+1/1 - 0s - 142ms/step
+1/1 - 0s - 140ms/step
+1/1 - 0s - 150ms/step
+1/1 - 0s - 148ms/step
+1/1 - 0s - 138ms/step
+1/1 - 0s - 140ms/step
+1/1 - 0s - 134ms/step
+1/1 - 0s - 131ms/step
+1/1 - 0s - 128ms/step
+1/1 - 0s - 139ms/step
+1/1 - 0s - 144ms/step
+1/1 - 0s - 143ms/step
+1/1 - 0s - 147ms/step
+1/1 - 0s - 139ms/step
+1/1 - 0s - 144ms/step
+1/1 - 0s - 138ms/step
+1/1 - 0s - 125ms/step
+1/1 - 0s - 128ms/step
+1/1 - 0s - 130ms/step
+1/1 - 0s - 131ms/step
+1/1 - 0s - 139ms/step
+1/1 - 0s - 132ms/step
+1/1 - 0s - 131ms/step
+1/1 - 0s - 126ms/step
+1/1 - 0s - 142ms/step
+1/1 - 0s - 139ms/step
+1/1 - 0s - 125ms/step
+1/1 - 0s - 129ms/step
+1/1 - 0s - 132ms/step
+1/1 - 0s - 145ms/step
+1/1 - 0s - 136ms/step
+1/1 - 0s - 135ms/step
+1/1 - 0s - 128ms/step
+1/1 - 0s - 137ms/step
+1/1 - 0s - 133ms/step
+1/1 - 0s - 142ms/step
+1/1 - 0s - 133ms/step
+1/1 - 0s - 137ms/step
+1/1 - 0s - 141ms/step
+1/1 - 0s - 136ms/step
+1/1 - 0s - 127ms/step
+1/1 - 0s - 139ms/step
+1/1 - 0s - 133ms/step
+1/1 - 0s - 139ms/step
+1/1 - 0s - 130ms/step
+1/1 - 0s - 131ms/step
+1/1 - 0s - 126ms/step
+1/1 - 0s - 130ms/step
+1/1 - 0s - 136ms/step
+1/1 - 0s - 139ms/step
+1/1 - 0s - 133ms/step
+1/1 - 0s - 132ms/step
+1/1 - 0s - 132ms/step
+1/1 - 0s - 122ms/step
+1/1 - 0s - 135ms/step
+1/1 - 0s - 125ms/step
+1/1 - 0s - 134ms/step
+1/1 - 0s - 138ms/step
+1/1 - 10s - 10s/step
+              precision    recall  f1-score   support
+
+        1820       0.65      0.55      0.60        62
+        1821       0.64      0.77      0.70        57
+        1822       0.00      0.00      0.00         1
+        1823       0.00      0.00      0.00         1
+        1824       0.00      0.00      0.00         1
+        1825       0.00      0.00      0.00         3
+        1826       0.00      0.00      0.00         2
+        1827       0.80      0.64      0.71        25
+        1828       1.00      1.00      1.00         1
+        1829       0.00      0.00      0.00         5
+        1830       0.39      0.46      0.43        56
+        1831       0.72      0.81      0.76       134
+        1832       0.66      0.70      0.68        67
+        1833       0.88      0.74      0.80        19
+        1834       0.31      0.66      0.42        29
+        1835       0.00      0.00      0.00         2
+        1836       0.00      0.00      0.00         4
+        1837       0.00      0.00      0.00         6
+        1838       0.33      0.33      0.33         3
+        1839       0.00      0.00      0.00         1
+        1840       0.38      0.49      0.42        43
+        1841       0.60      0.44      0.51       108
+        1842       1.00      0.33      0.50         6
+        1843       0.33      0.17      0.22         6
+        1844       0.00      0.00      0.00         1
+        1845       0.00      0.00      0.00         1
+        1846       0.00      0.00      0.00         6
+        1847       0.00      0.00      0.00         2
+        1848       0.00      0.00      0.00         5
+        1849       0.00      0.00      0.00         6
+        1850       0.28      0.50      0.36        48
+        1851       0.59      0.44      0.50        77
+        1852       0.00      0.00      0.00         7
+        1853       0.00      0.00      0.00         7
+        1854       0.00      0.00      0.00         3
+        1855       0.50      0.17      0.26        23
+        1856       0.58      0.58      0.58        12
+        1857       0.40      0.33      0.36        30
+        1858       0.00      0.00      0.00         2
+        1859       0.00      0.00      0.00         2
+        1860       0.24      0.31      0.27        65
+        1861       0.43      0.69      0.53        85
+        1862       0.16      0.16      0.16        19
+        1863       0.36      0.21      0.27        19
+        1864       0.00      0.00      0.00        17
+        1865       0.00      0.00      0.00         7
+        1866       0.00      0.00      0.00         5
+        1867       0.33      0.09      0.14        11
+        1868       0.00      0.00      0.00         7
+        1869       0.00      0.00      0.00         5
+        1870       0.37      0.45      0.41        31
+        1871       0.43      0.51      0.47        49
+        1872       0.00      0.00      0.00         7
+        1873       0.25      0.10      0.14        10
+        1874       0.00      0.00      0.00         5
+        1875       0.32      0.50      0.39        14
+        1876       0.67      0.80      0.73        10
+        1877       0.00      0.00      0.00         5
+        1878       0.22      0.22      0.22         9
+        1879       0.00      0.00      0.00         2
+
+    accuracy                           0.48      1256
+   macro avg       0.25      0.24      0.23      1256
+weighted avg       0.46      0.48      0.46      1256
+
+Macro avg F1: 0.231
+Weighted avg F1: 0.460
+Micro avg F1: 0.482
+Top-3 Accuracy: 0.720
+Top-5 Accuracy: 0.810
+Classification MAE (in years): 5.67
+Micro ROC AUC  = 0.96
+Macro ROC AUC (present classes) = 0.93
+
+=== Fold 1 ===
+model_name: NASNetMobile
+input_shape: (224, 224, 3)
+Epoch 1/100
+707/707 - 173s - 244ms/step - accuracy: 0.1715 - loss: 3.1770 - val_accuracy: 0.1959 - val_loss: 3.0287
+Epoch 2/100
+707/707 - 128s - 181ms/step - accuracy: 0.3066 - loss: 2.6194 - val_accuracy: 0.2556 - val_loss: 2.8702
+Epoch 3/100
+707/707 - 127s - 179ms/step - accuracy: 0.3638 - loss: 2.3916 - val_accuracy: 0.2874 - val_loss: 2.7035
+Epoch 4/100
+707/707 - 128s - 181ms/step - accuracy: 0.4039 - loss: 2.2224 - val_accuracy: 0.3129 - val_loss: 2.5891
+Epoch 5/100
+707/707 - 126s - 178ms/step - accuracy: 0.4252 - loss: 2.1086 - val_accuracy: 0.3145 - val_loss: 2.5384
+Epoch 6/100
+707/707 - 127s - 179ms/step - accuracy: 0.4528 - loss: 1.9719 - val_accuracy: 0.3336 - val_loss: 2.4704
+Epoch 7/100
+707/707 - 128s - 181ms/step - accuracy: 0.4716 - loss: 1.9086 - val_accuracy: 0.3424 - val_loss: 2.4425
+Epoch 8/100
+707/707 - 129s - 183ms/step - accuracy: 0.4768 - loss: 1.8861 - val_accuracy: 0.3822 - val_loss: 2.3528
+Epoch 9/100
+707/707 - 125s - 177ms/step - accuracy: 0.4951 - loss: 1.7996 - val_accuracy: 0.3877 - val_loss: 2.3267
+Epoch 10/100
+707/707 - 127s - 180ms/step - accuracy: 0.5113 - loss: 1.7623 - val_accuracy: 0.3742 - val_loss: 2.3285
+Epoch 11/100
