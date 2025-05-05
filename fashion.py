@@ -121,14 +121,13 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
     # Set up plot and log directories
     if config.get("cross_validation", False) and fold_idx is not None:
         plot_dir = os.path.join("plots", "10_fold_cv", run_id)
-        log_dir = os.path.join(
-            "logs", "tensorboard", "10_fold_cv", run_id, time.strftime(f"fit_fold{fold_idx}_%Y-%m-%d_%H:%M:%S")
-        )
+        log_dir = os.path.join("logs", "tensorboard", "10_fold_cv", run_id, f"fit_fold{fold_idx}_{run_id}")
     else:
         plot_dir = "plots"
-        log_dir = os.path.join("logs", "tensorboard", time.strftime("fit_%Y-%m-%d_%H:%M:%S"))
+        log_dir = os.path.join("logs", "tensorboard", f"fit_{run_id}")
 
     os.makedirs(plot_dir, exist_ok=True)
+    os.makedirs(log_dir, exist_ok=True)
 
     # Prepare datasets
     train_ds = get_tf_dataset(
