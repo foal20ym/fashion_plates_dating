@@ -120,8 +120,8 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
 
     # Set up plot and log directories
     if config.get("cross_validation", False) and fold_idx is not None:
-        plot_dir = os.path.join("plots", "10_fold_cv", run_id)
-        log_dir = os.path.join("logs", "tensorboard", "10_fold_cv", run_id, f"fit_fold{fold_idx}_{run_id}")
+        plot_dir = os.path.join("plots", "10_fold_cv", f"{run_id}_{model_name}_fold{fold_idx}")
+        log_dir = os.path.join("logs", "tensorboard", "10_fold_cv", f"{run_id}_fit_fold{fold_idx}")
     else:
         plot_dir = "plots"
         log_dir = os.path.join("logs", "tensorboard", f"fit_{run_id}")
@@ -225,7 +225,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         plt.title(f"Regression: Training and Validation Loss{fold_str}")
         plt.legend()
         plt.tight_layout()
-        plt.savefig(os.path.join(plot_dir, f"loss_val_loss_regression_{model_name}{fold_str}_{run_id}.png"))
+        plt.savefig(os.path.join(plot_dir, f"loss_val_loss_regression.png"))
         plt.close()
 
         if "val_mae" in history.history and "val_mse" in history.history:
@@ -237,7 +237,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
             plt.title(f"Validation MAE and MSE{fold_str}")
             plt.legend()
             plt.tight_layout()
-            plt.savefig(os.path.join(plot_dir, f"train_mae_mse_{model_name}{fold_str}_{run_id}.png"))
+            plt.savefig(os.path.join(plot_dir, f"train_mae_mse.png"))
             plt.close()
 
     else:
@@ -263,7 +263,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         plt.ylabel("True")
         plt.title(f"Confusion Matrix{fold_str}")
         plt.tight_layout()
-        plt.savefig(os.path.join(plot_dir, f"confusion_matrix_{model_name}{fold_str}_{run_id}.png"))
+        plt.savefig(os.path.join(plot_dir, f"confusion_matrix.png"))
         plt.close()
 
         # Print classification report
@@ -293,7 +293,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         plt.title(f"Per-Class F1-score{fold_str}")
         plt.ylim(0, 1)
         plt.tight_layout()
-        plt.savefig(os.path.join(plot_dir, f"f1_score_bar_{model_name}{fold_str}_{run_id}.png"))
+        plt.savefig(os.path.join(plot_dir, f"f1_score_bar.png"))
         plt.close()
 
         if class_to_idx is not None:
@@ -350,7 +350,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         plt.title(f"Micro & Macro-average ROC Curve{fold_str}")
         plt.legend(loc="lower right")
         plt.tight_layout()
-        plt.savefig(os.path.join(plot_dir, f"micro_macro_avg_roc_curve_{model_name}{fold_str}_{run_id}.png"))
+        plt.savefig(os.path.join(plot_dir, f"micro_macro_avg_roc_curve.png"))
         plt.close()
 
         # Return metrics
