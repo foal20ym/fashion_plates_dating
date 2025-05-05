@@ -151,3 +151,69 @@ Epoch 4/100
 Epoch 5/100
 707/707 - 126s - 179ms/step - loss: 0.0358 - mae: 0.1478 - mse: 0.0358 - val_loss: 0.0373 - val_mae: 0.1533 - val_mse: 0.0373
 Epoch 6/100
+707/707 - 130s - 183ms/step - loss: 0.0345 - mae: 0.1448 - mse: 0.0345 - val_loss: 0.0374 - val_mae: 0.1534 - val_mse: 0.0374
+Epoch 7/100
+707/707 - 127s - 180ms/step - loss: 0.0337 - mae: 0.1425 - mse: 0.0337 - val_loss: 0.0364 - val_mae: 0.1510 - val_mse: 0.0364
+Epoch 8/100
+707/707 - 128s - 181ms/step - loss: 0.0318 - mae: 0.1381 - mse: 0.0318 - val_loss: 0.0355 - val_mae: 0.1487 - val_mse: 0.0355
+Epoch 9/100
+707/707 - 129s - 182ms/step - loss: 0.0320 - mae: 0.1383 - mse: 0.0320 - val_loss: 0.0351 - val_mae: 0.1473 - val_mse: 0.0351
+Epoch 10/100
+707/707 - 128s - 181ms/step - loss: 0.0311 - mae: 0.1368 - mse: 0.0311 - val_loss: 0.0338 - val_mae: 0.1442 - val_mse: 0.0338
+Epoch 11/100
+707/707 - 128s - 181ms/step - loss: 0.0311 - mae: 0.1367 - mse: 0.0311 - val_loss: 0.0340 - val_mae: 0.1445 - val_mse: 0.0340
+Epoch 12/100
+707/707 - 128s - 181ms/step - loss: 0.0305 - mae: 0.1341 - mse: 0.0305 - val_loss: 0.0344 - val_mae: 0.1458 - val_mse: 0.0344
+Epoch 13/100
+707/707 - 128s - 181ms/step - loss: 0.0294 - mae: 0.1319 - mse: 0.0294 - val_loss: 0.0332 - val_mae: 0.1423 - val_mse: 0.0332
+Epoch 14/100
+707/707 - 128s - 181ms/step - loss: 0.0303 - mae: 0.1343 - mse: 0.0303 - val_loss: 0.0331 - val_mae: 0.1423 - val_mse: 0.0331
+Epoch 15/100
+707/707 - 128s - 181ms/step - loss: 0.0297 - mae: 0.1327 - mse: 0.0297 - val_loss: 0.0328 - val_mae: 0.1415 - val_mse: 0.0328
+Epoch 16/100
+707/707 - 128s - 181ms/step - loss: 0.0297 - mae: 0.1328 - mse: 0.0297 - val_loss: 0.0327 - val_mae: 0.1410 - val_mse: 0.0327
+Epoch 17/100
+707/707 - 126s - 179ms/step - loss: 0.0289 - mae: 0.1309 - mse: 0.0289 - val_loss: 0.0329 - val_mae: 0.1413 - val_mse: 0.0329
+Epoch 18/100
+707/707 - 126s - 179ms/step - loss: 0.0285 - mae: 0.1299 - mse: 0.0285 - val_loss: 0.0332 - val_mae: 0.1420 - val_mse: 0.0332
+Epoch 19/100
+707/707 - 126s - 178ms/step - loss: 0.0289 - mae: 0.1305 - mse: 0.0289 - val_loss: 0.0326 - val_mae: 0.1407 - val_mse: 0.0326
+Epoch 20/100
+707/707 - 126s - 179ms/step - loss: 0.0288 - mae: 0.1304 - mse: 0.0288 - val_loss: 0.0320 - val_mae: 0.1391 - val_mse: 0.0320
+Epoch 21/100
+707/707 - 128s - 180ms/step - loss: 0.0287 - mae: 0.1296 - mse: 0.0287 - val_loss: 0.0319 - val_mae: 0.1388 - val_mse: 0.0319
+Epoch 22/100
+707/707 - 125s - 177ms/step - loss: 0.0276 - mae: 0.1281 - mse: 0.0276 - val_loss: 0.0318 - val_mae: 0.1385 - val_mse: 0.0318
+Epoch 23/100
+707/707 - 124s - 175ms/step - loss: 0.0281 - mae: 0.1289 - mse: 0.0281 - val_loss: 0.0316 - val_mae: 0.1380 - val_mse: 0.0316
+Epoch 24/100
+707/707 - 128s - 181ms/step - loss: 0.0281 - mae: 0.1289 - mse: 0.0281 - val_loss: 0.0324 - val_mae: 0.1407 - val_mse: 0.0324
+Epoch 25/100
+707/707 - 127s - 180ms/step - loss: 0.0271 - mae: 0.1267 - mse: 0.0271 - val_loss: 0.0322 - val_mae: 0.1402 - val_mse: 0.0322
+Epoch 26/100
+707/707 - 127s - 180ms/step - loss: 0.0276 - mae: 0.1274 - mse: 0.0276 - val_loss: 0.0317 - val_mae: 0.1386 - val_mse: 0.0317
+Epoch 27/100
+707/707 - 124s - 176ms/step - loss: 0.0279 - mae: 0.1287 - mse: 0.0279 - val_loss: 0.0317 - val_mae: 0.1382 - val_mse: 0.0317
+Epoch 27: early stopping
+Restoring model weights from the end of the best epoch: 23.
+79/79 - 13s - 159ms/step - loss: 0.0316 - mae: 0.1380 - mse: 0.0316
+Fold 2 Evaluation results: [0.03157830238342285, 0.13800078630447388, 0.03157830238342285]
+Fold 2 Exactly correct year predictions: 23 out of 1256
+Fold 2 Final MAE (rounded to years): 17.32
+
+=== Fold 3 ===
+model_name: NASNetMobile
+input_shape: (224, 224, 3)
+Epoch 1/100
+707/707 - 194s - 275ms/step - loss: 0.0634 - mae: 0.2073 - mse: 0.0634 - val_loss: 0.0497 - val_mae: 0.1835 - val_mse: 0.0497
+Epoch 2/100
+707/707 - 125s - 176ms/step - loss: 0.0469 - mae: 0.1740 - mse: 0.0469 - val_loss: 0.0421 - val_mae: 0.1679 - val_mse: 0.0421
+Epoch 3/100
+707/707 - 125s - 177ms/step - loss: 0.0405 - mae: 0.1592 - mse: 0.0405 - val_loss: 0.0392 - val_mae: 0.1603 - val_mse: 0.0392
+Epoch 4/100
+707/707 - 129s - 183ms/step - loss: 0.0383 - mae: 0.1543 - mse: 0.0383 - val_loss: 0.0370 - val_mae: 0.1547 - val_mse: 0.0370
+Epoch 5/100
+707/707 - 126s - 178ms/step - loss: 0.0367 - mae: 0.1494 - mse: 0.0367 - val_loss: 0.0365 - val_mae: 0.1509 - val_mse: 0.0365
+Epoch 6/100
+707/707 - 127s - 179ms/step - loss: 0.0348 - mae: 0.1459 - mse: 0.0348 - val_loss: 0.0347 - val_mae: 0.1478 - val_mse: 0.0347
+Epoch 7/100
