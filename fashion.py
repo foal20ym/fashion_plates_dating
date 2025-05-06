@@ -1,8 +1,9 @@
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Dense, Dropout, RandomRotation, RandomFlip, RandomContrast
-from tensorflow.keras.callbacks import EarlyStopping, TensorBoard, ReduceLROnPlateau
+from tensorflow.keras.callbacks import EarlyStopping, TensorBoard, ReduceLROnPlateau, ModelCheckpoint
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.applications import InceptionV3, ResNet101, NASNetMobile
+from tensorflow.keras.regularizers import l2
 import random
 import pandas as pd
 import numpy as np
@@ -108,111 +109,8 @@ def top_n_accuracy(y_true, y_score, n=3):
     return np.mean([y in top_n_row for y, top_n_row in zip(y_true, top_n)])
 
 
-def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_year, max_year, config, fold_idx=None):
-    input_shape = get_input_shape(config["model"]["name"], config["model"]["include_top"])
-    model_name = config["model"]["name"]
-    regression = config["task"] == "regression"
-
-    # Prepare datasets
-    train_ds = get_tf_dataset(
-        train_files,
-        regression=regression,
-        class_to_idx=class_to_idx,
-        min_year=min_year,
-        max_year=max_year,
-        augment=True,
-        image_size=input_shape[:2],
-    )
-    val_ds = get_tf_dataset(
-        [test_file],
-        regression=regression,
-        class_to_idx=class_to_idx,
-        min_year=min_year,
-        max_year=max_year,
-        augment=False,
-        image_size=input_shape[:2],
-    )
-
-    BATCH_SIZE = config["training"]["batch_size"]
-    train_ds_batched = train_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
-    val_ds_batched = val_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
-
-    # Build and compile model
-    model = build_model(
-        config,
-        num_classes=num_classes,
-        input_shape=input_shape,
-    )
-
-    optimizer = Adam(learning_rate=config["training"]["learning_rate"])
-    loss = "mean_squared_error" if regression else "sparse_categorical_crossentropy"
-    metrics = ["mae", "mse"] if regression else ["accuracy"]
-    model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
-
-    # Callbacks
-    callbacks = [
-        EarlyStopping(
-            monitor="val_loss",
-            patience=config["training"]["early_stopping_patience"],
-            restore_best_weights=True,
-            verbose=1,
-        )
-    ]
-    log_dir = os.path.join(
-        "logs",
-        (
-            time.strftime(f"fit_fold{fold_idx}_%Y-%m-%d_%H:%M:%S")
-            if fold_idx is not None
-            else time.strftime("fit_%Y-%m-%d_%H:%M:%S")
-        ),
-    )
-    tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
-    callbacks.append(tensorboard_callback)
-
-    # Train
-    history = model.fit(
-        train_ds_batched,
-        validation_data=val_ds_batched,
-        epochs=config["training"]["epochs"],
-        callbacks=callbacks,
-        verbose=2,
-    )
-
-    if config["model"]["save_model"]:
-        if not os.path.exists("trained_models"):
-            os.makedirs("trained_models")
-        version = get_highest_version_for_saved_model(model_name)
-        model.save(f"trained_models/{model_name}_version_{version}.keras")
-
-    # Helper for fold-specific naming
-    fold_str = f"_fold{fold_idx}" if fold_idx is not None else ""
-    fold_print = f"Fold {fold_idx} " if fold_idx is not None else ""
-
-    # Evaluate
-    results = model.evaluate(val_ds_batched, verbose=2)
-    print(f"{fold_print}Evaluation results:", results)
-
-    # Collect predictions and metrics for reporting
-    metrics = {}
-    run_id = time.strftime("%Y-%m-%d_%H:%M:%S")
+def plot_metrics(history, fold_str, plot_dir, regression, class_to_idx, y_true=None, y_pred=None, y_score=None):
     if regression:
-        preds = model.predict(val_ds_batched, verbose=2)
-        preds_years = preds * (max_year - min_year) + min_year
-        preds_years_rounded = np.round(preds_years).astype(int)
-        y_true = []
-        for _, label in val_ds_batched.unbatch():
-            y_true.append(label.numpy())
-        y_true = np.array(y_true)
-        y_true_years = y_true * (max_year - min_year) + min_year
-        y_true_years_rounded = np.round(y_true_years).astype(int)
-        exact_matches = np.sum(preds_years_rounded.flatten() == y_true_years_rounded.flatten())
-        total = len(y_true_years_rounded)
-        mae = np.mean(np.abs(preds_years_rounded.flatten() - y_true_years_rounded.flatten()))
-        print(f"{fold_print}Exactly correct year predictions: {exact_matches} out of {total}")
-        print(f"{fold_print}Final MAE (rounded to years): {mae:.2f}")
-        metrics = {"mae": mae, "exact": exact_matches, "total": total}
-
-        os.makedirs("plots", exist_ok=True)
         plt.figure(figsize=(10, 5))
         plt.plot(history.history["loss"], label="loss")
         plt.plot(history.history["val_loss"], label="val_loss")
@@ -221,7 +119,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         plt.title(f"Regression: Training and Validation Loss{fold_str}")
         plt.legend()
         plt.tight_layout()
-        plt.savefig(f"plots/loss_val_loss_regression_{model_name}{fold_str}_{run_id}.png")
+        plt.savefig(os.path.join(plot_dir, f"loss_val_loss_regression.png"))
         plt.close()
 
         if "val_mae" in history.history and "val_mse" in history.history:
@@ -233,21 +131,9 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
             plt.title(f"Validation MAE and MSE{fold_str}")
             plt.legend()
             plt.tight_layout()
-            plt.savefig(f"plots/train_mae_mse_{model_name}{fold_str}_{run_id}.png")
+            plt.savefig(os.path.join(plot_dir, f"train_mae_mse.png"))
             plt.close()
-
     else:
-        # Collect predictions
-        y_score = []
-        y_true = []
-        y_pred = []
-        for images, labels in val_ds_batched:
-            preds = model.predict(images, verbose=2)
-            y_true.extend(labels.numpy())
-            y_pred.extend(np.argmax(preds, axis=1))
-            y_score.extend(preds)
-        y_score = np.array(y_score)
-
         target_names = [str(k) for k in sorted(class_to_idx.keys(), key=lambda x: class_to_idx[x])]
         all_labels = [class_to_idx[k] for k in sorted(class_to_idx.keys(), key=lambda x: class_to_idx[x])]
 
@@ -259,7 +145,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         plt.ylabel("True")
         plt.title(f"Confusion Matrix{fold_str}")
         plt.tight_layout()
-        plt.savefig(f"plots/confusion_matrix_{model_name}{fold_str}_{run_id}.png")
+        plt.savefig(os.path.join(plot_dir, f"confusion_matrix.png"))
         plt.close()
 
         # Print classification report
@@ -289,7 +175,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         plt.title(f"Per-Class F1-score{fold_str}")
         plt.ylim(0, 1)
         plt.tight_layout()
-        plt.savefig(f"plots/f1_score_bar_{model_name}{fold_str}_{run_id}.png")
+        plt.savefig(os.path.join(plot_dir, f"f1_score_bar.png"))
         plt.close()
 
         if class_to_idx is not None:
@@ -346,11 +232,163 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         plt.title(f"Micro & Macro-average ROC Curve{fold_str}")
         plt.legend(loc="lower right")
         plt.tight_layout()
-        plt.savefig(f"plots/micro_macro_avg_roc_curve_{model_name}{fold_str}_{run_id}.png")
+        plt.savefig(os.path.join(plot_dir, f"micro_macro_avg_roc_curve.png"))
         plt.close()
 
-        # Return metrics
-        metrics = {"mae": results[0], "accuracy": results[1]}
+    return
+
+
+def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_year, max_year, config, fold_idx=None):
+    input_shape = get_input_shape(config["model"]["name"], config["model"]["include_top"])
+    model_name = config["model"]["name"]
+    regression = config["task"] == "regression"
+
+    # Helper for fold-specific naming
+    fold_str = f"_fold{fold_idx}" if fold_idx is not None else ""
+    fold_print = f"Fold {fold_idx} " if fold_idx is not None else ""
+    run_id = time.strftime("%Y-%m-%d_%H:%M:%S")
+
+    # Set up plot and log directories
+    if config.get("cross_validation", False) and fold_idx is not None:
+        plot_dir = os.path.join("plots", "10_fold_cv", f"{run_id}_{model_name}_fold{fold_idx}")
+        log_dir = os.path.join("logs", "tensorboard", "10_fold_cv", f"{run_id}_fit_fold{fold_idx}")
+    else:
+        plot_dir = os.path.join("plots", "single_run", f"{run_id}_{model_name}")
+        log_dir = os.path.join("logs", "tensorboard", f"fit_{run_id}")
+
+    os.makedirs(plot_dir, exist_ok=True)
+    os.makedirs(log_dir, exist_ok=True)
+
+    # Prepare datasets
+    train_ds = get_tf_dataset(
+        train_files,
+        regression=regression,
+        class_to_idx=class_to_idx,
+        min_year=min_year,
+        max_year=max_year,
+        augment=True,
+        image_size=input_shape[:2],
+    )
+    val_ds = get_tf_dataset(
+        [test_file],
+        regression=regression,
+        class_to_idx=class_to_idx,
+        min_year=min_year,
+        max_year=max_year,
+        augment=False,
+        image_size=input_shape[:2],
+    )
+
+    BATCH_SIZE = config["training"]["batch_size"]
+    train_ds_batched = train_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+    val_ds_batched = val_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+
+    # Build and compile model
+    model = build_model(
+        config,
+        num_classes=num_classes,
+        input_shape=input_shape,
+    )
+
+    optimizer = Adam(learning_rate=config["training"]["learning_rate"])
+    loss = "mean_squared_error" if regression else "sparse_categorical_crossentropy"
+    metrics = ["mae", "mse"] if regression else ["accuracy"]
+    model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
+
+    # Callbacks
+    callbacks = [
+        EarlyStopping(
+            monitor="val_loss",
+            patience=config["training"]["early_stopping_patience"],
+            restore_best_weights=True,
+            min_delta=1e-4,
+            verbose=1,
+        )
+    ]
+
+    tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
+    callbacks.append(tensorboard_callback)
+
+    reduce_lr_callback = ReduceLROnPlateau(
+        monitor="val_loss",
+        factor=0.1,
+        patience=config["training"]["reduce_lr_patience"],
+        min_delta=1e-4,
+        verbose=1,
+        min_lr=1e-6,
+    )
+
+    callbacks.append(reduce_lr_callback)
+
+    # model_checkpoint = ModelCheckpoint(
+    #     filepath,
+    #     monitor="val_loss",
+    #     verbose=1,
+    #     save_best_only=True,
+    #     save_weights_only=False,
+    #     mode="auto",
+    #     save_freq="epoch",
+    #     initial_value_threshold=None,
+    # )
+
+    if config["model"]["save_model"]:
+        # callbacks.append(model_checkpoint)
+        if not os.path.exists("trained_models"):
+            os.makedirs("trained_models")
+        version = get_highest_version_for_saved_model(model_name)
+        model.save(f"trained_models/{model_name}_version_{version}.keras")
+
+    # Train
+    history = model.fit(
+        train_ds_batched,
+        validation_data=val_ds_batched,
+        epochs=config["training"]["epochs"],
+        callbacks=callbacks,
+        verbose=2,
+    )
+
+    # Evaluate
+    results = model.evaluate(val_ds_batched, verbose=0)
+    print(f"{fold_print}Evaluation results:", results)
+
+    # Collect predictions and metrics for reporting
+    metrics = {}
+    if regression:
+        preds = model.predict(val_ds_batched, verbose=0)
+        preds_years = preds * (max_year - min_year) + min_year
+        preds_years_rounded = np.round(preds_years).astype(int)
+        y_true = []
+        for _, label in val_ds_batched.unbatch():
+            y_true.append(label.numpy())
+        y_true = np.array(y_true)
+        y_true_years = y_true * (max_year - min_year) + min_year
+        y_true_years_rounded = np.round(y_true_years).astype(int)
+        exact_matches = np.sum(preds_years_rounded.flatten() == y_true_years_rounded.flatten())
+        total = len(y_true_years_rounded)
+        mae = np.mean(np.abs(preds_years_rounded.flatten() - y_true_years_rounded.flatten()))
+        print(f"{fold_print}Exactly correct year predictions: {exact_matches} out of {total}")
+        print(f"{fold_print}Final MAE (rounded to years): {mae:.2f}")
+        metrics = {"mae": mae, "exact": exact_matches, "total": total}
+
+        os.makedirs("plots", exist_ok=True)
+
+        plot_metrics(history, fold_str, plot_dir, regression, class_to_idx)
+
+    else:
+        # Collect predictions
+        y_score = []
+        y_true = []
+        y_pred = []
+        for images, labels in val_ds_batched:
+            preds = model.predict(images, verbose=0)
+            y_true.extend(labels.numpy())
+            y_pred.extend(np.argmax(preds, axis=1))
+            y_score.extend(preds)
+        y_score = np.array(y_score)
+
+        plot_metrics(history, fold_str, plot_dir, regression, class_to_idx, y_true, y_pred, y_score)
+
+        metrics = {"accuracy": results[1]}
     return metrics
 
 
@@ -358,55 +396,61 @@ def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
     regression = config["task"] == "regression"
     model_name = config["model"]["name"]
     fine_tune = config["model"]["fine_tune"]
-    print("model_name:", model_name)
-    print("input_shape:", input_shape)
 
-    base_model = None
+    # Select base model and setup according to model_name
     if model_name == "NASNetMobile":
-        base_model = NASNetMobile(
-            include_top=config["model"]["include_top"], weights="imagenet", input_shape=input_shape, pooling="avg"
-        )
+        base_model = NASNetMobile(weights="imagenet", input_shape=input_shape, include_top=False)
+        base_model.trainable = False
+        x = base_model.output
+        x = tf.keras.layers.GlobalAveragePooling2D()(x)
+        x = tf.keras.layers.Dense(76, activation="relu")(x)
     elif model_name == "ResNet101":
-        base_model = ResNet101(
-            include_top=config["model"]["include_top"], weights="imagenet", input_shape=input_shape, pooling="avg"
-        )
+        base_model = ResNet101(weights="imagenet", input_shape=input_shape, include_top=False)
+        base_model.trainable = False
+        x = base_model.output
+        x = tf.keras.layers.GlobalAveragePooling2D()(x)
+        x = tf.keras.layers.Dense(10, activation="relu")(x)
     elif model_name == "InceptionV3":
-        base_model = InceptionV3(
-            include_top=config["model"]["include_top"], weights="imagenet", input_shape=input_shape, pooling="avg"
-        )
-
-    x = base_model.output
-
-    if regression:
-        predictions = Dense(1, activation="sigmoid", name="PREDICTIONS")(x)
+        base_model = InceptionV3(weights="imagenet", input_shape=input_shape, include_top=False)
+        base_model.trainable = False
+        x = base_model.output
+        x = tf.keras.layers.GlobalAveragePooling2D()(x)
     else:
-        predictions = Dense(num_classes, activation="softmax", name="PREDICTIONS")(x)
+        raise ValueError(f"Unsupported model name: {model_name}")
+
+    # Optional dropout
+    if config["model"]["use_dropout"]:
+        x = Dropout(config["model"]["dropout"])(x)
+
+    # Output layer
+    if regression:
+        if config["model"]["use_l2_regularization"]:
+            predictions = Dense(
+                1,
+                activation="sigmoid",
+                name="PREDICTIONS",
+                kernel_regularizer=l2(float(config["model"]["l2_regularization"])),
+            )(x)
+        else:
+            predictions = Dense(1, activation="sigmoid", name="PREDICTIONS")(x)
+    else:
+        if config["model"]["use_l2_regularization"]:
+            predictions = Dense(
+                num_classes,
+                activation="softmax",
+                name="PREDICTIONS",
+                kernel_regularizer=l2(float(config["model"]["l2_regularization"])),
+            )(x)
+        else:
+            predictions = Dense(num_classes, activation="softmax", name="PREDICTIONS")(x)
 
     model = Model(inputs=base_model.input, outputs=predictions)
 
-    for layer in base_model.layers:
-        layer.trainable = False
-
-    # !!--- This is what method says in report ---!!
-    # • Fine-tuning One additional layer
-    # • Transfer learning One additional layer
-    # • Fine-tuning A Dense classifier with a single unit
-    # • Transfer learning A Dense classifier with a single unit
-
-    # !!--- If we want to fine tune instead of transfer learning. ---!!
+    # Fine-tuning: unfreeze last layer if requested
     if fine_tune:
-        # Unfreeze one additional layer
         for layer in base_model.layers[-1:]:
             layer.trainable = True
 
-    # ??--- Optional way to do it. ---??
-
-    # freeze_base = True
-    # base_model.trainable = not freeze_base
-
-    # inputs = layers.Input(shape=input_shape)
-    # x = base_model(inputs, training=not freeze_base)  # if fine-tuning, allow BN layers to train
-    # x = layers.GlobalAveragePooling2D()(x)
     return model
 
 
@@ -432,7 +476,7 @@ def main():
 
     start_time = time.time()
 
-    if config["cross_validation"]:  # if ten_fold_cv:
+    if config["cross_validation"]:
         all_metrics = []
         for test_fold in fold_nums:
             print(f"\n=== Fold {test_fold} ===")
@@ -468,7 +512,7 @@ def main():
                 min_year,
                 max_year,
                 config,
-                fold_idx=None,
+                fold_idx=test_fold,
             )
             all_metrics.append(metrics)
 
@@ -519,7 +563,7 @@ def main():
             min_year,
             max_year,
             config,
-            fold_idx=None,
+            fold_idx=test_fold,
         )
         print("Metrics:", metrics)
 
