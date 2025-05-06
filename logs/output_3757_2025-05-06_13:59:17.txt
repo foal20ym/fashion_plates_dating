@@ -1,0 +1,9 @@
+TensorFlow Version: 2.19.0
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+Using model: NASNetMobile.
+RUN ID: 2025-05-06_13:59:21
+Test fold: 0
+Epoch 1/100
+707/707 - 189s - 267ms/step - accuracy: 0.2715 - loss: 2.6182 - val_accuracy: 0.2779 - val_loss: 2.5622 - learning_rate: 0.0100
+Epoch 2/100
