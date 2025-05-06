@@ -1,9 +1,9 @@
 task: classification
 
 model:
-  # name: NASNetMobile
+  name: NASNetMobile
   # name: InceptionV3
-  name: ResNet101
+  # name: ResNet101
   include_top: false
   fine_tune: false
   save_model: false
