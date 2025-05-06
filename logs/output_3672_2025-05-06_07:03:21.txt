@@ -1,0 +1,48 @@
+Using model: NASNetMobile.
+TensorFlow Version: 2.19.0
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+Test fold: 6
+model_name: NASNetMobile
+input_shape: (224, 224, 3)
+Epoch 1/100
+707/707 - 170s - 240ms/step - accuracy: 0.3972 - loss: 3.1720 - val_accuracy: 0.3248 - val_loss: 4.0937 - learning_rate: 0.0100
+Epoch 2/100
+707/707 - 111s - 157ms/step - accuracy: 0.4722 - loss: 2.8396 - val_accuracy: 0.3432 - val_loss: 4.1848 - learning_rate: 0.0100
+Epoch 3/100
+707/707 - 105s - 149ms/step - accuracy: 0.5044 - loss: 2.7624 - val_accuracy: 0.3527 - val_loss: 4.4242 - learning_rate: 0.0100
+Epoch 4/100
+707/707 - 100s - 142ms/step - accuracy: 0.5269 - loss: 2.6698 - val_accuracy: 0.3583 - val_loss: 5.1263 - learning_rate: 0.0100
+Epoch 5/100
+707/707 - 100s - 141ms/step - accuracy: 0.5445 - loss: 2.5677 - val_accuracy: 0.3766 - val_loss: 4.2068 - learning_rate: 0.0100
+Epoch 6/100
+
+Epoch 6: ReduceLROnPlateau reducing learning rate to 0.0009999999776482583.
+707/707 - 96s - 136ms/step - accuracy: 0.5392 - loss: 2.7628 - val_accuracy: 0.3225 - val_loss: 5.1836 - learning_rate: 0.0100
+Epoch 7/100
+707/707 - 99s - 140ms/step - accuracy: 0.6333 - loss: 1.6615 - val_accuracy: 0.4570 - val_loss: 3.1208 - learning_rate: 1.0000e-03
+Epoch 8/100
+707/707 - 97s - 138ms/step - accuracy: 0.6637 - loss: 1.3741 - val_accuracy: 0.4610 - val_loss: 2.9992 - learning_rate: 1.0000e-03
+Epoch 9/100
+707/707 - 99s - 140ms/step - accuracy: 0.6705 - loss: 1.2905 - val_accuracy: 0.4642 - val_loss: 2.9952 - learning_rate: 1.0000e-03
+Epoch 10/100
+707/707 - 103s - 145ms/step - accuracy: 0.6626 - loss: 1.3201 - val_accuracy: 0.4705 - val_loss: 2.7931 - learning_rate: 1.0000e-03
+Epoch 11/100
+707/707 - 101s - 143ms/step - accuracy: 0.6754 - loss: 1.2091 - val_accuracy: 0.4610 - val_loss: 2.7255 - learning_rate: 1.0000e-03
+Epoch 12/100
+707/707 - 107s - 151ms/step - accuracy: 0.6756 - loss: 1.1896 - val_accuracy: 0.4602 - val_loss: 2.7131 - learning_rate: 1.0000e-03
+Epoch 13/100
+707/707 - 107s - 151ms/step - accuracy: 0.6887 - loss: 1.1282 - val_accuracy: 0.4411 - val_loss: 2.7758 - learning_rate: 1.0000e-03
+Epoch 14/100
+707/707 - 103s - 146ms/step - accuracy: 0.6708 - loss: 1.1637 - val_accuracy: 0.4713 - val_loss: 2.5817 - learning_rate: 1.0000e-03
+Epoch 15/100
+707/707 - 99s - 141ms/step - accuracy: 0.6797 - loss: 1.1381 - val_accuracy: 0.4658 - val_loss: 2.5910 - learning_rate: 1.0000e-03
+Epoch 16/100
+707/707 - 101s - 142ms/step - accuracy: 0.6944 - loss: 1.0592 - val_accuracy: 0.4578 - val_loss: 2.6723 - learning_rate: 1.0000e-03
+Epoch 17/100
+707/707 - 144s - 204ms/step - accuracy: 0.6867 - loss: 1.0734 - val_accuracy: 0.4594 - val_loss: 2.5049 - learning_rate: 1.0000e-03
+Epoch 18/100
+707/707 - 102s - 144ms/step - accuracy: 0.6877 - loss: 1.0801 - val_accuracy: 0.4650 - val_loss: 2.5232 - learning_rate: 1.0000e-03
+Epoch 19/100
+707/707 - 111s - 156ms/step - accuracy: 0.6916 - loss: 1.0598 - val_accuracy: 0.4570 - val_loss: 2.4572 - learning_rate: 1.0000e-03
+Epoch 20/100

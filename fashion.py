@@ -1,8 +1,9 @@
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Dense, Dropout, RandomRotation, RandomFlip, RandomContrast
-from tensorflow.keras.callbacks import EarlyStopping, TensorBoard, ReduceLROnPlateau
+from tensorflow.keras.callbacks import EarlyStopping, TensorBoard, ReduceLROnPlateau, ModelCheckpoint
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.applications import InceptionV3, ResNet101, NASNetMobile
+from tensorflow.keras.regularizers import l2
 import random
 import pandas as pd
 import numpy as np
@@ -171,12 +172,42 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
             monitor="val_loss",
             patience=config["training"]["early_stopping_patience"],
             restore_best_weights=True,
+            min_delta=1e-4,
             verbose=1,
         )
     ]
 
     tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
     callbacks.append(tensorboard_callback)
+
+    reduce_lr_callback = ReduceLROnPlateau(
+        monitor="val_loss",
+        factor=0.1,
+        patience=config["training"]["reduce_lr_patience"],
+        min_delta=1e-4,
+        verbose=1,
+        min_lr=1e-6,
+    )
+
+    callbacks.append(reduce_lr_callback)
+
+    # model_checkpoint = ModelCheckpoint(
+    #     filepath,
+    #     monitor="val_loss",
+    #     verbose=1,
+    #     save_best_only=True,
+    #     save_weights_only=False,
+    #     mode="auto",
+    #     save_freq="epoch",
+    #     initial_value_threshold=None,
+    # )
+
+    if config["model"]["save_model"]:
+        # callbacks.append(model_checkpoint)
+        if not os.path.exists("trained_models"):
+            os.makedirs("trained_models")
+        version = get_highest_version_for_saved_model(model_name)
+        model.save(f"trained_models/{model_name}_version_{version}.keras")
 
     # Train
     history = model.fit(
@@ -186,12 +217,6 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         callbacks=callbacks,
         verbose=2,
     )
-
-    if config["model"]["save_model"]:
-        if not os.path.exists("trained_models"):
-            os.makedirs("trained_models")
-        version = get_highest_version_for_saved_model(model_name)
-        model.save(f"trained_models/{model_name}_version_{version}.keras")
 
     # Evaluate
     results = model.evaluate(val_ds_batched, verbose=0)
@@ -380,11 +405,26 @@ def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
         )
 
     x = base_model.output
+    if config["model"]["use_dropout"]:
+        x = Dropout(config["model"]["dropout"])(x)
 
     if regression:
-        predictions = Dense(1, activation="sigmoid", name="PREDICTIONS")(x)
+        if config["model"]["use_l2_regularization"]:
+            predictions = Dense(
+                1, activation="sigmoid", name="PREDICTIONS", kernel_regularizer=l2(config["model"]["l2_regularization"])
+            )(x)
+        else:
+            predictions = Dense(1, activation="sigmoid", name="PREDICTIONS")(x)
     else:
-        predictions = Dense(num_classes, activation="softmax", name="PREDICTIONS")(x)
+        if config["model"]["use_l2_regularization"]:
+            predictions = Dense(
+                num_classes,
+                activation="softmax",
+                name="PREDICTIONS",
+                kernel_regularizer=l2(config["model"]["l2_regularization"]),
+            )(x)
+        else:
+            predictions = Dense(num_classes, activation="softmax", name="PREDICTIONS")(x)
 
     model = Model(inputs=base_model.input, outputs=predictions)
 
@@ -436,7 +476,7 @@ def main():
 
     start_time = time.time()
 
-    if config["cross_validation"]:  # if ten_fold_cv:
+    if config["cross_validation"]:
         all_metrics = []
         for test_fold in fold_nums:
             print(f"\n=== Fold {test_fold} ===")
@@ -523,7 +563,7 @@ def main():
             min_year,
             max_year,
             config,
-            fold_idx=None,
+            fold_idx=test_fold,
         )
         print("Metrics:", metrics)
 
