@@ -529,7 +529,7 @@ def main():
 
     else:
         # Single train/test split (random fold selection)
-        test_fold = random.choice(fold_nums)
+        test_fold = fold_nums[0]
         print(f"Test fold: {test_fold}")
         train_folds = [fold for fold in fold_nums if fold != test_fold]
         train_files = [f"data/datasets/fold{fold}.csv" for fold in train_folds]
