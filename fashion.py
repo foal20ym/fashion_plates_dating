@@ -108,7 +108,51 @@ def top_n_accuracy(y_true, y_score, n=3):
     return np.mean([y in top_n_row for y, top_n_row in zip(y_true, top_n)])
 
 
-def plot_metrics(history, fold_str, plot_dir, regression, class_to_idx, y_true=None, y_pred=None, y_score=None):
+def plot_cv_metrics_summary(all_metrics, plot_dir):
+    if not all_metrics or not isinstance(all_metrics, list):
+        print("No metrics to plot.")
+        return
+
+    # Collect all metric keys
+    metric_keys = all_metrics[0].keys()
+    stats = {}
+
+    for key in metric_keys:
+        values = [m[key] for m in all_metrics if key in m]
+        stats[key] = {
+            "mean": np.mean(values),
+            "std": np.std(values),
+            "var": np.var(values),
+            "all": values,
+        }
+
+    # Plot
+    plt.figure(figsize=(8, 6))
+    x = np.arange(len(metric_keys))
+    means = [stats[k]["mean"] for k in metric_keys]
+    stds = [stats[k]["std"] for k in metric_keys]
+    vars_ = [stats[k]["var"] for k in metric_keys]
+
+    plt.bar(x, means, yerr=stds, capsize=8, color="green", label="Mean ± Std")
+    plt.scatter(x, means, color="blue")
+    plt.xticks(x, metric_keys)
+    plt.ylabel("Metric Value")
+    plt.title("Cross-Validation Metrics Summary (Mean ± Std)")
+    plt.tight_layout()
+    plt.legend()
+
+    # Annotate variance
+    for i, v in enumerate(vars_):
+        plt.text(i, means[i] + stds[i] + 0.01, f"Var: {v:.4f}", ha="center", fontsize=9)
+
+    os.makedirs(plot_dir, exist_ok=True)
+    plt.savefig(os.path.join(plot_dir, "cv_metrics_summary.png"))
+    plt.close()
+
+
+def plot_metrics(
+    history=None, fold_str="", plot_dir="", regression=False, class_to_idx=None, y_true=None, y_pred=None, y_score=None
+):
     if regression:
         plt.figure(figsize=(10, 5))
         plt.plot(history.history["loss"], label="loss")
@@ -177,13 +221,6 @@ def plot_metrics(history, fold_str, plot_dir, regression, class_to_idx, y_true=N
         plt.savefig(os.path.join(plot_dir, f"f1_score_bar.png"))
         plt.close()
 
-        if class_to_idx is not None:
-            idx_to_class = {v: k for k, v in class_to_idx.items()}
-            y_true_years = np.array([idx_to_class[idx] for idx in y_true])
-            y_pred_years = np.array([idx_to_class[idx] for idx in y_pred])
-            mae_years = np.mean(np.abs(y_true_years - y_pred_years))
-            print(f"Classification MAE (in years): {mae_years:.2f}")
-
         y_true_bin = label_binarize(y_true, classes=all_labels)  # shape (n_samples, n_classes)
 
         # Find classes present in y_true
@@ -237,7 +274,7 @@ def plot_metrics(history, fold_str, plot_dir, regression, class_to_idx, y_true=N
     return
 
 
-def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_year, max_year, config, fold_idx=None):
+def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_year, max_year, config, run_id, fold_idx):
     input_shape = get_input_shape(config["model"]["name"])
     model_name = config["model"]["name"]
     regression = config["task"] == "regression"
@@ -245,7 +282,6 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
     # Helper for fold-specific naming
     fold_str = f"_fold{fold_idx}" if fold_idx is not None else ""
     fold_print = f"Fold {fold_idx} " if fold_idx is not None else ""
-    run_id = time.strftime("%Y-%m-%d_%H:%M:%S")
 
     # Set up plot and log directories
     if config.get("cross_validation", False) and fold_idx is not None:
@@ -387,7 +423,14 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
 
         plot_metrics(history, fold_str, plot_dir, regression, class_to_idx, y_true, y_pred, y_score)
 
-        metrics = {"accuracy": results[1]}
+        if class_to_idx is not None:
+            idx_to_class = {v: k for k, v in class_to_idx.items()}
+            y_true_years = np.array([idx_to_class[idx] for idx in y_true])
+            y_pred_years = np.array([idx_to_class[idx] for idx in y_pred])
+            mae_years = np.mean(np.abs(y_true_years - y_pred_years))
+            print(f"Classification MAE (in years): {mae_years:.2f}")
+
+        metrics = {"accuracy": results[1], "mae_years": mae_years}
     return metrics
 
 
@@ -447,6 +490,7 @@ def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
 
     # Fine-tuning: unfreeze last layer if requested
     if fine_tune:
+        print("Fine Tuning!")
         for layer in base_model.layers[-1:]:
             layer.trainable = True
 
@@ -454,12 +498,6 @@ def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
 
 
 def main():
-    config = load_config("config.yaml")
-    regression = config["task"] == "regression"
-    model_name = config["model"]["name"]
-    fold_nums = [num for num in range(10)]
-    print(f"Using model: {model_name}.")
-
     # --- GPU Configuration for Optimal Utilization ---
     print("TensorFlow Version:", tf.__version__)
     print("Num GPUs Available:", len(tf.config.list_physical_devices("GPU")))
@@ -474,6 +512,14 @@ def main():
         print("No GPU detected. Training will run on CPU.")
 
     start_time = time.time()
+
+    config = load_config("config.yaml")
+    regression = config["task"] == "regression"
+    model_name = config["model"]["name"]
+    fold_nums = [num for num in range(10)]
+    run_id = time.strftime("%Y-%m-%d_%H:%M:%S")
+    print(f"Using model: {model_name}.")
+    print(f"RUN ID: {run_id}")
 
     if config["cross_validation"]:
         all_metrics = []
@@ -511,9 +557,13 @@ def main():
                 min_year,
                 max_year,
                 config,
-                fold_idx=test_fold,
+                run_id,
+                test_fold,
             )
             all_metrics.append(metrics)
+        plot_cv_metrics_summary(
+            all_metrics, plot_dir=os.path.join("plots", "10_fold_cv", f"{run_id}_{model_name}_mean_std_var")
+        )
 
         # Print mean metrics
         if regression:
@@ -562,7 +612,8 @@ def main():
             min_year,
             max_year,
             config,
-            fold_idx=test_fold,
+            run_id,
+            test_fold,
         )
         print("Metrics:", metrics)
 
