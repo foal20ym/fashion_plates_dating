@@ -1,15 +1,20 @@
-task: regression
+task: classification
 
 model:
   name: NASNetMobile
   include_top: false
   fine_tune: false
   save_model: false
+  use_l2_regularization: false
+  l2_regularization: 1e-4
+  use_dropout: false
+  dropout: 0.5
 
 training:
   batch_size: 16
   epochs: 100
-  learning_rate: 0.0001
-  early_stopping_patience: 4
+  learning_rate: 0.01
+  early_stopping_patience: 10
+  reduce_lr_patience: 5
 
-cross_validation: true
+cross_validation: false

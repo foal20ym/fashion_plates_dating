@@ -1,0 +1,26 @@
+Using model: NASNetMobile.
+TensorFlow Version: 2.19.0
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+Test fold: 3
+model_name: NASNetMobile
+input_shape: (224, 224, 3)
+Epoch 1/100
+707/707 - 178s - 252ms/step - accuracy: 0.3122 - loss: 4.1686 - val_accuracy: 0.2771 - val_loss: 4.2040 - learning_rate: 0.0100
+Epoch 2/100
+707/707 - 114s - 161ms/step - accuracy: 0.3491 - loss: 4.6374 - val_accuracy: 0.3400 - val_loss: 4.2083 - learning_rate: 0.0100
+Epoch 3/100
+707/707 - 107s - 151ms/step - accuracy: 0.3800 - loss: 4.5857 - val_accuracy: 0.3041 - val_loss: 5.2307 - learning_rate: 0.0100
+Epoch 4/100
+707/707 - 101s - 143ms/step - accuracy: 0.3830 - loss: 4.9193 - val_accuracy: 0.3798 - val_loss: 4.6121 - learning_rate: 0.0100
+Epoch 5/100
+707/707 - 105s - 148ms/step - accuracy: 0.3788 - loss: 4.9926 - val_accuracy: 0.3877 - val_loss: 4.3407 - learning_rate: 0.0100
+Epoch 6/100
+
+Epoch 6: ReduceLROnPlateau reducing learning rate to 0.0009999999776482583.
+707/707 - 100s - 142ms/step - accuracy: 0.3964 - loss: 4.9628 - val_accuracy: 0.3726 - val_loss: 4.5847 - learning_rate: 0.0100
+Epoch 7/100
+707/707 - 105s - 148ms/step - accuracy: 0.4249 - loss: 4.0970 - val_accuracy: 0.4467 - val_loss: 3.4154 - learning_rate: 1.0000e-03
+Epoch 8/100
+707/707 - 107s - 151ms/step - accuracy: 0.4415 - loss: 3.8933 - val_accuracy: 0.4379 - val_loss: 3.3226 - learning_rate: 1.0000e-03
+Epoch 9/100
