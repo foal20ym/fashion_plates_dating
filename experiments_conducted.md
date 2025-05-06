@@ -1,10 +1,14 @@
 # Experiments
 
-## BASELINE
+## Experiment 1:
 - run all three models same way thesis did with regression
 - run all three models same way thesis did with classification
+
+## Experiment 2:
 - run all three models same way thesis did with regression and fine tune one layer
 - run all three models same way thesis did with classification and fine tune one layer
+
+Configurations for experiment 1 and 2:
 
 task: classification
 
@@ -14,6 +18,7 @@ model:
   name: ResNet101
   include_top: false
   fine_tune: false
+  <!-- true on experiment 2 -->
   save_model: false
   use_l2_regularization: false
   l2_regularization: 1e-4
