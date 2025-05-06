@@ -8,11 +8,11 @@ model:
   use_l2_regularization: false
   l2_regularization: 1e-4
   use_dropout: false
-  dropout: 0.5
+  dropout: 0.25
 
 training:
   batch_size: 16
-  epochs: 100
+  epochs: 1
   learning_rate: 0.01
   early_stopping_patience: 10
   reduce_lr_patience: 5

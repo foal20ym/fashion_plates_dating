@@ -109,6 +109,135 @@ def top_n_accuracy(y_true, y_score, n=3):
     return np.mean([y in top_n_row for y, top_n_row in zip(y_true, top_n)])
 
 
+def plot_metrics(history, fold_str, plot_dir, regression, class_to_idx, y_true=None, y_pred=None, y_score=None):
+    if regression:
+        plt.figure(figsize=(10, 5))
+        plt.plot(history.history["loss"], label="loss")
+        plt.plot(history.history["val_loss"], label="val_loss")
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.title(f"Regression: Training and Validation Loss{fold_str}")
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(os.path.join(plot_dir, f"loss_val_loss_regression.png"))
+        plt.close()
+
+        if "val_mae" in history.history and "val_mse" in history.history:
+            plt.figure(figsize=(10, 5))
+            plt.plot(history.history["val_mae"], label="val_mae")
+            plt.plot(history.history["val_mse"], label="val_mse")
+            plt.xlabel("Epoch")
+            plt.ylabel("Metric")
+            plt.title(f"Validation MAE and MSE{fold_str}")
+            plt.legend()
+            plt.tight_layout()
+            plt.savefig(os.path.join(plot_dir, f"train_mae_mse.png"))
+            plt.close()
+    else:
+        target_names = [str(k) for k in sorted(class_to_idx.keys(), key=lambda x: class_to_idx[x])]
+        all_labels = [class_to_idx[k] for k in sorted(class_to_idx.keys(), key=lambda x: class_to_idx[x])]
+
+        # Confusion Matrix
+        cm = confusion_matrix(y_true, y_pred, labels=all_labels)
+        plt.figure(figsize=(12, 10))
+        sns.heatmap(cm, annot=False, fmt="d", cmap="Blues", xticklabels=target_names, yticklabels=target_names)
+        plt.xlabel("Predicted")
+        plt.ylabel("True")
+        plt.title(f"Confusion Matrix{fold_str}")
+        plt.tight_layout()
+        plt.savefig(os.path.join(plot_dir, f"confusion_matrix.png"))
+        plt.close()
+
+        # Print classification report
+        report = classification_report(
+            y_true, y_pred, labels=all_labels, target_names=target_names, output_dict=True, zero_division=0
+        )
+        print(classification_report(y_true, y_pred, labels=all_labels, target_names=target_names, zero_division=0))
+
+        print(f"Macro avg F1: {report['macro avg']['f1-score']:.3f}")
+        print(f"Weighted avg F1: {report['weighted avg']['f1-score']:.3f}")
+        micro_f1 = f1_score(y_true, y_pred, average="micro")
+        print(f"Micro avg F1: {micro_f1:.3f}")
+
+        top3_acc = top_n_accuracy(y_true, y_score, n=3)
+        top5_acc = top_n_accuracy(y_true, y_score, n=5)
+        print(f"Top-3 Accuracy: {top3_acc:.3f}")
+        print(f"Top-5 Accuracy: {top5_acc:.3f}")
+
+        # Plot bar chart of per-class F1-score
+        f1_scores = [report[name]["f1-score"] for name in target_names]
+        plt.figure(figsize=(max(10, len(target_names) * 0.5), 6))
+        bar_positions = np.arange(len(target_names))
+        plt.bar(bar_positions, f1_scores, color="green", width=0.6, align="center")
+        plt.xticks(bar_positions, target_names, rotation=45, ha="center")
+        plt.xlabel("Class")
+        plt.ylabel("F1-score")
+        plt.title(f"Per-Class F1-score{fold_str}")
+        plt.ylim(0, 1)
+        plt.tight_layout()
+        plt.savefig(os.path.join(plot_dir, f"f1_score_bar.png"))
+        plt.close()
+
+        if class_to_idx is not None:
+            idx_to_class = {v: k for k, v in class_to_idx.items()}
+            y_true_years = np.array([idx_to_class[idx] for idx in y_true])
+            y_pred_years = np.array([idx_to_class[idx] for idx in y_pred])
+            mae_years = np.mean(np.abs(y_true_years - y_pred_years))
+            print(f"Classification MAE (in years): {mae_years:.2f}")
+
+        y_true_bin = label_binarize(y_true, classes=all_labels)  # shape (n_samples, n_classes)
+
+        # Find classes present in y_true
+        present_classes = [i for i, label in enumerate(all_labels) if label in y_true]
+
+        # Compute scalar AUCs with roc_auc_score
+        roc_auc_micro = roc_auc_score(y_true_bin, y_score, average="micro", multi_class="ovr")
+        print(f"Micro ROC AUC  = {roc_auc_micro:.2f}")
+        # Compute macro AUC only for present classes
+        if len(present_classes) > 1:
+            roc_auc_macro = roc_auc_score(
+                label_binarize(y_true, classes=[all_labels[i] for i in present_classes]),
+                y_score[:, present_classes],
+                average="macro",
+                multi_class="ovr",
+            )
+            print(f"Macro ROC AUC (present classes) = {roc_auc_macro:.2f}")
+        else:
+            print("Macro ROC AUC not defined (less than 2 classes present in y_true)")
+
+        # Build the ROC curves for plotting
+
+        # Micro-average ROC curve
+        fpr_micro, tpr_micro, _ = roc_curve(y_true_bin.ravel(), y_score.ravel())
+
+        # Macro-average ROC curve (average of per-class curves)
+        fpr_dict = {}
+        tpr_dict = {}
+        for i in range(len(all_labels)):
+            fpr_dict[i], tpr_dict[i], _ = roc_curve(y_true_bin[:, i], y_score[:, i])
+
+        all_fpr = np.unique(np.concatenate([fpr_dict[i] for i in range(len(all_labels))]))
+        mean_tpr = np.zeros_like(all_fpr)
+        for i in range(len(all_labels)):
+            mean_tpr += np.interp(all_fpr, fpr_dict[i], tpr_dict[i])
+        mean_tpr /= len(all_labels)
+
+        # Plot both curves
+        plt.figure(figsize=(8, 6))
+        plt.plot(fpr_micro, tpr_micro, color="blue", lw=2, label=f"Micro-average ROC (AUC = {roc_auc_micro:.2f})")
+        plt.plot(all_fpr, mean_tpr, color="green", lw=2, label=f"Macro-average ROC (AUC = {roc_auc_macro:.2f})")
+        plt.plot([0, 1], [0, 1], "k--", lw=1)
+        plt.xlabel("False Positive Rate")
+        plt.ylabel("True Positive Rate")
+        plt.title(f"Micro & Macro-average ROC Curve{fold_str}")
+        plt.legend(loc="lower right")
+        plt.tight_layout()
+        plt.savefig(os.path.join(plot_dir, f"micro_macro_avg_roc_curve.png"))
+        plt.close()
+
+    return
+
+
 def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_year, max_year, config, fold_idx=None):
     input_shape = get_input_shape(config["model"]["name"], config["model"]["include_top"])
     model_name = config["model"]["name"]
@@ -124,7 +253,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         plot_dir = os.path.join("plots", "10_fold_cv", f"{run_id}_{model_name}_fold{fold_idx}")
         log_dir = os.path.join("logs", "tensorboard", "10_fold_cv", f"{run_id}_fit_fold{fold_idx}")
     else:
-        plot_dir = "plots"
+        plot_dir = os.path.join("plots", "single_run", f"{run_id}_{model_name}")
         log_dir = os.path.join("logs", "tensorboard", f"fit_{run_id}")
 
     os.makedirs(plot_dir, exist_ok=True)
@@ -242,28 +371,8 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         metrics = {"mae": mae, "exact": exact_matches, "total": total}
 
         os.makedirs("plots", exist_ok=True)
-        plt.figure(figsize=(10, 5))
-        plt.plot(history.history["loss"], label="loss")
-        plt.plot(history.history["val_loss"], label="val_loss")
-        plt.xlabel("Epoch")
-        plt.ylabel("Loss")
-        plt.title(f"Regression: Training and Validation Loss{fold_str}")
-        plt.legend()
-        plt.tight_layout()
-        plt.savefig(os.path.join(plot_dir, f"loss_val_loss_regression.png"))
-        plt.close()
 
-        if "val_mae" in history.history and "val_mse" in history.history:
-            plt.figure(figsize=(10, 5))
-            plt.plot(history.history["val_mae"], label="val_mae")
-            plt.plot(history.history["val_mse"], label="val_mse")
-            plt.xlabel("Epoch")
-            plt.ylabel("Metric")
-            plt.title(f"Validation MAE and MSE{fold_str}")
-            plt.legend()
-            plt.tight_layout()
-            plt.savefig(os.path.join(plot_dir, f"train_mae_mse.png"))
-            plt.close()
+        plot_metrics(history, fold_str, plot_dir, regression, class_to_idx)
 
     else:
         # Collect predictions
@@ -271,115 +380,15 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         y_true = []
         y_pred = []
         for images, labels in val_ds_batched:
-            preds = model.predict(images, verbose=2)
+            preds = model.predict(images, verbose=0)
             y_true.extend(labels.numpy())
             y_pred.extend(np.argmax(preds, axis=1))
             y_score.extend(preds)
         y_score = np.array(y_score)
 
-        target_names = [str(k) for k in sorted(class_to_idx.keys(), key=lambda x: class_to_idx[x])]
-        all_labels = [class_to_idx[k] for k in sorted(class_to_idx.keys(), key=lambda x: class_to_idx[x])]
+        plot_metrics(history, fold_str, plot_dir, regression, class_to_idx, y_true, y_pred, y_score)
 
-        # Confusion Matrix
-        cm = confusion_matrix(y_true, y_pred, labels=all_labels)
-        plt.figure(figsize=(12, 10))
-        sns.heatmap(cm, annot=False, fmt="d", cmap="Blues", xticklabels=target_names, yticklabels=target_names)
-        plt.xlabel("Predicted")
-        plt.ylabel("True")
-        plt.title(f"Confusion Matrix{fold_str}")
-        plt.tight_layout()
-        plt.savefig(os.path.join(plot_dir, f"confusion_matrix.png"))
-        plt.close()
-
-        # Print classification report
-        report = classification_report(
-            y_true, y_pred, labels=all_labels, target_names=target_names, output_dict=True, zero_division=0
-        )
-        print(classification_report(y_true, y_pred, labels=all_labels, target_names=target_names, zero_division=0))
-
-        print(f"Macro avg F1: {report['macro avg']['f1-score']:.3f}")
-        print(f"Weighted avg F1: {report['weighted avg']['f1-score']:.3f}")
-        micro_f1 = f1_score(y_true, y_pred, average="micro")
-        print(f"Micro avg F1: {micro_f1:.3f}")
-
-        top3_acc = top_n_accuracy(y_true, y_score, n=3)
-        top5_acc = top_n_accuracy(y_true, y_score, n=5)
-        print(f"Top-3 Accuracy: {top3_acc:.3f}")
-        print(f"Top-5 Accuracy: {top5_acc:.3f}")
-
-        # Plot bar chart of per-class F1-score
-        f1_scores = [report[name]["f1-score"] for name in target_names]
-        plt.figure(figsize=(max(10, len(target_names) * 0.5), 6))
-        bar_positions = np.arange(len(target_names))
-        plt.bar(bar_positions, f1_scores, color="green", width=0.6, align="center")
-        plt.xticks(bar_positions, target_names, rotation=45, ha="center")
-        plt.xlabel("Class")
-        plt.ylabel("F1-score")
-        plt.title(f"Per-Class F1-score{fold_str}")
-        plt.ylim(0, 1)
-        plt.tight_layout()
-        plt.savefig(os.path.join(plot_dir, f"f1_score_bar.png"))
-        plt.close()
-
-        if class_to_idx is not None:
-            idx_to_class = {v: k for k, v in class_to_idx.items()}
-            y_true_years = np.array([idx_to_class[idx] for idx in y_true])
-            y_pred_years = np.array([idx_to_class[idx] for idx in y_pred])
-            mae_years = np.mean(np.abs(y_true_years - y_pred_years))
-            print(f"Classification MAE (in years): {mae_years:.2f}")
-
-        y_true_bin = label_binarize(y_true, classes=all_labels)  # shape (n_samples, n_classes)
-
-        # Find classes present in y_true
-        present_classes = [i for i, label in enumerate(all_labels) if label in y_true]
-
-        # Compute scalar AUCs with roc_auc_score
-        roc_auc_micro = roc_auc_score(y_true_bin, y_score, average="micro", multi_class="ovr")
-        print(f"Micro ROC AUC  = {roc_auc_micro:.2f}")
-        # Compute macro AUC only for present classes
-        if len(present_classes) > 1:
-            roc_auc_macro = roc_auc_score(
-                label_binarize(y_true, classes=[all_labels[i] for i in present_classes]),
-                y_score[:, present_classes],
-                average="macro",
-                multi_class="ovr",
-            )
-            print(f"Macro ROC AUC (present classes) = {roc_auc_macro:.2f}")
-        else:
-            print("Macro ROC AUC not defined (less than 2 classes present in y_true)")
-
-        # Build the ROC curves for plotting
-
-        # Micro-average ROC curve
-        fpr_micro, tpr_micro, _ = roc_curve(y_true_bin.ravel(), y_score.ravel())
-
-        # Macro-average ROC curve (average of per-class curves)
-        fpr_dict = {}
-        tpr_dict = {}
-        for i in range(len(all_labels)):
-            fpr_dict[i], tpr_dict[i], _ = roc_curve(y_true_bin[:, i], y_score[:, i])
-
-        all_fpr = np.unique(np.concatenate([fpr_dict[i] for i in range(len(all_labels))]))
-        mean_tpr = np.zeros_like(all_fpr)
-        for i in range(len(all_labels)):
-            mean_tpr += np.interp(all_fpr, fpr_dict[i], tpr_dict[i])
-        mean_tpr /= len(all_labels)
-
-        # Plot both curves
-        plt.figure(figsize=(8, 6))
-        plt.plot(fpr_micro, tpr_micro, color="blue", lw=2, label=f"Micro-average ROC (AUC = {roc_auc_micro:.2f})")
-        plt.plot(all_fpr, mean_tpr, color="green", lw=2, label=f"Macro-average ROC (AUC = {roc_auc_macro:.2f})")
-        plt.plot([0, 1], [0, 1], "k--", lw=1)
-        plt.xlabel("False Positive Rate")
-        plt.ylabel("True Positive Rate")
-        plt.title(f"Micro & Macro-average ROC Curve{fold_str}")
-        plt.legend(loc="lower right")
-        plt.tight_layout()
-        plt.savefig(os.path.join(plot_dir, f"micro_macro_avg_roc_curve.png"))
-        plt.close()
-
-        # Return metrics
-        metrics = {"mae": results[0], "accuracy": results[1]}
+        metrics = {"accuracy": results[1]}
     return metrics
 
 
@@ -387,31 +396,40 @@ def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
     regression = config["task"] == "regression"
     model_name = config["model"]["name"]
     fine_tune = config["model"]["fine_tune"]
-    print("model_name:", model_name)
-    print("input_shape:", input_shape)
 
-    base_model = None
+    # Select base model and setup according to model_name
     if model_name == "NASNetMobile":
-        base_model = NASNetMobile(
-            include_top=config["model"]["include_top"], weights="imagenet", input_shape=input_shape, pooling="avg"
-        )
+        base_model = NASNetMobile(weights="imagenet", input_shape=input_shape, include_top=False)
+        base_model.trainable = False
+        x = base_model.output
+        x = tf.keras.layers.GlobalAveragePooling2D()(x)
+        x = tf.keras.layers.Dense(76, activation="relu")(x)
     elif model_name == "ResNet101":
-        base_model = ResNet101(
-            include_top=config["model"]["include_top"], weights="imagenet", input_shape=input_shape, pooling="avg"
-        )
+        base_model = ResNet101(weights="imagenet", input_shape=input_shape, include_top=False)
+        base_model.trainable = False
+        x = base_model.output
+        x = tf.keras.layers.GlobalAveragePooling2D()(x)
+        x = tf.keras.layers.Dense(10, activation="relu")(x)
     elif model_name == "InceptionV3":
-        base_model = InceptionV3(
-            include_top=config["model"]["include_top"], weights="imagenet", input_shape=input_shape, pooling="avg"
-        )
+        base_model = InceptionV3(weights="imagenet", input_shape=input_shape, include_top=False)
+        base_model.trainable = False
+        x = base_model.output
+        x = tf.keras.layers.GlobalAveragePooling2D()(x)
+    else:
+        raise ValueError(f"Unsupported model name: {model_name}")
 
-    x = base_model.output
+    # Optional dropout
     if config["model"]["use_dropout"]:
         x = Dropout(config["model"]["dropout"])(x)
 
+    # Output layer
     if regression:
         if config["model"]["use_l2_regularization"]:
             predictions = Dense(
-                1, activation="sigmoid", name="PREDICTIONS", kernel_regularizer=l2(config["model"]["l2_regularization"])
+                1,
+                activation="sigmoid",
+                name="PREDICTIONS",
+                kernel_regularizer=l2(float(config["model"]["l2_regularization"])),
             )(x)
         else:
             predictions = Dense(1, activation="sigmoid", name="PREDICTIONS")(x)
@@ -421,36 +439,18 @@ def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
                 num_classes,
                 activation="softmax",
                 name="PREDICTIONS",
-                kernel_regularizer=l2(config["model"]["l2_regularization"]),
+                kernel_regularizer=l2(float(config["model"]["l2_regularization"])),
             )(x)
         else:
             predictions = Dense(num_classes, activation="softmax", name="PREDICTIONS")(x)
 
     model = Model(inputs=base_model.input, outputs=predictions)
 
-    for layer in base_model.layers:
-        layer.trainable = False
-
-    # !!--- This is what method says in report ---!!
-    # • Fine-tuning One additional layer
-    # • Transfer learning One additional layer
-    # • Fine-tuning A Dense classifier with a single unit
-    # • Transfer learning A Dense classifier with a single unit
-
-    # !!--- If we want to fine tune instead of transfer learning. ---!!
+    # Fine-tuning: unfreeze last layer if requested
     if fine_tune:
-        # Unfreeze one additional layer
         for layer in base_model.layers[-1:]:
             layer.trainable = True
 
-    # ??--- Optional way to do it. ---??
-
-    # freeze_base = True
-    # base_model.trainable = not freeze_base
-
-    # inputs = layers.Input(shape=input_shape)
-    # x = base_model(inputs, training=not freeze_base)  # if fine-tuning, allow BN layers to train
-    # x = layers.GlobalAveragePooling2D()(x)
     return model
 
 
