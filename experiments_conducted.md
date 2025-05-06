@@ -23,10 +23,12 @@ model:
 training:
   batch_size: 16
   epochs: 100
-  learning_rate: 0.1
+  learning_rate: 0.01
   early_stopping_patience: 4
   reduce_lr_patience: 3
 
 cross_validation: false
+
+learning rate = 0.1 made the models get stuck in local minimum, so we lowered it to 0.01
 
 ## Extending
