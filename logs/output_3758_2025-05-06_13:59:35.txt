@@ -1,0 +1,9 @@
+TensorFlow Version: 2.19.0
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+Using model: ResNet101.
+RUN ID: 2025-05-06_13:59:39
+Test fold: 0
+Epoch 1/100
+707/707 - 194s - 274ms/step - accuracy: 0.1062 - loss: 3.4972 - val_accuracy: 0.1067 - val_loss: 3.3950 - learning_rate: 0.0100
+Epoch 2/100
