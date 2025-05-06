@@ -24,3 +24,15 @@ ToDo / Future Work:
 7. **Expand Timeframe of Study**
    - Extend the period of study beyond 1820-1880 to include more artifacts.
    - Address challenges such as data sparsity and reduced accuracy with a broader historical range.
+
+8. **Implement new model**
+
+
+## Experiments:
+1. **Hyperparameter tuning:**
+   - batch size
+   - dropout yes/no value [0 - 1]
+   - l2_regularization yes/no value [-> 0]
+   - learning rate, start value and factor in ReduceLROnPlateau
+   - Add Dense layers and fine tuning layers
+   - different loss function
