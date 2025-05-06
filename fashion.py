@@ -490,6 +490,7 @@ def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
 
     # Fine-tuning: unfreeze last layer if requested
     if fine_tune:
+        print("Fine Tuning!")
         for layer in base_model.layers[-1:]:
             layer.trainable = True
 
