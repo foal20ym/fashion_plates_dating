@@ -27,6 +27,8 @@ ToDo / Future Work:
 
 8. **Implement new model**
 
+9. **Plot ten fold mean correctly**
+
 
 ## Experiments:
 1. **Hyperparameter tuning:**
