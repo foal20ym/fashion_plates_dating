@@ -238,7 +238,7 @@ def plot_metrics(history, fold_str, plot_dir, regression, class_to_idx, y_true=N
 
 
 def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_year, max_year, config, fold_idx=None):
-    input_shape = get_input_shape(config["model"]["name"], config["model"]["include_top"])
+    input_shape = get_input_shape(config["model"]["name"])
     model_name = config["model"]["name"]
     regression = config["task"] == "regression"
 
