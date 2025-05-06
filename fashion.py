@@ -4,7 +4,6 @@ from tensorflow.keras.callbacks import EarlyStopping, TensorBoard, ReduceLROnPla
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.applications import InceptionV3, ResNet101, NASNetMobile
 from tensorflow.keras.regularizers import l2
-import random
 import pandas as pd
 import numpy as np
 import tensorflow as tf
@@ -71,7 +70,7 @@ def get_tf_dataset(
     return ds
 
 
-def get_input_shape(model_name, include_top):
+def get_input_shape(model_name):
     if model_name == "NASNetMobile":
         return (224, 224, 3)
     elif model_name == "ResNet101":
@@ -529,7 +528,7 @@ def main():
 
     else:
         # Single train/test split (random fold selection)
-        test_fold = random.choice(fold_nums)
+        test_fold = fold_nums[0]
         print(f"Test fold: {test_fold}")
         train_folds = [fold for fold in fold_nums if fold != test_fold]
         train_files = [f"data/datasets/fold{fold}.csv" for fold in train_folds]

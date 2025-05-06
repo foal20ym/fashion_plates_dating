@@ -1,0 +1,32 @@
+# Experiments
+
+## BASELINE
+- run all three models same way thesis did with regression
+- run all three models same way thesis did with classification
+- run all three models same way thesis did with regression and fine tune one layer
+- run all three models same way thesis did with classification and fine tune one layer
+
+task: classification
+
+model:
+  <!-- # name: NASNetMobile -->
+  <!-- # name: InceptionV3 -->
+  name: ResNet101
+  include_top: false
+  fine_tune: false
+  save_model: false
+  use_l2_regularization: false
+  l2_regularization: 1e-4
+  use_dropout: false
+  dropout: 0.25
+
+training:
+  batch_size: 16
+  epochs: 100
+  learning_rate: 0.1
+  early_stopping_patience: 4
+  reduce_lr_patience: 3
+
+cross_validation: false
+
+## Extending
