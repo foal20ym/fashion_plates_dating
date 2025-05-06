@@ -36,3 +36,5 @@ ToDo / Future Work:
    - learning rate, start value and factor in ReduceLROnPlateau
    - Add Dense layers and fine tuning layers
    - different loss function
+   - Testa Ordinal categorical cross entropy: https://github.com/JHart96/keras_ordinal_categorical_crossentropy/blob/master/ordinal_categorical_crossentropy.py 
+   - CategoricalFocalCrossentropy: https://www.tensorflow.org/api_docs/python/tf/keras/losses/CategoricalFocalCrossentropy 
