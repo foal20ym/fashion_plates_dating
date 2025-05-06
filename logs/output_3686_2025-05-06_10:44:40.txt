@@ -1,0 +1,7 @@
+Using model: NASNetMobile.
+TensorFlow Version: 2.19.0
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+Test fold: 8
+707/707 - 177s - 250ms/step - accuracy: 0.2967 - loss: 2.4655 - val_accuracy: 0.2978 - val_loss: 2.4790 - learning_rate: 0.0100
+Restoring model weights from the end of the best epoch: 1.
