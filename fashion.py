@@ -238,7 +238,7 @@ def plot_metrics(history, fold_str, plot_dir, regression, class_to_idx, y_true=N
 
 
 def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_year, max_year, config, fold_idx=None):
-    input_shape = get_input_shape(config["model"]["name"], config["model"]["include_top"])
+    input_shape = get_input_shape(config["model"]["name"])
     model_name = config["model"]["name"]
     regression = config["task"] == "regression"
 
@@ -252,8 +252,8 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         plot_dir = os.path.join("plots", "10_fold_cv", f"{run_id}_{model_name}_fold{fold_idx}")
         log_dir = os.path.join("logs", "tensorboard", "10_fold_cv", f"{run_id}_fit_fold{fold_idx}")
     else:
-        plot_dir = os.path.join("plots", "single_run", f"{run_id}_{model_name}")
-        log_dir = os.path.join("logs", "tensorboard", f"fit_{run_id}")
+        plot_dir = os.path.join("plots", "single_run", f"{run_id}_{model_name}_fold{fold_idx}")
+        log_dir = os.path.join("logs", "tensorboard", f"fit_{run_id}_{model_name}_fit_fold{fold_idx}")
 
     os.makedirs(plot_dir, exist_ok=True)
     os.makedirs(log_dir, exist_ok=True)
