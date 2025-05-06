@@ -243,3 +243,8 @@ I0000 00:00:1746535417.776566   20717 device_compiler.h:188] Compiled cluster us
 2025-05-06 14:02:45.966497: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:482] Shuffle buffer filled.
 2025-05-06 14:03:48.161977: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 1436 of 11303
 2025-05-06 14:04:06.854670: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 4486 of 11303
+2025-05-06 14:04:27.252546: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 7721 of 11303
+2025-05-06 14:04:46.657390: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 10248 of 11303
+2025-05-06 14:04:51.227747: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:482] Shuffle buffer filled.
+2025-05-06 14:06:33.893744: I tensorflow/core/framework/local_rendezvous.cc:407] Local rendezvous is aborting with status: OUT_OF_RANGE: End of sequence
+finished task with id:: 3730

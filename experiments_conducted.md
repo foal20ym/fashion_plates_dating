@@ -10,7 +10,7 @@
 
 Configurations for experiment 1 and 2:
 
-task: classification
+task: classification and regression
 
 model:
   <!-- # name: NASNetMobile -->

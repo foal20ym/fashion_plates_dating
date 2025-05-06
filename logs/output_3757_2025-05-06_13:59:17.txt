@@ -7,3 +7,158 @@ Test fold: 0
 Epoch 1/100
 707/707 - 189s - 267ms/step - accuracy: 0.2715 - loss: 2.6182 - val_accuracy: 0.2779 - val_loss: 2.5622 - learning_rate: 0.0100
 Epoch 2/100
+707/707 - 119s - 169ms/step - accuracy: 0.3446 - loss: 2.2645 - val_accuracy: 0.2643 - val_loss: 2.7331 - learning_rate: 0.0100
+Epoch 3/100
+707/707 - 121s - 171ms/step - accuracy: 0.3577 - loss: 2.2153 - val_accuracy: 0.2882 - val_loss: 2.5831 - learning_rate: 0.0100
+Epoch 4/100
+
+Epoch 4: ReduceLROnPlateau reducing learning rate to 0.0009999999776482583.
+707/707 - 122s - 173ms/step - accuracy: 0.3721 - loss: 2.1516 - val_accuracy: 0.2460 - val_loss: 2.6548 - learning_rate: 0.0100
+Epoch 5/100
+707/707 - 122s - 172ms/step - accuracy: 0.4237 - loss: 1.9870 - val_accuracy: 0.3256 - val_loss: 2.4919 - learning_rate: 1.0000e-03
+Epoch 6/100
+707/707 - 124s - 175ms/step - accuracy: 0.4290 - loss: 1.9475 - val_accuracy: 0.3177 - val_loss: 2.4734 - learning_rate: 1.0000e-03
+Epoch 7/100
+707/707 - 118s - 167ms/step - accuracy: 0.4261 - loss: 1.9354 - val_accuracy: 0.3511 - val_loss: 2.3430 - learning_rate: 1.0000e-03
+Epoch 8/100
+707/707 - 123s - 174ms/step - accuracy: 0.4299 - loss: 1.9358 - val_accuracy: 0.3471 - val_loss: 2.3558 - learning_rate: 1.0000e-03
+Epoch 9/100
+707/707 - 131s - 185ms/step - accuracy: 0.4272 - loss: 1.9296 - val_accuracy: 0.3240 - val_loss: 2.4596 - learning_rate: 1.0000e-03
+Epoch 10/100
+707/707 - 124s - 175ms/step - accuracy: 0.4400 - loss: 1.8873 - val_accuracy: 0.3471 - val_loss: 2.3275 - learning_rate: 1.0000e-03
+Epoch 11/100
+707/707 - 127s - 179ms/step - accuracy: 0.4354 - loss: 1.9108 - val_accuracy: 0.3400 - val_loss: 2.3374 - learning_rate: 1.0000e-03
+Epoch 12/100
+707/707 - 115s - 163ms/step - accuracy: 0.4415 - loss: 1.9006 - val_accuracy: 0.3591 - val_loss: 2.2860 - learning_rate: 1.0000e-03
+Epoch 13/100
+707/707 - 133s - 188ms/step - accuracy: 0.4363 - loss: 1.8960 - val_accuracy: 0.3543 - val_loss: 2.3036 - learning_rate: 1.0000e-03
+Epoch 14/100
+707/707 - 106s - 149ms/step - accuracy: 0.4441 - loss: 1.8720 - val_accuracy: 0.3455 - val_loss: 2.3085 - learning_rate: 1.0000e-03
+Epoch 15/100
+707/707 - 107s - 151ms/step - accuracy: 0.4443 - loss: 1.8645 - val_accuracy: 0.3559 - val_loss: 2.2725 - learning_rate: 1.0000e-03
+Epoch 16/100
+707/707 - 108s - 152ms/step - accuracy: 0.4466 - loss: 1.8581 - val_accuracy: 0.3654 - val_loss: 2.2533 - learning_rate: 1.0000e-03
+Epoch 17/100
+707/707 - 106s - 150ms/step - accuracy: 0.4565 - loss: 1.8416 - val_accuracy: 0.3551 - val_loss: 2.2694 - learning_rate: 1.0000e-03
+Epoch 18/100
+707/707 - 107s - 151ms/step - accuracy: 0.4693 - loss: 1.7977 - val_accuracy: 0.3846 - val_loss: 2.1850 - learning_rate: 1.0000e-03
+Epoch 19/100
+707/707 - 107s - 152ms/step - accuracy: 0.4666 - loss: 1.7798 - val_accuracy: 0.3806 - val_loss: 2.2319 - learning_rate: 1.0000e-03
+Epoch 20/100
+707/707 - 108s - 153ms/step - accuracy: 0.4662 - loss: 1.7907 - val_accuracy: 0.3742 - val_loss: 2.2291 - learning_rate: 1.0000e-03
+Epoch 21/100
+
+Epoch 21: ReduceLROnPlateau reducing learning rate to 9.999999310821295e-05.
+707/707 - 106s - 150ms/step - accuracy: 0.4721 - loss: 1.7657 - val_accuracy: 0.3710 - val_loss: 2.2399 - learning_rate: 1.0000e-03
+Epoch 22/100
+707/707 - 107s - 152ms/step - accuracy: 0.4774 - loss: 1.7523 - val_accuracy: 0.3869 - val_loss: 2.1572 - learning_rate: 1.0000e-04
+Epoch 23/100
+707/707 - 108s - 152ms/step - accuracy: 0.4916 - loss: 1.7028 - val_accuracy: 0.3846 - val_loss: 2.1649 - learning_rate: 1.0000e-04
+Epoch 24/100
+707/707 - 108s - 153ms/step - accuracy: 0.4859 - loss: 1.7287 - val_accuracy: 0.3854 - val_loss: 2.1661 - learning_rate: 1.0000e-04
+Epoch 25/100
+707/707 - 107s - 151ms/step - accuracy: 0.4812 - loss: 1.7355 - val_accuracy: 0.3893 - val_loss: 2.1509 - learning_rate: 1.0000e-04
+Epoch 26/100
+707/707 - 107s - 151ms/step - accuracy: 0.4846 - loss: 1.7180 - val_accuracy: 0.3933 - val_loss: 2.1363 - learning_rate: 1.0000e-04
+Epoch 27/100
+707/707 - 103s - 146ms/step - accuracy: 0.4814 - loss: 1.7329 - val_accuracy: 0.3901 - val_loss: 2.1302 - learning_rate: 1.0000e-04
+Epoch 28/100
+707/707 - 103s - 145ms/step - accuracy: 0.4812 - loss: 1.7260 - val_accuracy: 0.3885 - val_loss: 2.1443 - learning_rate: 1.0000e-04
+Epoch 29/100
+707/707 - 111s - 157ms/step - accuracy: 0.4845 - loss: 1.7055 - val_accuracy: 0.3893 - val_loss: 2.1250 - learning_rate: 1.0000e-04
+Epoch 30/100
+707/707 - 111s - 157ms/step - accuracy: 0.4896 - loss: 1.7237 - val_accuracy: 0.3869 - val_loss: 2.1290 - learning_rate: 1.0000e-04
+Epoch 31/100
+707/707 - 113s - 160ms/step - accuracy: 0.4859 - loss: 1.7029 - val_accuracy: 0.3846 - val_loss: 2.1344 - learning_rate: 1.0000e-04
+Epoch 32/100
+707/707 - 114s - 161ms/step - accuracy: 0.4833 - loss: 1.7210 - val_accuracy: 0.3981 - val_loss: 2.1073 - learning_rate: 1.0000e-04
+Epoch 33/100
+707/707 - 112s - 158ms/step - accuracy: 0.4873 - loss: 1.7054 - val_accuracy: 0.3917 - val_loss: 2.1078 - learning_rate: 1.0000e-04
+Epoch 34/100
+707/707 - 141s - 200ms/step - accuracy: 0.4923 - loss: 1.7090 - val_accuracy: 0.3981 - val_loss: 2.1108 - learning_rate: 1.0000e-04
+Epoch 35/100
+
+Epoch 35: ReduceLROnPlateau reducing learning rate to 9.999999019782991e-06.
+707/707 - 144s - 203ms/step - accuracy: 0.4864 - loss: 1.7005 - val_accuracy: 0.3973 - val_loss: 2.1110 - learning_rate: 1.0000e-04
+Epoch 36/100
+707/707 - 112s - 159ms/step - accuracy: 0.4927 - loss: 1.7096 - val_accuracy: 0.3989 - val_loss: 2.1078 - learning_rate: 1.0000e-05
+Epoch 36: early stopping
+Restoring model weights from the end of the best epoch: 32.
+Fold 0 Evaluation results: [2.10726261138916, 0.3980891704559326]
+              precision    recall  f1-score   support
+
+        1820       0.37      0.42      0.39        62
+        1821       0.59      0.74      0.66        57
+        1822       0.00      0.00      0.00         1
+        1823       0.00      0.00      0.00         1
+        1824       0.00      0.00      0.00         1
+        1825       0.00      0.00      0.00         3
+        1826       0.00      0.00      0.00         2
+        1827       0.40      0.08      0.13        25
+        1828       0.00      0.00      0.00         1
+        1829       0.00      0.00      0.00         5
+        1830       0.24      0.57      0.34        56
+        1831       0.73      0.74      0.74       134
+        1832       0.62      0.64      0.63        67
+        1833       1.00      0.16      0.27        19
+        1834       0.28      0.38      0.32        29
+        1835       0.00      0.00      0.00         2
+        1836       0.00      0.00      0.00         4
+        1837       0.00      0.00      0.00         6
+        1838       0.00      0.00      0.00         3
+        1839       0.00      0.00      0.00         1
+        1840       0.33      0.30      0.32        43
+        1841       0.48      0.36      0.41       108
+        1842       0.00      0.00      0.00         6
+        1843       0.00      0.00      0.00         6
+        1844       0.00      0.00      0.00         1
+        1845       0.00      0.00      0.00         1
+        1846       0.00      0.00      0.00         6
+        1847       0.00      0.00      0.00         2
+        1848       0.00      0.00      0.00         5
+        1849       0.00      0.00      0.00         6
+        1850       0.30      0.52      0.38        48
+        1851       0.54      0.43      0.48        77
+        1852       0.00      0.00      0.00         7
+        1853       0.00      0.00      0.00         7
+        1854       0.00      0.00      0.00         3
+        1855       0.25      0.22      0.23        23
+        1856       0.29      0.58      0.39        12
+        1857       0.23      0.27      0.25        30
+        1858       0.00      0.00      0.00         2
+        1859       0.00      0.00      0.00         2
+        1860       0.14      0.32      0.20        65
+        1861       0.47      0.64      0.54        85
+        1862       0.00      0.00      0.00        19
+        1863       0.40      0.11      0.17        19
+        1864       0.00      0.00      0.00        17
+        1865       0.00      0.00      0.00         7
+        1866       0.00      0.00      0.00         5
+        1867       0.00      0.00      0.00        11
+        1868       0.00      0.00      0.00         7
+        1869       0.00      0.00      0.00         5
+        1870       0.10      0.06      0.08        31
+        1871       0.34      0.59      0.43        49
+        1872       0.00      0.00      0.00         7
+        1873       0.00      0.00      0.00        10
+        1874       0.00      0.00      0.00         5
+        1875       0.00      0.00      0.00        14
+        1876       0.67      0.40      0.50        10
+        1877       0.00      0.00      0.00         5
+        1878       0.00      0.00      0.00         9
+        1879       0.00      0.00      0.00         2
+
+    accuracy                           0.40      1256
+   macro avg       0.15      0.14      0.13      1256
+weighted avg       0.37      0.40      0.37      1256
+
+Macro avg F1: 0.131
+Weighted avg F1: 0.366
+Micro avg F1: 0.398
+Top-3 Accuracy: 0.656
+Top-5 Accuracy: 0.744
+Micro ROC AUC  = 0.95
+Macro ROC AUC (present classes) = 0.89
+Classification MAE (in years): 6.45
+Metrics: {'accuracy': 0.3980891704559326, 'mae_years': np.float64(6.453821656050955)}
+Total running time: 1 hours, 11 minutes, 37 seconds
