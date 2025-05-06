@@ -4,7 +4,6 @@ from tensorflow.keras.callbacks import EarlyStopping, TensorBoard, ReduceLROnPla
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.applications import InceptionV3, ResNet101, NASNetMobile
 from tensorflow.keras.regularizers import l2
-import random
 import pandas as pd
 import numpy as np
 import tensorflow as tf
@@ -71,7 +70,7 @@ def get_tf_dataset(
     return ds
 
 
-def get_input_shape(model_name, include_top):
+def get_input_shape(model_name):
     if model_name == "NASNetMobile":
         return (224, 224, 3)
     elif model_name == "ResNet101":
