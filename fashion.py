@@ -274,6 +274,16 @@ def plot_metrics(
     return
 
 
+def ordinal_categorical_cross_entropy(y_true, y_pred):
+    num_classes = tf.cast(tf.shape(y_pred)[-1], tf.float32)
+    true_labels = tf.argmax(y_true, axis=-1)
+    pred_labels = tf.argmax(y_pred, axis=-1)
+    weights = tf.abs(tf.cast(pred_labels - true_labels, tf.float32)) / (num_classes - 1.0)
+    base_loss = tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred)
+    loss = (1.0 + weights) * base_loss
+    return loss
+    
+
 def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_year, max_year, config, run_id, fold_idx):
     input_shape = get_input_shape(config["model"]["name"])
     model_name = config["model"]["name"]
