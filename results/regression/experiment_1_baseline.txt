@@ -1,0 +1,21 @@
+ResNet101:
+Epoch 00006: early stopping
+Fold 0 Evaluation results: [0.07735687494277954, 0.2464897483587265, 0.07735687494277954]
+Fold 0 Exactly correct year predictions: 6 out of 1256
+Fold 0 Final MAE (rounded to years): 14.55
+Metrics: {'mae': 14.547770700636942, 'exact': 6, 'total': 1256}
+
+InceptionV3:
+Epoch 00005: early stopping
+Fold 0 Evaluation results: [0.26965442299842834, 0.43851879239082336, 0.26965442299842834]
+Fold 0 Exactly correct year predictions: 62 out of 1256
+Fold 0 Final MAE (rounded to years): 25.87
+Metrics: {'mae': 25.872611464968152, 'exact': 62, 'total': 1256}
+
+NASNetMobile:
+Epoch 00017: early stopping
+Fold 0 Evaluation results: [0.0228424072265625, 0.11201781034469604, 0.0228424072265625]
+Fold 0 Exactly correct year predictions: 22 out of 1256
+Fold 0 Final MAE (rounded to years): 18.17
+Metrics: {'mae': 18.168789808917197, 'exact': 22, 'total': 1256}
+
