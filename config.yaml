@@ -16,7 +16,7 @@ training:
   batch_size: 16
   epochs: 100
   learning_rate: 0.01
-  early_stopping_patience: 4
-  reduce_lr_patience: 3
+  early_stopping_patience: 10
+  reduce_lr_patience: 4
 
 cross_validation: false
