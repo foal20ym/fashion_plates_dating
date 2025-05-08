@@ -1,19 +1,22 @@
-from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras.layers import Dense, Dropout, RandomRotation, RandomFlip, RandomContrast
-from tensorflow.keras.callbacks import EarlyStopping, TensorBoard, ReduceLROnPlateau, ModelCheckpoint
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.applications import InceptionV3, ResNet101, NASNetMobile
-from tensorflow.keras.regularizers import l2
+from sklearn.metrics import (
+    roc_auc_score,
+    roc_curve,
+    classification_report,
+    confusion_matrix,
+    f1_score,
+    matthews_corrcoef,
+)
+from sklearn.utils.class_weight import compute_class_weight
+from tuning import run_hyperparameter_tuning, apply_best_hyperparameters, get_input_shape
+from sklearn.preprocessing import label_binarize
+import matplotlib.pyplot as plt
+import tensorflow as tf
+import seaborn as sns
 import pandas as pd
 import numpy as np
-import tensorflow as tf
 import time
 import os
 import yaml
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import label_binarize
-from sklearn.metrics import roc_auc_score, roc_curve, classification_report, confusion_matrix, f1_score
-import seaborn as sns
 
 
 def load_config(config_path="config.yaml"):
@@ -31,11 +34,11 @@ def create_dataset(files):
     return image_paths, labels
 
 
-data_augmentation = Sequential(
+data_augmentation = tf.keras.models.Sequential(
     [
-        RandomFlip("horizontal_and_vertical"),
-        RandomRotation(0.1),
-        RandomContrast(0.1),
+        tf.keras.layers.RandomFlip("horizontal_and_vertical"),
+        tf.keras.layers.RandomRotation(0.1),
+        tf.keras.layers.RandomContrast(0.1),
     ]
 )
 
@@ -51,17 +54,40 @@ def load_and_preprocess_image(path, label, image_size, augment=False):
     return image, label
 
 
+# def get_tf_dataset(
+#     files, regression=False, class_to_idx=None, min_year=None, max_year=None, augment=False, image_size=(224, 224)
+# ):
+#     image_paths, labels = create_dataset(files)
+#     image_paths = tf.constant(image_paths)
+#     if regression:
+#         labels = [(y - min_year) / (max_year - min_year) for y in labels]
+#         labels = tf.constant(labels, dtype=tf.float32)
+#     else:
+#         labels = [class_to_idx[y] for y in labels]
+#         labels = tf.constant(labels, dtype=tf.int32)
+#     ds = tf.data.Dataset.from_tensor_slices((image_paths, labels))
+#     ds = ds.map(
+#         lambda x, y: load_and_preprocess_image(x, y, image_size, augment=augment), num_parallel_calls=tf.data.AUTOTUNE
+#     )
+#     ds = ds.shuffle(buffer_size=len(image_paths))
+#     return ds
+
+
 def get_tf_dataset(
     files, regression=False, class_to_idx=None, min_year=None, max_year=None, augment=False, image_size=(224, 224)
 ):
     image_paths, labels = create_dataset(files)
     image_paths = tf.constant(image_paths)
+
     if regression:
         labels = [(y - min_year) / (max_year - min_year) for y in labels]
         labels = tf.constant(labels, dtype=tf.float32)
     else:
-        labels = [class_to_idx[y] for y in labels]
-        labels = tf.constant(labels, dtype=tf.int32)
+        # First convert to integer indices
+        labels_idx = [class_to_idx[y] for y in labels]
+        # Then convert to one-hot encoding
+        labels = tf.one_hot(indices=labels_idx, depth=len(class_to_idx))
+
     ds = tf.data.Dataset.from_tensor_slices((image_paths, labels))
     ds = ds.map(
         lambda x, y: load_and_preprocess_image(x, y, image_size, augment=augment), num_parallel_calls=tf.data.AUTOTUNE
@@ -101,6 +127,49 @@ def get_highest_version_for_saved_model(model_name):
             continue
 
     return max(versions) + 1 if versions else 1
+
+
+def get_class_weights(labels, method="balanced", max_weight=0.75):
+    classes = np.array(sorted(set(labels)))
+    weights = compute_class_weight(class_weight=method, classes=classes, y=labels)
+
+    capped_weights = {cls: min(w, max_weight) for cls, w in zip(classes, weights)}
+    return capped_weights
+
+
+def plot_class_distribution(train_labels, class_weights=None, plot_dir=None):
+    plt.figure(figsize=(12, 6))
+
+    # Count occurrences of each class
+    unique_labels = sorted(set(train_labels))
+    counts = [train_labels.count(label) for label in unique_labels]
+
+    # Create bar chart of class distribution
+    ax = plt.subplot(1, 2, 1)
+    ax.bar(range(len(unique_labels)), counts)
+    ax.set_title("Class Distribution")
+    ax.set_xlabel("Class Index")
+    ax.set_ylabel("Count")
+    ax.set_xticks(range(len(unique_labels)), unique_labels)
+    step = max(1, len(unique_labels) // 10)
+    ax.set_xticklabels([str(label) if i % step == 0 else "" for i, label in enumerate(unique_labels)])
+
+    ax = plt.subplot(1, 2, 2)
+    weights = [class_weights.get(label, 0) for label in unique_labels]
+    ax.bar(range(len(unique_labels)), weights)
+    ax.set_title("Class Weights")
+    ax.set_xlabel("Class Index")
+    ax.set_ylabel("Weight")
+    ax.set_xticks(range(len(unique_labels)))
+    step = max(1, len(unique_labels) // 10)
+    ax.set_xticklabels([str(label) if i % step == 0 else "" for i, label in enumerate(unique_labels)])
+
+    plt.tight_layout()
+
+    if plot_dir:
+        os.makedirs(plot_dir, exist_ok=True)
+        plt.savefig(os.path.join(plot_dir, "class_distribution_weights.png"))
+    plt.close()
 
 
 def top_n_accuracy(y_true, y_score, n=3):
@@ -197,6 +266,9 @@ def plot_metrics(
         )
         print(classification_report(y_true, y_pred, labels=all_labels, target_names=target_names, zero_division=0))
 
+        mcc = matthews_corrcoef(y_true, y_pred)
+        print(f"Matthews Correlation Coefficient: {mcc:.3f}")
+
         print(f"Macro avg F1: {report['macro avg']['f1-score']:.3f}")
         print(f"Weighted avg F1: {report['weighted avg']['f1-score']:.3f}")
         micro_f1 = f1_score(y_true, y_pred, average="micro")
@@ -282,12 +354,13 @@ def ordinal_categorical_cross_entropy(y_true, y_pred):
     base_loss = tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred)
     loss = (1.0 + weights) * base_loss
     return loss
-    
+
 
 def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_year, max_year, config, run_id, fold_idx):
-    input_shape = get_input_shape(config["model"]["name"])
-    model_name = config["model"]["name"]
-    regression = config["task"] == "regression"
+    input_shape = get_input_shape(config.get("model", {}).get("name", "InceptionV3"))
+    model_name = config.get("model", {}).get("name", "InceptionV3")
+    regression = config.get("task", "classification") == "regression"
+    metrics = {}
 
     # Helper for fold-specific naming
     fold_str = f"_fold{fold_idx}" if fold_idx is not None else ""
@@ -324,184 +397,322 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         image_size=input_shape[:2],
     )
 
-    BATCH_SIZE = config["training"]["batch_size"]
-    train_ds_batched = train_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
-    val_ds_batched = val_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+    # Calculate class weights for classification tasks
+    class_weights = None
+    if not regression and config.get("training", {}).get("class_balancing", {}).get("enabled", True):
+        method = config.get("training", {}).get("class_balancing", {}).get("method", "balanced")
+        # Extract labels as before
+        train_labels = []
+        for file in train_files:
+            df = pd.read_csv(file)
+            train_labels.extend([class_to_idx[y] for y in df["year"].tolist()])
 
-    # Build and compile model
-    model = build_model(
-        config,
-        num_classes=num_classes,
-        input_shape=input_shape,
-    )
+        class_weights = get_class_weights(train_labels, method)
+        print(f"{fold_print}Class weights: {class_weights}")
+        if class_weights:
+            plot_class_distribution(train_labels, class_weights, plot_dir)
 
-    optimizer = Adam(learning_rate=config["training"]["learning_rate"])
-    loss = "mean_squared_error" if regression else "sparse_categorical_crossentropy"
-    metrics = ["mae", "mse"] if regression else ["accuracy"]
-    model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
+    # Run hyperparameter tuning if enabled
+    if config.get("hyperparameter_tuning", {}).get("enabled", False):
+        print(f"{fold_print}Running hyperparameter tuning...")
+        best_params = run_hyperparameter_tuning(train_ds, val_ds, config, num_classes, run_id, fold_idx)
+        # Apply the best parameters to the config
+        config = apply_best_hyperparameters(config, best_params)
+        print(
+            f"{fold_print}Using tuned parameters: batch_size={config['training']['batch_size']}, "
+            + f"dropout={config['model']['dropout']}, lr={config['training']['learning_rate']}"
+        )
 
-    # Callbacks
-    callbacks = [
-        EarlyStopping(
+        # Common code for both paths - prepare dataset with batching
+        BATCH_SIZE = config["training"]["batch_size"]
+        train_ds_batched = train_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+        val_ds_batched = val_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+
+        # Build and compile model
+        model = build_model(
+            config,
+            num_classes=num_classes,
+            input_shape=input_shape,
+        )
+
+        optimizer = tf.keras.optimizers.Adam(learning_rate=config["training"]["learning_rate"])
+        # loss = "mean_squared_error" if regression else ordinal_categorical_cross_entropy
+        loss = tf.keras.losses.CategoricalFocalCrossentropy(
+            alpha=0.25,  # Can be a scalar or a list with per-class weights
+            gamma=2.0,  # Controls focus on hard examples (higher = more focus)
+        )
+        metrics_list = ["mae", "mse"] if regression else ["accuracy"]
+        model.compile(optimizer=optimizer, loss=loss, metrics=metrics_list)
+
+        # Callbacks
+        callbacks = [
+            tf.keras.callbacks.EarlyStopping(
+                monitor="val_loss",
+                patience=config["training"]["early_stopping_patience"],
+                restore_best_weights=True,
+                min_delta=1e-4,
+                verbose=1,
+            )
+        ]
+
+        tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+        callbacks.append(tensorboard_callback)
+
+        reduce_lr_callback = tf.keras.callbacks.ReduceLROnPlateau(
             monitor="val_loss",
-            patience=config["training"]["early_stopping_patience"],
-            restore_best_weights=True,
+            factor=0.5,
+            patience=config["training"]["reduce_lr_patience"],
             min_delta=1e-4,
             verbose=1,
+            min_lr=1e-6,
         )
-    ]
 
-    tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
-    callbacks.append(tensorboard_callback)
+        callbacks.append(reduce_lr_callback)
 
-    reduce_lr_callback = ReduceLROnPlateau(
-        monitor="val_loss",
-        factor=0.1,
-        patience=config["training"]["reduce_lr_patience"],
-        min_delta=1e-4,
-        verbose=1,
-        min_lr=1e-6,
-    )
+        if config["model"]["save_model"]:
+            if not os.path.exists("trained_models"):
+                os.makedirs("trained_models")
+            version = get_highest_version_for_saved_model(model_name)
+            model.save(f"trained_models/{model_name}_version_{version}.keras")
 
-    callbacks.append(reduce_lr_callback)
+        # Train
+        history = model.fit(
+            train_ds_batched,
+            validation_data=val_ds_batched,
+            epochs=config["training"]["epochs"],
+            callbacks=callbacks,
+            verbose=2,
+            class_weight=class_weights,
+        )
 
-    # model_checkpoint = ModelCheckpoint(
-    #     filepath,
-    #     monitor="val_loss",
-    #     verbose=1,
-    #     save_best_only=True,
-    #     save_weights_only=False,
-    #     mode="auto",
-    #     save_freq="epoch",
-    #     initial_value_threshold=None,
-    # )
+        # Evaluate
+        results = model.evaluate(val_ds_batched, verbose=0)
+        print(f"{fold_print}Evaluation results:", results)
 
-    if config["model"]["save_model"]:
-        # callbacks.append(model_checkpoint)
-        if not os.path.exists("trained_models"):
-            os.makedirs("trained_models")
-        version = get_highest_version_for_saved_model(model_name)
-        model.save(f"trained_models/{model_name}_version_{version}.keras")
+        # Collect predictions and metrics for reporting
+        if regression:
+            preds = model.predict(val_ds_batched, verbose=0)
+            preds_years = preds * (max_year - min_year) + min_year
+            preds_years_rounded = np.round(preds_years).astype(int)
+            y_true = []
+            for _, label in val_ds_batched.unbatch():
+                y_true.append(label.numpy())
+            y_true = np.array(y_true)
+            y_true_years = y_true * (max_year - min_year) + min_year
+            y_true_years_rounded = np.round(y_true_years).astype(int)
+            exact_matches = np.sum(preds_years_rounded.flatten() == y_true_years_rounded.flatten())
+            total = len(y_true_years_rounded)
+            mae = np.mean(np.abs(preds_years_rounded.flatten() - y_true_years_rounded.flatten()))
+            print(f"{fold_print}Exactly correct year predictions: {exact_matches} out of {total}")
+            print(f"{fold_print}Final MAE (rounded to years): {mae:.2f}")
+            metrics = {"mae": mae, "exact": exact_matches, "total": total}
 
-    # Train
-    history = model.fit(
-        train_ds_batched,
-        validation_data=val_ds_batched,
-        epochs=config["training"]["epochs"],
-        callbacks=callbacks,
-        verbose=2,
-    )
+            os.makedirs("plots", exist_ok=True)
 
-    # Evaluate
-    results = model.evaluate(val_ds_batched, verbose=0)
-    print(f"{fold_print}Evaluation results:", results)
-
-    # Collect predictions and metrics for reporting
-    metrics = {}
-    if regression:
-        preds = model.predict(val_ds_batched, verbose=0)
-        preds_years = preds * (max_year - min_year) + min_year
-        preds_years_rounded = np.round(preds_years).astype(int)
-        y_true = []
-        for _, label in val_ds_batched.unbatch():
-            y_true.append(label.numpy())
-        y_true = np.array(y_true)
-        y_true_years = y_true * (max_year - min_year) + min_year
-        y_true_years_rounded = np.round(y_true_years).astype(int)
-        exact_matches = np.sum(preds_years_rounded.flatten() == y_true_years_rounded.flatten())
-        total = len(y_true_years_rounded)
-        mae = np.mean(np.abs(preds_years_rounded.flatten() - y_true_years_rounded.flatten()))
-        print(f"{fold_print}Exactly correct year predictions: {exact_matches} out of {total}")
-        print(f"{fold_print}Final MAE (rounded to years): {mae:.2f}")
-        metrics = {"mae": mae, "exact": exact_matches, "total": total}
-
-        os.makedirs("plots", exist_ok=True)
-
-        plot_metrics(history, fold_str, plot_dir, regression, class_to_idx)
+            plot_metrics(history, fold_str, plot_dir, regression, class_to_idx)
 
     else:
-        # Collect predictions
-        y_score = []
-        y_true = []
-        y_pred = []
-        for images, labels in val_ds_batched:
-            preds = model.predict(images, verbose=0)
-            y_true.extend(labels.numpy())
-            y_pred.extend(np.argmax(preds, axis=1))
-            y_score.extend(preds)
-        y_score = np.array(y_score)
+        BATCH_SIZE = config["training"]["batch_size"]
+        train_ds_batched = train_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+        val_ds_batched = val_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
-        plot_metrics(history, fold_str, plot_dir, regression, class_to_idx, y_true, y_pred, y_score)
+        # Build and compile model
+        model = build_model(
+            config,
+            num_classes=num_classes,
+            input_shape=input_shape,
+        )
 
-        if class_to_idx is not None:
-            idx_to_class = {v: k for k, v in class_to_idx.items()}
-            y_true_years = np.array([idx_to_class[idx] for idx in y_true])
-            y_pred_years = np.array([idx_to_class[idx] for idx in y_pred])
-            mae_years = np.mean(np.abs(y_true_years - y_pred_years))
-            print(f"Classification MAE (in years): {mae_years:.2f}")
+        optimizer = tf.keras.optimizers.Adam(learning_rate=config["training"]["learning_rate"])
+        # loss = "mean_squared_error" if regression else ordinal_categorical_cross_entropy
+        loss = tf.keras.losses.CategoricalFocalCrossentropy(
+            alpha=0.25,  # Can be a scalar or a list with per-class weights
+            gamma=2.0,  # Controls focus on hard examples (higher = more focus)
+        )
+        metrics = ["mae", "mse"] if regression else ["accuracy"]
+        model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
 
-        metrics = {"accuracy": results[1], "mae_years": mae_years}
+        # Callbacks
+        callbacks = [
+            tf.keras.callbacks.EarlyStopping(
+                monitor="val_loss",
+                patience=config["training"]["early_stopping_patience"],
+                restore_best_weights=True,
+                min_delta=1e-4,
+                verbose=1,
+            )
+        ]
+
+        tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+        callbacks.append(tensorboard_callback)
+
+        reduce_lr_callback = tf.keras.callbacks.ReduceLROnPlateau(
+            monitor="val_loss",
+            factor=0.5,
+            patience=config["training"]["reduce_lr_patience"],
+            min_delta=1e-4,
+            verbose=1,
+            min_lr=1e-6,
+        )
+
+        callbacks.append(reduce_lr_callback)
+
+        # model_checkpoint = tf.keras.callbacks.ModelCheckpoint(
+        #     filepath,
+        #     monitor="val_loss",
+        #     verbose=1,
+        #     save_best_only=True,
+        #     save_weights_only=False,
+        #     mode="auto",
+        #     save_freq="epoch",
+        #     initial_value_threshold=None,
+        # )
+
+        if config["model"]["save_model"]:
+            # callbacks.append(model_checkpoint)
+            if not os.path.exists("trained_models"):
+                os.makedirs("trained_models")
+            version = get_highest_version_for_saved_model(model_name)
+            model.save(f"trained_models/{model_name}_version_{version}.keras")
+
+        # Train
+        history = model.fit(
+            train_ds_batched,
+            validation_data=val_ds_batched,
+            epochs=config["training"]["epochs"],
+            callbacks=callbacks,
+            verbose=2,
+            class_weight=class_weights,
+        )
+
+        # Evaluate
+        results = model.evaluate(val_ds_batched, verbose=0)
+        print(f"{fold_print}Evaluation results:", results)
+
+        # Collect predictions and metrics for reporting
+        if regression:
+            preds = model.predict(val_ds_batched, verbose=0)
+            preds_years = preds * (max_year - min_year) + min_year
+            preds_years_rounded = np.round(preds_years).astype(int)
+            y_true = []
+            for _, label in val_ds_batched.unbatch():
+                y_true.append(label.numpy())
+            y_true = np.array(y_true)
+            y_true_years = y_true * (max_year - min_year) + min_year
+            y_true_years_rounded = np.round(y_true_years).astype(int)
+            exact_matches = np.sum(preds_years_rounded.flatten() == y_true_years_rounded.flatten())
+            total = len(y_true_years_rounded)
+            mae = np.mean(np.abs(preds_years_rounded.flatten() - y_true_years_rounded.flatten()))
+            print(f"{fold_print}Exactly correct year predictions: {exact_matches} out of {total}")
+            print(f"{fold_print}Final MAE (rounded to years): {mae:.2f}")
+            metrics = {"mae": mae, "exact": exact_matches, "total": total}
+
+            os.makedirs("plots", exist_ok=True)
+
+            plot_metrics(history, fold_str, plot_dir, regression, class_to_idx)
+
+        else:
+            # Collect predictions
+            y_score = []
+            y_true = []
+            y_pred = []
+            for images, labels in val_ds_batched:
+                preds = model.predict(images, verbose=0)
+                y_true.extend(labels.numpy())
+                y_pred.extend(np.argmax(preds, axis=1))
+                y_score.extend(preds)
+            y_score = np.array(y_score)
+
+            mcc = matthews_corrcoef(y_true, y_pred)
+
+            plot_metrics(history, fold_str, plot_dir, regression, class_to_idx, y_true, y_pred, y_score)
+
+            if class_to_idx is not None:
+                idx_to_class = {v: k for k, v in class_to_idx.items()}
+                y_true_years = np.array([idx_to_class[idx] for idx in y_true])
+                y_pred_years = np.array([idx_to_class[idx] for idx in y_pred])
+                mae_years = np.mean(np.abs(y_true_years - y_pred_years))
+                print(f"Classification MAE (in years): {mae_years:.2f}")
+
+            metrics = {"accuracy": results[1], "mae_years": mae_years, "mcc": mcc}
     return metrics
 
 
 def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
-    regression = config["task"] == "regression"
-    model_name = config["model"]["name"]
-    fine_tune = config["model"]["fine_tune"]
+    regression = config.get("task", "classification") == "regression"
+    model_name = config.get("model", {}).get("name", "InceptionV3")
+    fine_tune = config["model"]["fine_tune"].get("use", False)
+    fine_tune_layers = config["model"]["fine_tune"].get("layers", 1)
+    dense_units = config["model"].get("dense_units", 1)
+    dense_layers = config["model"].get("dense_layers", 1)
 
     # Select base model and setup according to model_name
     if model_name == "NASNetMobile":
-        base_model = NASNetMobile(weights="imagenet", input_shape=input_shape, include_top=False)
+        base_model = tf.keras.applications.NASNetMobile(weights="imagenet", input_shape=input_shape, include_top=False)
         base_model.trainable = False
         x = base_model.output
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
         x = tf.keras.layers.Dense(76, activation="relu")(x)
     elif model_name == "ResNet101":
-        base_model = ResNet101(weights="imagenet", input_shape=input_shape, include_top=False)
+        base_model = tf.keras.applications.ResNet101(weights="imagenet", input_shape=input_shape, include_top=False)
         base_model.trainable = False
         x = base_model.output
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
         x = tf.keras.layers.Dense(10, activation="relu")(x)
     elif model_name == "InceptionV3":
-        base_model = InceptionV3(weights="imagenet", input_shape=input_shape, include_top=False)
+        base_model = tf.keras.applications.InceptionV3(weights="imagenet", input_shape=input_shape, include_top=False)
+        base_model.trainable = False
+        x = base_model.output
+        x = tf.keras.layers.GlobalAveragePooling2D()(x)
+    elif model_name == "EfficientNetB3":
+        base_model = tf.keras.applications.EfficientNetB3(
+            weights="imagenet", input_shape=input_shape, include_top=False
+        )
         base_model.trainable = False
         x = base_model.output
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
     else:
         raise ValueError(f"Unsupported model name: {model_name}")
 
-    # Optional dropout
-    if config["model"]["use_dropout"]:
-        x = Dropout(config["model"]["dropout"])(x)
+    # Add dense layers based on config
+    for _ in range(dense_layers):
+        x = tf.keras.layers.Dense(dense_units, activation="relu")(x)
+        # Optional dropout after each dense layer
+        if config["model"].get("dropout", {}).get("use", False):
+            x = tf.keras.layers.Dropout(config["model"].get("dropout", {}).get("value", 0))(x)
 
     # Output layer
     if regression:
-        if config["model"]["use_l2_regularization"]:
-            predictions = Dense(
+        if config["model"].get("l2_regularization", {}).get("use", False):
+            predictions = tf.keras.layers.Dense(
                 1,
                 activation="sigmoid",
                 name="PREDICTIONS",
-                kernel_regularizer=l2(float(config["model"]["l2_regularization"])),
+                kernel_regularizer=tf.keras.regularizers.l2(
+                    float(config["model"].get("l2_regularization", {}).get("value", 0))
+                ),
             )(x)
         else:
-            predictions = Dense(1, activation="sigmoid", name="PREDICTIONS")(x)
+            predictions = tf.keras.layers.Dense(1, activation="sigmoid", name="PREDICTIONS")(x)
     else:
-        if config["model"]["use_l2_regularization"]:
-            predictions = Dense(
+        if config["model"].get("l2_regularization", {}).get("use", False):
+            predictions = tf.keras.layers.Dense(
                 num_classes,
                 activation="softmax",
                 name="PREDICTIONS",
-                kernel_regularizer=l2(float(config["model"]["l2_regularization"])),
+                kernel_regularizer=tf.keras.regularizers.l2(
+                    float(config["model"].get("l2_regularization", {}).get("value", 0))
+                ),
             )(x)
         else:
-            predictions = Dense(num_classes, activation="softmax", name="PREDICTIONS")(x)
+            predictions = tf.keras.layers.Dense(num_classes, activation="softmax", name="PREDICTIONS")(x)
 
-    model = Model(inputs=base_model.input, outputs=predictions)
+    model = tf.keras.models.Model(inputs=base_model.input, outputs=predictions)
 
-    # Fine-tuning: unfreeze last layer if requested
+    # Fine-tuning: unfreeze specified number of layers if requested
     if fine_tune:
-        print("Fine Tuning!")
-        for layer in base_model.layers[-1:]:
+        print(f"\n===== Fine Tuning {fine_tune_layers} layers! =====")
+        for layer in base_model.layers[-fine_tune_layers:]:
             layer.trainable = True
 
     return model
@@ -524,17 +735,17 @@ def main():
     start_time = time.time()
 
     config = load_config("config.yaml")
-    regression = config["task"] == "regression"
-    model_name = config["model"]["name"]
+    regression = regression = config.get("task", "classification") == "regression"
+    model_name = config.get("model", {}).get("name", "InceptionV3")
     fold_nums = [num for num in range(10)]
     run_id = time.strftime("%Y-%m-%d_%H:%M:%S")
-    print(f"Using model: {model_name}.")
+    print(f"\n=== Using model: {model_name}. ===")
     print(f"RUN ID: {run_id}")
 
     if config["cross_validation"]:
         all_metrics = []
         for test_fold in fold_nums:
-            print(f"\n=== Fold {test_fold} ===")
+            print(f"\n===== Fold {test_fold} =====")
             train_folds = [fold for fold in fold_nums if fold != test_fold]
             train_files = [f"data/datasets/fold{fold}.csv" for fold in train_folds]
             test_file = f"data/datasets/fold{test_fold}.csv"
@@ -584,7 +795,11 @@ def main():
             print(f"Mean exact matches: {np.mean(exacts):.2f} / {np.mean(totals):.2f}")
         else:
             accs = [m["accuracy"] for m in all_metrics]
+            maes = [m["mae_years"] for m in all_metrics]
+            mccs = [m["mcc"] for m in all_metrics]
+            print(f"\nMean MAE over 10 folds: {np.mean(maes):.4f}")
             print(f"\nMean accuracy over 10 folds: {np.mean(accs):.4f}")
+            print(f"\nMean Matthews Correlation Coefficient over 10 folds: {np.mean(mccs):.4f}")
 
     else:
         # Single train/test split (random fold selection)
@@ -632,7 +847,7 @@ def main():
     hours = int(running_time // 3600)
     minutes = int((running_time % 3600) // 60)
     seconds = int(running_time % 60)
-    print(f"Total running time: {hours} hours, {minutes} minutes, {seconds} seconds")
+    print(f"\n=== Total running time: {hours} hours, {minutes} minutes, {seconds} seconds ===\n")
 
 
 if __name__ == "__main__":
