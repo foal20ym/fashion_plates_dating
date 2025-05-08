@@ -525,3 +525,19 @@ Epoch 30/100
 Epoch 31/100
 1413/1413 - 126s - 89ms/step - accuracy: 0.3571 - loss: 3.2610 - val_accuracy: 0.4068 - val_loss: 3.1226 - learning_rate: 6.9089e-06
 Epoch 32/100
+1413/1413 - 143s - 101ms/step - accuracy: 0.3567 - loss: 3.2603 - val_accuracy: 0.4116 - val_loss: 3.1123 - learning_rate: 6.9089e-06
+Epoch 33/100
+1413/1413 - 127s - 90ms/step - accuracy: 0.3535 - loss: 3.2487 - val_accuracy: 0.4100 - val_loss: 3.1133 - learning_rate: 6.9089e-06
+Epoch 34/100
+
+Epoch 34: ReduceLROnPlateau reducing learning rate to 1.381781476084143e-06.
+1413/1413 - 126s - 89ms/step - accuracy: 0.3514 - loss: 3.2608 - val_accuracy: 0.4108 - val_loss: 3.1095 - learning_rate: 6.9089e-06
+Epoch 35/100
+1413/1413 - 130s - 92ms/step - accuracy: 0.3473 - loss: 3.2703 - val_accuracy: 0.4132 - val_loss: 3.0944 - learning_rate: 1.3818e-06
+Epoch 36/100
+1413/1413 - 126s - 89ms/step - accuracy: 0.3486 - loss: 3.2661 - val_accuracy: 0.4132 - val_loss: 3.1094 - learning_rate: 1.3818e-06
+Epoch 37/100
+1413/1413 - 129s - 92ms/step - accuracy: 0.3552 - loss: 3.2609 - val_accuracy: 0.4132 - val_loss: 3.0988 - learning_rate: 1.3818e-06
+Epoch 38/100
+1413/1413 - 129s - 91ms/step - accuracy: 0.3537 - loss: 3.2477 - val_accuracy: 0.4124 - val_loss: 3.0983 - learning_rate: 1.3818e-06
+Epoch 39/100
