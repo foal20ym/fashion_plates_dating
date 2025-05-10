@@ -11,3 +11,41 @@ I0000 00:00:1746913271.643179 2894738 gpu_device.cc:2018] Created device /job:lo
 2025-05-10 21:41:58.979486: I external/local_xla/xla/service/service.cc:160]   StreamExecutor device (0): NVIDIA A100 80GB PCIe MIG 1g.10gb, Compute Capability 8.0
 2025-05-10 21:41:59.564397: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
 I0000 00:00:1746913321.924854 2895381 cuda_dnn.cc:529] Loaded cuDNN version 90300
+2025-05-10 21:42:09.087189: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_18231', 4 bytes spill stores, 4 bytes spill loads
+
+2025-05-10 21:42:10.806758: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_19133', 4 bytes spill stores, 4 bytes spill loads
+
+2025-05-10 21:42:10.898693: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_18180', 16 bytes spill stores, 16 bytes spill loads
+
+2025-05-10 21:42:10.997744: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_18231', 8 bytes spill stores, 8 bytes spill loads
+
+2025-05-10 21:42:11.263784: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_18180', 16 bytes spill stores, 16 bytes spill loads
+
+2025-05-10 21:42:11.479174: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_18180', 192 bytes spill stores, 192 bytes spill loads
+
+I0000 00:00:1746913348.571141 2895381 device_compiler.h:196] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+2025-05-10 21:43:21.196655: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_18231', 4 bytes spill stores, 4 bytes spill loads
+
+2025-05-10 21:43:22.186156: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_18231', 8 bytes spill stores, 8 bytes spill loads
+
+2025-05-10 21:43:22.273898: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_18180', 16 bytes spill stores, 16 bytes spill loads
+
+2025-05-10 21:43:22.286916: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_19133', 4 bytes spill stores, 4 bytes spill loads
+
+2025-05-10 21:43:22.652045: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_18180', 16 bytes spill stores, 16 bytes spill loads
+
+2025-05-10 21:43:22.869166: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_18180', 192 bytes spill stores, 192 bytes spill loads
+
+2025-05-10 21:43:46.451502: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_3267', 4 bytes spill stores, 4 bytes spill loads
+
+2025-05-10 21:43:46.819279: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_3267', 28 bytes spill stores, 28 bytes spill loads
+
+2025-05-10 21:44:06.780636: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 3169 of 11303
+2025-05-10 21:44:26.672980: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 10076 of 11303
+2025-05-10 21:44:29.797713: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+2025-05-10 21:45:31.201382: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 3216 of 11303
+2025-05-10 21:45:51.175760: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 10976 of 11303
+2025-05-10 21:45:51.624133: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+2025-05-10 21:46:53.190523: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 2726 of 11303
+2025-05-10 21:47:13.196957: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 9459 of 11303
+2025-05-10 21:47:18.021948: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.

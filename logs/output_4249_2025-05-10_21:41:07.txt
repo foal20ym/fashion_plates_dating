@@ -24,3 +24,9 @@ Value             |Best Value So Far |Hyperparameter
 1                 |1                 |dense_layers
 
 Epoch 1/100
+1413/1413 - 159s - 112ms/step - accuracy: 0.0941 - loss: 4.3310 - val_accuracy: 0.1067 - val_loss: 3.8605 - learning_rate: 1.3069e-05
+Epoch 2/100
+1413/1413 - 84s - 60ms/step - accuracy: 0.0974 - loss: 4.2789 - val_accuracy: 0.1067 - val_loss: 3.8315 - learning_rate: 1.3069e-05
+Epoch 3/100
+1413/1413 - 82s - 58ms/step - accuracy: 0.0977 - loss: 4.2365 - val_accuracy: 0.1067 - val_loss: 3.8132 - learning_rate: 1.3069e-05
+Epoch 4/100

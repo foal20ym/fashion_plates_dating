@@ -512,7 +512,7 @@ def main():
     start_time = time.time()
 
     config = load_config("config.yaml")
-    regression = regression = config.get("task", "classification") == "regression"
+    regression = config.get("task", "classification") == "regression"
     model_name = config.get("model", {}).get("name", "InceptionV3")
     fold_nums = [num for num in range(10)]
     run_id = time.strftime("%Y-%m-%d_%H:%M:%S")
