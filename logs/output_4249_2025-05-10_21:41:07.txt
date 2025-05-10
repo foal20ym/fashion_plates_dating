@@ -1,0 +1,26 @@
+TensorFlow Version: 2.20.0-dev20250508
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+
+=== Using model: EfficientNetB3. ===
+RUN ID: 2025-05-10_21:41:11
+Test fold: 0
+Fold 0 Running hyperparameter tuning...
+Using Bayesian Optimization for hyperparameter tuning
+
+===== Starting Hyperparameter Tuning with bayesian search =====
+Max trials: 10, Executions per trial: 1
+
+Tuning with batch size: 8
+
+Search: Running Trial #1
+
+Value             |Best Value So Far |Hyperparameter
+0.4               |0.4               |dropout
+1.3069e-05        |1.3069e-05        |learning_rate
+0                 |0                 |l2_regularization
+4                 |4                 |fine_tune_layers
+512               |512               |dense_units
+1                 |1                 |dense_layers
+
+Epoch 1/100

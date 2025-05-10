@@ -2,9 +2,9 @@ task: classification
 
 model:
   # name: NASNetMobile
-  name: InceptionV3
+  # name: InceptionV3
   # name: ResNet101
-  # name: EfficientNetB3
+  name: EfficientNetB3
   include_top: false
   fine_tune:
     layers: 7
@@ -32,7 +32,7 @@ training:
 cross_validation: false
 
 hyperparameter_tuning:
-  enabled: false
+  enabled: true
   method: "bayesian" # Options: "random", "bayesian", "hyperband"
   max_trials: 10
   executions_per_trial: 1

@@ -242,7 +242,7 @@ def run_hyperparameter_tuning(train_ds, val_ds, config, num_classes, run_id, fol
         tuner.search(
             train_ds_batched,
             validation_data=val_ds_batched,
-            epochs=min(config["training"]["epochs"], 60),
+            epochs=config["training"]["epochs"],
             callbacks=callbacks,
             verbose=2,
         )
