@@ -1,0 +1,72 @@
+TensorFlow Version: 2.19.0
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+
+=== Using model: InceptionV3. ===
+RUN ID: 2025-05-10_20:12:31
+Test fold: 0
+
+===== Fine Tuning 7 layers! =====
+Epoch 1/100
+1413/1413 - 221s - 156ms/step - accuracy: 0.3671 - loss: 0.4670 - val_accuracy: 0.3710 - val_loss: 0.4535 - learning_rate: 6.8751e-04
+Epoch 2/100
+1413/1413 - 149s - 106ms/step - accuracy: 0.4753 - loss: 0.3268 - val_accuracy: 0.4387 - val_loss: 0.3909 - learning_rate: 6.8751e-04
+Epoch 3/100
+1413/1413 - 153s - 108ms/step - accuracy: 0.5127 - loss: 0.2854 - val_accuracy: 0.4674 - val_loss: 0.3970 - learning_rate: 6.8751e-04
+Epoch 4/100
+1413/1413 - 147s - 104ms/step - accuracy: 0.5345 - loss: 0.2624 - val_accuracy: 0.4761 - val_loss: 0.3352 - learning_rate: 6.8751e-04
+Epoch 5/100
+1413/1413 - 151s - 107ms/step - accuracy: 0.5579 - loss: 0.2451 - val_accuracy: 0.4530 - val_loss: 0.3677 - learning_rate: 6.8751e-04
+Epoch 6/100
+1413/1413 - 145s - 102ms/step - accuracy: 0.5636 - loss: 0.2369 - val_accuracy: 0.5311 - val_loss: 0.2878 - learning_rate: 6.8751e-04
+Epoch 7/100
+1413/1413 - 145s - 103ms/step - accuracy: 0.5775 - loss: 0.2231 - val_accuracy: 0.5096 - val_loss: 0.3149 - learning_rate: 6.8751e-04
+Epoch 8/100
+1413/1413 - 145s - 103ms/step - accuracy: 0.5870 - loss: 0.2167 - val_accuracy: 0.5024 - val_loss: 0.3037 - learning_rate: 6.8751e-04
+Epoch 9/100
+1413/1413 - 145s - 103ms/step - accuracy: 0.5839 - loss: 0.2154 - val_accuracy: 0.5072 - val_loss: 0.3297 - learning_rate: 6.8751e-04
+Epoch 10/100
+1413/1413 - 145s - 102ms/step - accuracy: 0.5929 - loss: 0.2068 - val_accuracy: 0.5183 - val_loss: 0.2758 - learning_rate: 6.8751e-04
+Epoch 11/100
+1413/1413 - 145s - 103ms/step - accuracy: 0.6025 - loss: 0.2008 - val_accuracy: 0.5318 - val_loss: 0.2807 - learning_rate: 6.8751e-04
+Epoch 12/100
+1413/1413 - 145s - 103ms/step - accuracy: 0.6018 - loss: 0.2038 - val_accuracy: 0.4737 - val_loss: 0.3011 - learning_rate: 6.8751e-04
+Epoch 13/100
+1413/1413 - 146s - 103ms/step - accuracy: 0.6128 - loss: 0.1940 - val_accuracy: 0.5350 - val_loss: 0.2780 - learning_rate: 6.8751e-04
+Epoch 14/100
+1413/1413 - 145s - 102ms/step - accuracy: 0.6114 - loss: 0.1916 - val_accuracy: 0.5454 - val_loss: 0.2750 - learning_rate: 6.8751e-04
+Epoch 15/100
+1413/1413 - 145s - 103ms/step - accuracy: 0.6183 - loss: 0.1882 - val_accuracy: 0.5350 - val_loss: 0.2841 - learning_rate: 6.8751e-04
+Epoch 16/100
+1413/1413 - 146s - 103ms/step - accuracy: 0.6232 - loss: 0.1909 - val_accuracy: 0.5303 - val_loss: 0.2800 - learning_rate: 6.8751e-04
+Epoch 17/100
+1413/1413 - 145s - 103ms/step - accuracy: 0.6185 - loss: 0.1841 - val_accuracy: 0.5605 - val_loss: 0.2586 - learning_rate: 6.8751e-04
+Epoch 18/100
+1413/1413 - 145s - 102ms/step - accuracy: 0.6303 - loss: 0.1830 - val_accuracy: 0.4976 - val_loss: 0.2847 - learning_rate: 6.8751e-04
+Epoch 19/100
+1413/1413 - 144s - 102ms/step - accuracy: 0.6236 - loss: 0.1838 - val_accuracy: 0.4889 - val_loss: 0.2946 - learning_rate: 6.8751e-04
+Epoch 20/100
+1413/1413 - 144s - 102ms/step - accuracy: 0.6232 - loss: 0.1807 - val_accuracy: 0.5414 - val_loss: 0.2740 - learning_rate: 6.8751e-04
+Epoch 21/100
+1413/1413 - 144s - 102ms/step - accuracy: 0.6336 - loss: 0.1762 - val_accuracy: 0.5016 - val_loss: 0.2764 - learning_rate: 6.8751e-04
+Epoch 22/100
+1413/1413 - 146s - 103ms/step - accuracy: 0.6380 - loss: 0.1721 - val_accuracy: 0.5008 - val_loss: 0.2987 - learning_rate: 6.8751e-04
+Epoch 23/100
+1413/1413 - 144s - 102ms/step - accuracy: 0.6312 - loss: 0.1757 - val_accuracy: 0.5462 - val_loss: 0.2807 - learning_rate: 6.8751e-04
+Epoch 24/100
+1413/1413 - 142s - 100ms/step - accuracy: 0.6404 - loss: 0.1708 - val_accuracy: 0.5040 - val_loss: 0.2980 - learning_rate: 6.8751e-04
+Epoch 25/100
+1413/1413 - 144s - 102ms/step - accuracy: 0.6466 - loss: 0.1726 - val_accuracy: 0.5549 - val_loss: 0.2499 - learning_rate: 6.8751e-04
+Epoch 26/100
+1413/1413 - 146s - 103ms/step - accuracy: 0.6356 - loss: 0.1718 - val_accuracy: 0.5653 - val_loss: 0.2652 - learning_rate: 6.8751e-04
+Epoch 27/100
+1413/1413 - 145s - 102ms/step - accuracy: 0.6502 - loss: 0.1667 - val_accuracy: 0.5422 - val_loss: 0.2550 - learning_rate: 6.8751e-04
+Epoch 28/100
+1413/1413 - 141s - 100ms/step - accuracy: 0.6493 - loss: 0.1637 - val_accuracy: 0.5295 - val_loss: 0.2851 - learning_rate: 6.8751e-04
+Epoch 29/100
+1413/1413 - 146s - 103ms/step - accuracy: 0.6399 - loss: 0.1667 - val_accuracy: 0.5398 - val_loss: 0.2570 - learning_rate: 6.8751e-04
+Epoch 30/100
+1413/1413 - 144s - 102ms/step - accuracy: 0.6508 - loss: 0.1631 - val_accuracy: 0.5358 - val_loss: 0.2671 - learning_rate: 6.8751e-04
+Epoch 31/100
+1413/1413 - 142s - 100ms/step - accuracy: 0.6530 - loss: 0.1612 - val_accuracy: 0.5677 - val_loss: 0.2562 - learning_rate: 6.8751e-04
+Epoch 32/100
