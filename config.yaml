@@ -7,22 +7,22 @@ model:
   # name: EfficientNetB3
   include_top: false
   fine_tune:
-    layers: 1
+    layers: 7
     use: true
   save_model: false
   l2_regularization:
-    value: 1e-4
+    value: 0.01
     use: false
   dropout:
-    value: 0.25
-    use: false
-  dense_layers: 1
-  dense_units: 1
+    value: 0.1
+    use: true
+  dense_layers: 2
+  dense_units: 512
 
 training:
-  batch_size: 16
+  batch_size: 8
   epochs: 100
-  learning_rate: 0.01
+  learning_rate: 0.0006875077116166043
   early_stopping_patience: 16
   reduce_lr_patience: 8
   class_balancing:
