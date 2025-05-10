@@ -1,7 +1,10 @@
 Using model: ResNet101.
 RUN ID: 2025-05-06_13:59:39
 Test fold: 0
+<<<<<<< HEAD
 Fine Tuning!
+=======
+>>>>>>> 408a6bf1dd8ff5f9d98b21ff81537e223ffd4639
 
 Restoring model weights from the end of the best epoch: 4.
 Fold 0 Evaluation results: [3.392367362976074, 0.10668789595365524]
@@ -86,7 +89,10 @@ Total running time: 0 hours, 21 minutes, 30 seconds
 Using model: NASNetMobile.
 RUN ID: 2025-05-06_13:59:21
 Test fold: 0
+<<<<<<< HEAD
 Fine Tuning!
+=======
+>>>>>>> 408a6bf1dd8ff5f9d98b21ff81537e223ffd4639
 Epoch 36: early stopping
 Restoring model weights from the end of the best epoch: 32.
 Fold 0 Evaluation results: [2.10726261138916, 0.3980891704559326]
@@ -171,6 +177,7 @@ Total running time: 1 hours, 11 minutes, 37 seconds
 Using model: InceptionV3.
 RUN ID: 2025-05-06_16:17:53
 Test fold: 0
+<<<<<<< HEAD
 Fine Tuning!
 Epoch 47: early stopping
 Restoring model weights from the end of the best epoch: 43.
@@ -252,3 +259,6 @@ Macro ROC AUC (present classes) = 0.94
 Classification MAE (in years): 4.27
 Metrics: {'accuracy': 0.5644904375076294, 'mae_years': np.float64(4.272292993630574)}
 Total running time: 1 hours, 35 minutes, 2 seconds
+=======
+Fine Tuning!
+>>>>>>> 408a6bf1dd8ff5f9d98b21ff81537e223ffd4639

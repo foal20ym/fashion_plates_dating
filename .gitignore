@@ -2,4 +2,5 @@
 run_job.sh
 /tools
 *.h5
-__pycache__
+__pycache__/
+requirements.txt

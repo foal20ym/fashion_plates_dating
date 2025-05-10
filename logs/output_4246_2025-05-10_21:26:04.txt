@@ -1,0 +1,12 @@
+TensorFlow Version: 2.20.0-dev20250508
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+
+=== Using model: InceptionV3. ===
+RUN ID: 2025-05-10_21:26:08
+Test fold: 0
+
+===== Fine Tuning 7 layers! =====
+Epoch 1/100
+1413/1413 - 156s - 110ms/step - accuracy: 0.1932 - loss: 4.0009 - val_accuracy: 0.3272 - val_loss: 3.1529 - learning_rate: 6.8751e-04
+Epoch 2/100
