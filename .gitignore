@@ -2,3 +2,4 @@
 run_job.sh
 /tools
 *.h5
+__pycache__
