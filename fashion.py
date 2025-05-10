@@ -86,6 +86,8 @@ def get_input_shape(model_name):
         return (224, 224, 3)
     elif model_name == "InceptionV3":
         return (299, 299, 3)
+    elif model_name == "EfficientNetB3":
+        return (255, 255, 3)
     else:
         raise ValueError(f"Unsupported model name: {model_name}")
 

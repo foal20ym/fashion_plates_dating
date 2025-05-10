@@ -10,3 +10,19 @@ Test fold: 0
 Epoch 1/100
 1413/1413 - 156s - 110ms/step - accuracy: 0.1932 - loss: 4.0009 - val_accuracy: 0.3272 - val_loss: 3.1529 - learning_rate: 6.8751e-04
 Epoch 2/100
+1413/1413 - 93s - 66ms/step - accuracy: 0.2652 - loss: 3.5490 - val_accuracy: 0.4148 - val_loss: 2.8806 - learning_rate: 6.8751e-04
+Epoch 3/100
+1413/1413 - 96s - 68ms/step - accuracy: 0.3058 - loss: 3.4013 - val_accuracy: 0.4339 - val_loss: 2.6909 - learning_rate: 6.8751e-04
+Epoch 4/100
+1413/1413 - 92s - 65ms/step - accuracy: 0.3196 - loss: 3.3034 - val_accuracy: 0.4331 - val_loss: 2.5910 - learning_rate: 6.8751e-04
+Epoch 5/100
+1413/1413 - 91s - 65ms/step - accuracy: 0.3358 - loss: 3.2099 - val_accuracy: 0.4753 - val_loss: 2.6299 - learning_rate: 6.8751e-04
+Epoch 6/100
+1413/1413 - 95s - 68ms/step - accuracy: 0.3429 - loss: 3.1538 - val_accuracy: 0.4904 - val_loss: 2.4153 - learning_rate: 6.8751e-04
+Epoch 7/100
+1413/1413 - 90s - 63ms/step - accuracy: 0.3547 - loss: 3.0927 - val_accuracy: 0.4896 - val_loss: 2.4059 - learning_rate: 6.8751e-04
+Epoch 8/100
+1413/1413 - 92s - 65ms/step - accuracy: 0.3633 - loss: 3.0706 - val_accuracy: 0.5191 - val_loss: 2.3256 - learning_rate: 6.8751e-04
+Epoch 9/100
+1413/1413 - 94s - 67ms/step - accuracy: 0.3710 - loss: 3.0112 - val_accuracy: 0.5056 - val_loss: 2.3239 - learning_rate: 6.8751e-04
+Epoch 10/100
