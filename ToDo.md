@@ -26,8 +26,10 @@ ToDo / Future Work:
    - Address challenges such as data sparsity and reduced accuracy with a broader historical range.
 
 8. **Implement new model**
+   - Done EfficentNetB3 is included
 
-9. **Plot ten fold mean correctly**
+9.  **Plot ten fold mean correctly**
+   - Done
 
 
 ## Experiments:
@@ -37,7 +39,9 @@ ToDo / Future Work:
    - l2_regularization yes/no value [-> 0]
    - learning rate, start value and factor in ReduceLROnPlateau
    - Add Dense layers and fine tuning layers
-   - different loss function
-   - Testa Ordinal categorical cross entropy: https://github.com/JHart96/keras_ordinal_categorical_crossentropy/blob/master/ordinal_categorical_crossentropy.py 
-   - CategoricalFocalCrossentropy: https://www.tensorflow.org/api_docs/python/tf/keras/losses/CategoricalFocalCrossentropy 
-   - larger image size
+     - All above parameters has been tuned on InceptionV3 which helped alot.
+2. **Different loss function**
+     - Testa Ordinal categorical cross entropy: https://github.com/JHart96/keras_ordinal_categorical_crossentropy/blob/master/ordinal_categorical_crossentropy.py 
+     - CategoricalFocalCrossentropy: https://www.tensorflow.org/api_docs/python/tf/keras/losses/CategoricalFocalCrossentropy 
+       - focal and ordinal, ordinal seems best but no big difference.
+3. **larger image size**

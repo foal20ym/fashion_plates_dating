@@ -88,3 +88,11 @@ Epoch 38/100
 Epoch 39/100
 1413/1413 - 139s - 98ms/step - accuracy: 0.6983 - loss: 0.1307 - val_accuracy: 0.5788 - val_loss: 0.2494 - learning_rate: 3.4375e-04
 Epoch 40/100
+1413/1413 - 137s - 97ms/step - accuracy: 0.7021 - loss: 0.1266 - val_accuracy: 0.5812 - val_loss: 0.2392 - learning_rate: 3.4375e-04
+Epoch 41/100
+1413/1413 - 139s - 99ms/step - accuracy: 0.6982 - loss: 0.1345 - val_accuracy: 0.5796 - val_loss: 0.2371 - learning_rate: 3.4375e-04
+Epoch 42/100
+1413/1413 - 140s - 99ms/step - accuracy: 0.7072 - loss: 0.1246 - val_accuracy: 0.5756 - val_loss: 0.2519 - learning_rate: 3.4375e-04
+Epoch 43/100
+1413/1413 - 138s - 98ms/step - accuracy: 0.7016 - loss: 0.1260 - val_accuracy: 0.5780 - val_loss: 0.2466 - learning_rate: 3.4375e-04
+Epoch 44/100
