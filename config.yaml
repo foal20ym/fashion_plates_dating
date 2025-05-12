@@ -2,9 +2,9 @@ task: classification
 
 model:
   # name: NASNetMobile
-  # name: InceptionV3
+  name: InceptionV3
   # name: ResNet101
-  name: EfficientNetB3
+  # name: EfficientNetB3
   include_top: false
   fine_tune:
     layers: 7
@@ -21,7 +21,7 @@ model:
 
 training:
   batch_size: 8
-  epochs: 100
+  epochs: 300
   learning_rate: 0.0006875077116166043
   early_stopping_patience: 16
   reduce_lr_patience: 8
@@ -34,7 +34,7 @@ cross_validation: false
 hyperparameter_tuning:
   enabled: true
   method: "bayesian" # Options: "random", "bayesian", "hyperband"
-  max_trials: 10
+  max_trials: 15
   executions_per_trial: 1
   directory: "hyperparameter_tuning"
   project_name: "fashion_plates_dating"
