@@ -1,0 +1,115 @@
+now processing task id:: 3789 on worker1.slurm.hj.se
+2025-05-07 09:53:01.476516: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:467] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+E0000 00:00:1746611581.496563 1663927 cuda_dnn.cc:8579] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+E0000 00:00:1746611581.502739 1663927 cuda_blas.cc:1407] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+W0000 00:00:1746611581.519381 1663927 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1746611581.519412 1663927 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1746611581.519418 1663927 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1746611581.519422 1663927 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+2025-05-07 09:53:01.524022: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+I0000 00:00:1746611584.667424 1663927 gpu_device.cc:2019] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 8098 MB memory:  -> device: 0, name: NVIDIA A100 80GB PCIe MIG 1g.10gb, pci bus id: 0000:81:00.0, compute capability: 8.0
+2025-05-07 09:53:22.187686: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 659 of 11303
+2025-05-07 09:53:41.990227: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 2710 of 11303
+2025-05-07 09:53:52.068997: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 4147 of 11303
+2025-05-07 09:54:02.143104: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 5221 of 11303
+2025-05-07 09:54:12.520082: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 6470 of 11303
+2025-05-07 09:54:32.192397: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 8973 of 11303
+2025-05-07 09:54:47.929893: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:482] Shuffle buffer filled.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1746611687.986509 1664568 service.cc:152] XLA service 0x7f38a4002e30 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1746611687.986589 1664568 service.cc:160]   StreamExecutor device (0): NVIDIA A100 80GB PCIe MIG 1g.10gb, Compute Capability 8.0
+2025-05-07 09:54:48.150512: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1746611689.634298 1664568 cuda_dnn.cc:529] Loaded cuDNN version 90300
+2025-05-07 09:54:51.373260: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_8359', 60 bytes spill stores, 60 bytes spill loads
+
+2025-05-07 09:54:51.696032: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_8359', 2900 bytes spill stores, 2888 bytes spill loads
+
+I0000 00:00:1746611701.852372 1664568 device_compiler.h:188] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+2025-05-07 09:55:41.048414: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_8359', 80 bytes spill stores, 80 bytes spill loads
+
+2025-05-07 09:55:41.441198: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_8359', 2472 bytes spill stores, 2448 bytes spill loads
+
+2025-05-07 09:56:09.349891: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_2447', 80 bytes spill stores, 80 bytes spill loads
+
+2025-05-07 09:56:09.731418: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_2447', 2732 bytes spill stores, 2704 bytes spill loads
+
+2025-05-07 09:57:19.776367: I tensorflow/core/framework/local_rendezvous.cc:407] Local rendezvous is aborting with status: OUT_OF_RANGE: End of sequence
+2025-05-07 09:57:36.966463: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:1199: Filling up shuffle buffer (this may take a while): 1067 of 11303
+2025-05-07 09:57:47.070163: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:1199: Filling up shuffle buffer (this may take a while): 2683 of 11303
+2025-05-07 09:58:07.066494: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:1199: Filling up shuffle buffer (this may take a while): 5152 of 11303
+2025-05-07 09:58:19.289647: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:1199: Filling up shuffle buffer (this may take a while): 6461 of 11303
+2025-05-07 09:58:40.428184: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:1199: Filling up shuffle buffer (this may take a while): 8973 of 11303
+2025-05-07 09:58:55.009841: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:482] Shuffle buffer filled.
+2025-05-07 10:01:04.498142: I tensorflow/core/framework/local_rendezvous.cc:407] Local rendezvous is aborting with status: OUT_OF_RANGE: End of sequence
+/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/sklearn/metrics/_ranking.py:1188: UndefinedMetricWarning: No positive samples in y_true, true positive value should be meaningless
+  warnings.warn(
+2025-05-07 10:01:21.771028: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:2396: Filling up shuffle buffer (this may take a while): 1069 of 11303
+2025-05-07 10:01:31.872024: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:2396: Filling up shuffle buffer (this may take a while): 2588 of 11303
+2025-05-07 10:01:43.097527: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:2396: Filling up shuffle buffer (this may take a while): 3948 of 11303
+2025-05-07 10:01:53.514381: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:2396: Filling up shuffle buffer (this may take a while): 5205 of 11303
+2025-05-07 10:02:12.367297: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:2396: Filling up shuffle buffer (this may take a while): 7721 of 11303
+2025-05-07 10:02:23.248058: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:2396: Filling up shuffle buffer (this may take a while): 8973 of 11303
+2025-05-07 10:02:37.080096: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:482] Shuffle buffer filled.
+/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/sklearn/metrics/_ranking.py:1188: UndefinedMetricWarning: No positive samples in y_true, true positive value should be meaningless
+  warnings.warn(
+2025-05-07 10:05:06.171816: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:3593: Filling up shuffle buffer (this may take a while): 1074 of 11303
+2025-05-07 10:05:20.449741: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:3593: Filling up shuffle buffer (this may take a while): 2692 of 11303
+2025-05-07 10:05:38.489198: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:3593: Filling up shuffle buffer (this may take a while): 5205 of 11303
+2025-05-07 10:05:57.854050: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:3593: Filling up shuffle buffer (this may take a while): 7721 of 11303
+2025-05-07 10:06:17.493432: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:3593: Filling up shuffle buffer (this may take a while): 10227 of 11303
+2025-05-07 10:06:22.722247: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:482] Shuffle buffer filled.
+2025-05-07 10:08:32.388713: I tensorflow/core/framework/local_rendezvous.cc:407] Local rendezvous is aborting with status: OUT_OF_RANGE: End of sequence
+/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/sklearn/metrics/_ranking.py:1188: UndefinedMetricWarning: No positive samples in y_true, true positive value should be meaningless
+  warnings.warn(
+2025-05-07 10:08:49.272757: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:4790: Filling up shuffle buffer (this may take a while): 1339 of 11303
+2025-05-07 10:09:02.379302: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:4790: Filling up shuffle buffer (this may take a while): 2692 of 11303
+2025-05-07 10:09:21.102705: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:4790: Filling up shuffle buffer (this may take a while): 5205 of 11303
+2025-05-07 10:09:39.387415: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:4790: Filling up shuffle buffer (this may take a while): 7717 of 11303
+2025-05-07 10:09:50.512688: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:4790: Filling up shuffle buffer (this may take a while): 8973 of 11303
+2025-05-07 10:10:05.896492: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:482] Shuffle buffer filled.
+/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/sklearn/metrics/_ranking.py:1188: UndefinedMetricWarning: No positive samples in y_true, true positive value should be meaningless
+  warnings.warn(
+2025-05-07 10:12:30.673482: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:5987: Filling up shuffle buffer (this may take a while): 1103 of 11303
+2025-05-07 10:12:52.894239: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:5987: Filling up shuffle buffer (this may take a while): 3951 of 11303
+2025-05-07 10:13:12.097774: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:5987: Filling up shuffle buffer (this may take a while): 6461 of 11303
+2025-05-07 10:13:32.414966: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:5987: Filling up shuffle buffer (this may take a while): 8973 of 11303
+2025-05-07 10:13:47.543311: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:482] Shuffle buffer filled.
+/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/sklearn/metrics/_ranking.py:1188: UndefinedMetricWarning: No positive samples in y_true, true positive value should be meaningless
+  warnings.warn(
+2025-05-07 10:16:14.668525: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:7184: Filling up shuffle buffer (this may take a while): 1337 of 11303
+2025-05-07 10:16:28.453099: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:7184: Filling up shuffle buffer (this may take a while): 2692 of 11303
+2025-05-07 10:16:44.566179: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:7184: Filling up shuffle buffer (this may take a while): 5183 of 11303
+2025-05-07 10:16:57.422031: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:7184: Filling up shuffle buffer (this may take a while): 6461 of 11303
+2025-05-07 10:17:19.545653: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:7184: Filling up shuffle buffer (this may take a while): 8973 of 11303
+2025-05-07 10:17:35.000847: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:7184: Filling up shuffle buffer (this may take a while): 11029 of 11303
+2025-05-07 10:17:35.092240: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:482] Shuffle buffer filled.
+/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/sklearn/metrics/_ranking.py:1188: UndefinedMetricWarning: No positive samples in y_true, true positive value should be meaningless
+  warnings.warn(
+2025-05-07 10:20:00.684228: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:8381: Filling up shuffle buffer (this may take a while): 1086 of 11303
+2025-05-07 10:20:15.088774: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:8381: Filling up shuffle buffer (this may take a while): 2692 of 11303
+2025-05-07 10:20:31.969320: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:8381: Filling up shuffle buffer (this may take a while): 5204 of 11303
+2025-05-07 10:20:42.522508: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:8381: Filling up shuffle buffer (this may take a while): 6461 of 11303
+2025-05-07 10:21:02.428609: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:8381: Filling up shuffle buffer (this may take a while): 8973 of 11303
+2025-05-07 10:21:17.718669: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:482] Shuffle buffer filled.
+2025-05-07 10:23:26.737580: I tensorflow/core/framework/local_rendezvous.cc:407] Local rendezvous is aborting with status: OUT_OF_RANGE: End of sequence
+/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/sklearn/metrics/_ranking.py:1188: UndefinedMetricWarning: No positive samples in y_true, true positive value should be meaningless
+  warnings.warn(
+2025-05-07 10:23:44.478752: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:9578: Filling up shuffle buffer (this may take a while): 1073 of 11303
+2025-05-07 10:23:58.267384: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:9578: Filling up shuffle buffer (this may take a while): 2692 of 11303
+2025-05-07 10:24:15.184645: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:9578: Filling up shuffle buffer (this may take a while): 5204 of 11303
+2025-05-07 10:24:26.554535: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:9578: Filling up shuffle buffer (this may take a while): 6461 of 11303
+2025-05-07 10:24:46.429443: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:9578: Filling up shuffle buffer (this may take a while): 8977 of 11303
+2025-05-07 10:25:01.619570: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:482] Shuffle buffer filled.
+/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/sklearn/metrics/_ranking.py:1188: UndefinedMetricWarning: No positive samples in y_true, true positive value should be meaningless
+  warnings.warn(
+2025-05-07 10:27:28.869211: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:10775: Filling up shuffle buffer (this may take a while): 1067 of 11304
+2025-05-07 10:27:51.209724: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:10775: Filling up shuffle buffer (this may take a while): 3951 of 11304
+2025-05-07 10:28:10.767883: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:10775: Filling up shuffle buffer (this may take a while): 6461 of 11304
+2025-05-07 10:28:28.594746: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:10775: Filling up shuffle buffer (this may take a while): 8973 of 11304
+2025-05-07 10:28:40.863915: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:452] ShuffleDatasetV3:10775: Filling up shuffle buffer (this may take a while): 10229 of 11304
+2025-05-07 10:28:45.923413: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:482] Shuffle buffer filled.
+/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/sklearn/metrics/_ranking.py:1188: UndefinedMetricWarning: No positive samples in y_true, true positive value should be meaningless
+  warnings.warn(
+finished task with id:: 3789

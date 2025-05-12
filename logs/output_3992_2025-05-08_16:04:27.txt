@@ -1,0 +1,180 @@
+TensorFlow Version: 2.19.0
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+
+=== Using model: InceptionV3. ===
+RUN ID: 2025-05-08_16:04:31
+Test fold: 0
+Fold 0 Class weights: {np.int64(0): np.float64(0.33942942942942944), np.int64(1): np.float64(0.3643778207607995), np.int64(2): 1.5, np.int64(3): 1.5, np.int64(4): 1.5, np.int64(5): 1.5, np.int64(6): 1.5, np.int64(7): np.float64(0.8372592592592593), np.int64(8): 1.5, np.int64(9): 1.5, np.int64(10): np.float64(0.373776455026455), np.int64(11): np.float64(0.15568870523415979), np.int64(12): np.float64(0.30781590413943355), np.int64(13): np.float64(1.1016569200779727), np.int64(14): np.float64(0.7162864385297846), np.int64(15): 1.5, np.int64(16): 1.5, np.int64(17): 1.5, np.int64(18): 1.5, np.int64(19): 1.5, np.int64(20): np.float64(0.4905815972222222), np.int64(21): np.float64(0.1948121337469838), np.int64(22): 1.5, np.int64(23): 1.5, np.int64(24): 1.5, np.int64(25): 1.5, np.int64(26): 1.5, np.int64(27): 1.5, np.int64(28): 1.5, np.int64(29): 1.5, np.int64(30): np.float64(0.43912198912198913), np.int64(31): np.float64(0.2718374218374218), np.int64(32): 1.5, np.int64(33): 1.5, np.int64(34): 1.5, np.int64(35): np.float64(0.9013556618819777), np.int64(36): 1.5, np.int64(37): np.float64(0.6800842358604091), np.int64(38): 1.5, np.int64(39): 1.5, np.int64(40): np.float64(0.3242398164084911), np.int64(41): np.float64(0.24625272331154685), np.int64(42): np.float64(1.1081372549019608), np.int64(43): np.float64(1.1417171717171717), np.int64(44): np.float64(1.2312636165577342), np.int64(45): 1.5, np.int64(46): 1.5, np.int64(47): 1.5, np.int64(48): 1.5, np.int64(49): 1.5, np.int64(50): np.float64(0.682548309178744), np.int64(51): np.float64(0.42620663650075413), np.int64(52): 1.5, np.int64(53): 1.5, np.int64(54): 1.5, np.int64(55): 1.5, np.int64(56): 1.5, np.int64(57): 1.5, np.int64(58): 1.5, np.int64(59): 1.5}
+===== Fine Tuning 1 layers! =====
+Epoch 1/100
+707/707 - 181s - 256ms/step - accuracy: 0.0621 - loss: 3.0209 - val_accuracy: 0.0151 - val_loss: 4.0310 - learning_rate: 0.0100
+Epoch 2/100
+707/707 - 129s - 183ms/step - accuracy: 0.0235 - loss: 3.0313 - val_accuracy: 0.0533 - val_loss: 4.0363 - learning_rate: 0.0100
+Epoch 3/100
+707/707 - 131s - 185ms/step - accuracy: 0.0305 - loss: 3.1535 - val_accuracy: 0.0382 - val_loss: 5.1004 - learning_rate: 0.0100
+Epoch 4/100
+707/707 - 127s - 180ms/step - accuracy: 0.0389 - loss: 2.9314 - val_accuracy: 0.0151 - val_loss: 4.1087 - learning_rate: 0.0100
+Epoch 5/100
+707/707 - 129s - 182ms/step - accuracy: 0.0396 - loss: 3.0036 - val_accuracy: 0.0231 - val_loss: 4.0874 - learning_rate: 0.0100
+Epoch 6/100
+707/707 - 130s - 184ms/step - accuracy: 0.0396 - loss: 2.9603 - val_accuracy: 0.0518 - val_loss: 5.6698 - learning_rate: 0.0100
+Epoch 7/100
+707/707 - 124s - 175ms/step - accuracy: 0.0319 - loss: 3.1758 - val_accuracy: 0.0111 - val_loss: 6.6777 - learning_rate: 0.0100
+Epoch 8/100
+707/707 - 129s - 182ms/step - accuracy: 0.0275 - loss: 3.2813 - val_accuracy: 0.0494 - val_loss: 4.1099 - learning_rate: 0.0100
+Epoch 9/100
+707/707 - 133s - 188ms/step - accuracy: 0.0258 - loss: 3.3106 - val_accuracy: 0.0446 - val_loss: 3.9656 - learning_rate: 0.0100
+Epoch 10/100
+707/707 - 129s - 182ms/step - accuracy: 0.0267 - loss: 3.0751 - val_accuracy: 0.1067 - val_loss: 3.9601 - learning_rate: 0.0100
+Epoch 11/100
+707/707 - 131s - 185ms/step - accuracy: 0.0390 - loss: 2.8600 - val_accuracy: 0.1067 - val_loss: 3.9583 - learning_rate: 0.0100
+Epoch 12/100
+707/707 - 130s - 184ms/step - accuracy: 0.0366 - loss: 2.9361 - val_accuracy: 0.0382 - val_loss: 5.0678 - learning_rate: 0.0100
+Epoch 13/100
+707/707 - 139s - 196ms/step - accuracy: 0.0413 - loss: 3.0899 - val_accuracy: 0.0151 - val_loss: 5.8656 - learning_rate: 0.0100
+Epoch 14/100
+707/707 - 136s - 192ms/step - accuracy: 0.0347 - loss: 2.9548 - val_accuracy: 0.0199 - val_loss: 3.9255 - learning_rate: 0.0100
+Epoch 15/100
+707/707 - 128s - 181ms/step - accuracy: 0.0372 - loss: 2.9337 - val_accuracy: 0.0239 - val_loss: 5.5790 - learning_rate: 0.0100
+Epoch 16/100
+707/707 - 135s - 191ms/step - accuracy: 0.0369 - loss: 3.1748 - val_accuracy: 0.0151 - val_loss: 4.0604 - learning_rate: 0.0100
+Epoch 17/100
+707/707 - 133s - 188ms/step - accuracy: 0.0249 - loss: 3.0124 - val_accuracy: 0.0860 - val_loss: 4.5727 - learning_rate: 0.0100
+Epoch 18/100
+707/707 - 132s - 187ms/step - accuracy: 0.0384 - loss: 2.8661 - val_accuracy: 0.0454 - val_loss: 4.0432 - learning_rate: 0.0100
+Epoch 19/100
+707/707 - 128s - 181ms/step - accuracy: 0.0280 - loss: 3.2691 - val_accuracy: 0.0135 - val_loss: 5.9759 - learning_rate: 0.0100
+Epoch 20/100
+707/707 - 125s - 177ms/step - accuracy: 0.0384 - loss: 3.3395 - val_accuracy: 0.1067 - val_loss: 3.9933 - learning_rate: 0.0100
+Epoch 21/100
+707/707 - 128s - 181ms/step - accuracy: 0.0387 - loss: 2.9503 - val_accuracy: 0.0446 - val_loss: 3.9696 - learning_rate: 0.0100
+Epoch 22/100
+
+Epoch 22: ReduceLROnPlateau reducing learning rate to 0.004999999888241291.
+707/707 - 133s - 189ms/step - accuracy: 0.0334 - loss: 2.7830 - val_accuracy: 0.0199 - val_loss: 3.9399 - learning_rate: 0.0100
+Epoch 23/100
+707/707 - 128s - 181ms/step - accuracy: 0.0300 - loss: 2.9691 - val_accuracy: 0.0151 - val_loss: 4.0781 - learning_rate: 0.0050
+Epoch 24/100
+707/707 - 130s - 183ms/step - accuracy: 0.0277 - loss: 3.1364 - val_accuracy: 0.0151 - val_loss: 4.0276 - learning_rate: 0.0050
+Epoch 25/100
+707/707 - 129s - 182ms/step - accuracy: 0.0269 - loss: 2.6992 - val_accuracy: 0.0199 - val_loss: 3.9341 - learning_rate: 0.0050
+Epoch 26/100
+707/707 - 134s - 190ms/step - accuracy: 0.0239 - loss: 3.0284 - val_accuracy: 0.0111 - val_loss: 6.7496 - learning_rate: 0.0050
+Epoch 27/100
+707/707 - 133s - 188ms/step - accuracy: 0.0369 - loss: 3.2112 - val_accuracy: 0.0199 - val_loss: 3.9175 - learning_rate: 0.0050
+Epoch 28/100
+707/707 - 131s - 185ms/step - accuracy: 0.0272 - loss: 3.0653 - val_accuracy: 0.0151 - val_loss: 5.8276 - learning_rate: 0.0050
+Epoch 29/100
+707/707 - 131s - 185ms/step - accuracy: 0.0257 - loss: 3.1668 - val_accuracy: 0.0613 - val_loss: 5.1725 - learning_rate: 0.0050
+Epoch 30/100
+707/707 - 126s - 178ms/step - accuracy: 0.0255 - loss: 3.3230 - val_accuracy: 0.0151 - val_loss: 4.0434 - learning_rate: 0.0050
+Epoch 31/100
+707/707 - 127s - 179ms/step - accuracy: 0.0373 - loss: 2.7934 - val_accuracy: 0.0382 - val_loss: 5.1386 - learning_rate: 0.0050
+Epoch 32/100
+707/707 - 126s - 179ms/step - accuracy: 0.0304 - loss: 2.8919 - val_accuracy: 0.0183 - val_loss: 5.4099 - learning_rate: 0.0050
+Epoch 33/100
+707/707 - 127s - 179ms/step - accuracy: 0.0309 - loss: 3.0909 - val_accuracy: 0.0494 - val_loss: 4.1156 - learning_rate: 0.0050
+Epoch 34/100
+707/707 - 132s - 186ms/step - accuracy: 0.0357 - loss: 2.7170 - val_accuracy: 0.0342 - val_loss: 4.4924 - learning_rate: 0.0050
+Epoch 35/100
+
+Epoch 35: ReduceLROnPlateau reducing learning rate to 0.0024999999441206455.
+707/707 - 137s - 193ms/step - accuracy: 0.0325 - loss: 2.8560 - val_accuracy: 0.0390 - val_loss: 6.4575 - learning_rate: 0.0050
+Epoch 36/100
+707/707 - 134s - 190ms/step - accuracy: 0.0337 - loss: 2.9384 - val_accuracy: 0.0247 - val_loss: 6.3837 - learning_rate: 0.0025
+Epoch 37/100
+707/707 - 128s - 181ms/step - accuracy: 0.0349 - loss: 2.7065 - val_accuracy: 0.0533 - val_loss: 4.0048 - learning_rate: 0.0025
+Epoch 38/100
+707/707 - 129s - 183ms/step - accuracy: 0.0521 - loss: 3.1240 - val_accuracy: 0.0677 - val_loss: 5.7884 - learning_rate: 0.0025
+Epoch 39/100
+707/707 - 129s - 183ms/step - accuracy: 0.0297 - loss: 3.0642 - val_accuracy: 0.0860 - val_loss: 4.5343 - learning_rate: 0.0025
+Epoch 40/100
+707/707 - 128s - 181ms/step - accuracy: 0.0415 - loss: 2.8938 - val_accuracy: 0.0151 - val_loss: 5.8497 - learning_rate: 0.0025
+Epoch 41/100
+707/707 - 131s - 186ms/step - accuracy: 0.0211 - loss: 3.0892 - val_accuracy: 0.0533 - val_loss: 4.0104 - learning_rate: 0.0025
+Epoch 42/100
+707/707 - 132s - 187ms/step - accuracy: 0.0408 - loss: 2.9005 - val_accuracy: 0.0613 - val_loss: 5.2348 - learning_rate: 0.0025
+Epoch 43/100
+
+Epoch 43: ReduceLROnPlateau reducing learning rate to 0.0012499999720603228.
+707/707 - 132s - 186ms/step - accuracy: 0.0496 - loss: 2.7535 - val_accuracy: 0.0494 - val_loss: 4.1571 - learning_rate: 0.0025
+Epoch 43: early stopping
+Restoring model weights from the end of the best epoch: 27.
+Fold 0 Evaluation results: [3.919933557510376, 0.01990445889532566]
+              precision    recall  f1-score   support
+
+        1820       0.00      0.00      0.00        62
+        1821       0.00      0.00      0.00        57
+        1822       0.00      0.00      0.00         1
+        1823       0.00      0.00      0.00         1
+        1824       0.00      0.00      0.00         1
+        1825       0.00      0.00      0.00         3
+        1826       0.00      0.00      0.00         2
+        1827       0.02      1.00      0.04        25
+        1828       0.00      0.00      0.00         1
+        1829       0.00      0.00      0.00         5
+        1830       0.00      0.00      0.00        56
+        1831       0.00      0.00      0.00       134
+        1832       0.00      0.00      0.00        67
+        1833       0.00      0.00      0.00        19
+        1834       0.00      0.00      0.00        29
+        1835       0.00      0.00      0.00         2
+        1836       0.00      0.00      0.00         4
+        1837       0.00      0.00      0.00         6
+        1838       0.00      0.00      0.00         3
+        1839       0.00      0.00      0.00         1
+        1840       0.00      0.00      0.00        43
+        1841       0.00      0.00      0.00       108
+        1842       0.00      0.00      0.00         6
+        1843       0.00      0.00      0.00         6
+        1844       0.00      0.00      0.00         1
+        1845       0.00      0.00      0.00         1
+        1846       0.00      0.00      0.00         6
+        1847       0.00      0.00      0.00         2
+        1848       0.00      0.00      0.00         5
+        1849       0.00      0.00      0.00         6
+        1850       0.00      0.00      0.00        48
+        1851       0.00      0.00      0.00        77
+        1852       0.00      0.00      0.00         7
+        1853       0.00      0.00      0.00         7
+        1854       0.00      0.00      0.00         3
+        1855       0.00      0.00      0.00        23
+        1856       0.00      0.00      0.00        12
+        1857       0.00      0.00      0.00        30
+        1858       0.00      0.00      0.00         2
+        1859       0.00      0.00      0.00         2
+        1860       0.00      0.00      0.00        65
+        1861       0.00      0.00      0.00        85
+        1862       0.00      0.00      0.00        19
+        1863       0.00      0.00      0.00        19
+        1864       0.00      0.00      0.00        17
+        1865       0.00      0.00      0.00         7
+        1866       0.00      0.00      0.00         5
+        1867       0.00      0.00      0.00        11
+        1868       0.00      0.00      0.00         7
+        1869       0.00      0.00      0.00         5
+        1870       0.00      0.00      0.00        31
+        1871       0.00      0.00      0.00        49
+        1872       0.00      0.00      0.00         7
+        1873       0.00      0.00      0.00        10
+        1874       0.00      0.00      0.00         5
+        1875       0.00      0.00      0.00        14
+        1876       0.00      0.00      0.00        10
+        1877       0.00      0.00      0.00         5
+        1878       0.00      0.00      0.00         9
+        1879       0.00      0.00      0.00         2
+
+    accuracy                           0.02      1256
+   macro avg       0.00      0.02      0.00      1256
+weighted avg       0.00      0.02      0.00      1256
+
+Matthews Correlation Coefficient: 0.000
+Macro avg F1: 0.001
+Weighted avg F1: 0.001
+Micro avg F1: 0.020
+Top-3 Accuracy: 0.050
+Top-5 Accuracy: 0.114
+Micro ROC AUC  = 0.75
+Macro ROC AUC (present classes) = 0.50
+Classification MAE (in years): 20.14

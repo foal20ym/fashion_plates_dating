@@ -1,0 +1,34 @@
+TensorFlow Version: 2.20.0-dev20250508
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+
+=== Using model: InceptionV3. ===
+RUN ID: 2025-05-12_06:37:28
+Test fold: 0
+
+===== Fine Tuning 7 layers! =====
+Epoch 1/300
+1413/1413 - 163s - 115ms/step - accuracy: 0.1913 - loss: 4.0284 - val_accuracy: 0.3336 - val_loss: 3.3307 - learning_rate: 6.8751e-04
+Epoch 2/300
+1413/1413 - 99s - 70ms/step - accuracy: 0.2790 - loss: 3.5488 - val_accuracy: 0.3965 - val_loss: 2.8205 - learning_rate: 6.8751e-04
+Epoch 3/300
+1413/1413 - 96s - 68ms/step - accuracy: 0.3104 - loss: 3.3396 - val_accuracy: 0.4260 - val_loss: 2.6388 - learning_rate: 6.8751e-04
+Epoch 4/300
+1413/1413 - 96s - 68ms/step - accuracy: 0.3335 - loss: 3.2134 - val_accuracy: 0.4275 - val_loss: 2.6684 - learning_rate: 6.8751e-04
+Epoch 5/300
+1413/1413 - 93s - 66ms/step - accuracy: 0.3373 - loss: 3.1875 - val_accuracy: 0.4713 - val_loss: 2.5582 - learning_rate: 6.8751e-04
+Epoch 6/300
+1413/1413 - 94s - 66ms/step - accuracy: 0.3551 - loss: 3.0948 - val_accuracy: 0.4753 - val_loss: 2.4558 - learning_rate: 6.8751e-04
+Epoch 7/300
+1413/1413 - 93s - 66ms/step - accuracy: 0.3548 - loss: 3.0663 - val_accuracy: 0.4793 - val_loss: 2.4233 - learning_rate: 6.8751e-04
+Epoch 8/300
+1413/1413 - 94s - 67ms/step - accuracy: 0.3678 - loss: 3.0199 - val_accuracy: 0.4952 - val_loss: 2.4623 - learning_rate: 6.8751e-04
+Epoch 9/300
+1413/1413 - 96s - 68ms/step - accuracy: 0.3623 - loss: 3.0188 - val_accuracy: 0.5127 - val_loss: 2.3322 - learning_rate: 6.8751e-04
+Epoch 10/300
+1413/1413 - 95s - 68ms/step - accuracy: 0.3728 - loss: 2.9772 - val_accuracy: 0.5032 - val_loss: 2.2825 - learning_rate: 6.8751e-04
+Epoch 11/300
+1413/1413 - 93s - 66ms/step - accuracy: 0.3855 - loss: 2.9222 - val_accuracy: 0.5159 - val_loss: 2.2499 - learning_rate: 6.8751e-04
+Epoch 12/300
+1413/1413 - 92s - 65ms/step - accuracy: 0.3788 - loss: 2.9295 - val_accuracy: 0.5119 - val_loss: 2.3405 - learning_rate: 6.8751e-04
+Epoch 13/300

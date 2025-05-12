@@ -1,0 +1,28 @@
+TensorFlow Version: 2.20.0-dev20250508
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+
+=== Using model: InceptionV3. ===
+RUN ID: 2025-05-12_06:54:17
+Test fold: 0
+Fold 0 Running hyperparameter tuning...
+Using Bayesian Optimization for hyperparameter tuning
+
+===== Starting Hyperparameter Tuning with bayesian search =====
+Max trials: 15, Executions per trial: 1
+
+Tuning with batch size: 8
+
+Search: Running Trial #1
+
+Value             |Best Value So Far |Hyperparameter
+0.4               |0.4               |dropout
+0.00067117        |0.00067117        |learning_rate
+0                 |0                 |l2_regularization
+9                 |9                 |fine_tune_layers
+256               |256               |dense_units
+2                 |2                 |dense_layers
+
+Epoch 1/300
+1413/1413 - 149s - 106ms/step - accuracy: 0.1197 - loss: 4.3669 - val_accuracy: 0.2166 - val_loss: 4.0245 - learning_rate: 6.7117e-04
+Epoch 2/300
