@@ -1,0 +1,50 @@
+Using model: NASNetMobile.
+TensorFlow Version: 2.6.0
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+Test fold: 0
+Epoch 1/100
+707/707 - 143s - loss: 0.0423 - mae: 0.1531 - mse: 0.0423 - val_loss: 0.0339 - val_mae: 0.1406 - val_mse: 0.0339
+Epoch 2/100
+707/707 - 123s - loss: 0.0287 - mae: 0.1272 - mse: 0.0287 - val_loss: 0.0293 - val_mae: 0.1261 - val_mse: 0.0293
+Epoch 3/100
+707/707 - 121s - loss: 0.0260 - mae: 0.1196 - mse: 0.0260 - val_loss: 0.0348 - val_mae: 0.1439 - val_mse: 0.0348
+Epoch 4/100
+707/707 - 119s - loss: 0.0254 - mae: 0.1181 - mse: 0.0254 - val_loss: 0.0267 - val_mae: 0.1237 - val_mse: 0.0267
+Epoch 5/100
+707/707 - 114s - loss: 0.0249 - mae: 0.1159 - mse: 0.0249 - val_loss: 0.0254 - val_mae: 0.1208 - val_mse: 0.0254
+Epoch 6/100
+707/707 - 115s - loss: 0.0240 - mae: 0.1141 - mse: 0.0240 - val_loss: 0.0290 - val_mae: 0.1288 - val_mse: 0.0290
+Epoch 7/100
+707/707 - 126s - loss: 0.0242 - mae: 0.1144 - mse: 0.0242 - val_loss: 0.0249 - val_mae: 0.1193 - val_mse: 0.0249
+Epoch 8/100
+707/707 - 130s - loss: 0.0233 - mae: 0.1122 - mse: 0.0233 - val_loss: 0.0271 - val_mae: 0.1276 - val_mse: 0.0271
+Epoch 9/100
+707/707 - 134s - loss: 0.0235 - mae: 0.1136 - mse: 0.0235 - val_loss: 0.0276 - val_mae: 0.1243 - val_mse: 0.0276
+Epoch 10/100
+707/707 - 129s - loss: 0.0227 - mae: 0.1114 - mse: 0.0227 - val_loss: 0.0253 - val_mae: 0.1192 - val_mse: 0.0253
+
+Epoch 00010: ReduceLROnPlateau reducing learning rate to 0.0009999999776482583.
+Epoch 11/100
+707/707 - 122s - loss: 0.0205 - mae: 0.1047 - mse: 0.0205 - val_loss: 0.0240 - val_mae: 0.1154 - val_mse: 0.0240
+Epoch 12/100
+707/707 - 120s - loss: 0.0199 - mae: 0.1032 - mse: 0.0199 - val_loss: 0.0231 - val_mae: 0.1127 - val_mse: 0.0231
+Epoch 13/100
+707/707 - 123s - loss: 0.0202 - mae: 0.1034 - mse: 0.0202 - val_loss: 0.0228 - val_mae: 0.1120 - val_mse: 0.0228
+Epoch 14/100
+707/707 - 127s - loss: 0.0197 - mae: 0.1022 - mse: 0.0197 - val_loss: 0.0232 - val_mae: 0.1124 - val_mse: 0.0232
+Epoch 15/100
+707/707 - 126s - loss: 0.0197 - mae: 0.1022 - mse: 0.0197 - val_loss: 0.0230 - val_mae: 0.1119 - val_mse: 0.0230
+Epoch 16/100
+707/707 - 132s - loss: 0.0192 - mae: 0.1008 - mse: 0.0192 - val_loss: 0.0230 - val_mae: 0.1126 - val_mse: 0.0230
+
+Epoch 00016: ReduceLROnPlateau reducing learning rate to 9.999999310821295e-05.
+Epoch 17/100
+707/707 - 124s - loss: 0.0194 - mae: 0.1015 - mse: 0.0194 - val_loss: 0.0228 - val_mae: 0.1118 - val_mse: 0.0228
+Restoring model weights from the end of the best epoch.
+Epoch 00017: early stopping
+Fold 0 Evaluation results: [0.0228424072265625, 0.11201781034469604, 0.0228424072265625]
+Fold 0 Exactly correct year predictions: 22 out of 1256
+Fold 0 Final MAE (rounded to years): 18.17
+Metrics: {'mae': 18.168789808917197, 'exact': 22, 'total': 1256}
+Total running time: 0 hours, 36 minutes, 58 seconds

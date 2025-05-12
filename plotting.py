@@ -1,17 +1,57 @@
-import pandas as pd
 import numpy as np
-import tensorflow as tf
-import time
 import os
-import yaml
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import label_binarize
-from sklearn.metrics import roc_auc_score, roc_curve, classification_report, confusion_matrix, f1_score
+from sklearn.metrics import (
+    roc_auc_score,
+    roc_curve,
+    classification_report,
+    confusion_matrix,
+    f1_score,
+    matthews_corrcoef,
+)
 import seaborn as sns
+
+
+def plot_class_distribution(train_labels, class_weights=None, plot_dir=None):
+    plt.figure(figsize=(12, 6))
+
+    # Count occurrences of each class
+    unique_labels = sorted(set(train_labels))
+    counts = [train_labels.count(label) for label in unique_labels]
+
+    # Create bar chart of class distribution
+    ax = plt.subplot(1, 2, 1)
+    ax.bar(range(len(unique_labels)), counts)
+    ax.set_title("Class Distribution")
+    ax.set_xlabel("Class Index")
+    ax.set_ylabel("Count")
+    ax.set_xticks(range(len(unique_labels)), unique_labels)
+    step = max(1, len(unique_labels) // 10)
+    ax.set_xticklabels([str(label) if i % step == 0 else "" for i, label in enumerate(unique_labels)])
+
+    ax = plt.subplot(1, 2, 2)
+    weights = [class_weights.get(label, 0) for label in unique_labels]
+    ax.bar(range(len(unique_labels)), weights)
+    ax.set_title("Class Weights")
+    ax.set_xlabel("Class Index")
+    ax.set_ylabel("Weight")
+    ax.set_xticks(range(len(unique_labels)))
+    step = max(1, len(unique_labels) // 10)
+    ax.set_xticklabels([str(label) if i % step == 0 else "" for i, label in enumerate(unique_labels)])
+
+    plt.tight_layout()
+
+    if plot_dir:
+        os.makedirs(plot_dir, exist_ok=True)
+        plt.savefig(os.path.join(plot_dir, "class_distribution_weights.png"))
+    plt.close()
+
 
 def top_n_accuracy(y_true, y_score, n=3):
     top_n = np.argsort(y_score, axis=1)[:, -n:]
     return np.mean([y in top_n_row for y, top_n_row in zip(y_true, top_n)])
+
 
 def plot_cv_metrics_summary(all_metrics, plot_dir):
     if not all_metrics or not isinstance(all_metrics, list):
@@ -101,6 +141,9 @@ def plot_metrics(
             y_true, y_pred, labels=all_labels, target_names=target_names, output_dict=True, zero_division=0
         )
         print(classification_report(y_true, y_pred, labels=all_labels, target_names=target_names, zero_division=0))
+
+        mcc = matthews_corrcoef(y_true, y_pred)
+        print(f"Matthews Correlation Coefficient: {mcc:.3f}")
 
         print(f"Macro avg F1: {report['macro avg']['f1-score']:.3f}")
         print(f"Weighted avg F1: {report['weighted avg']['f1-score']:.3f}")
