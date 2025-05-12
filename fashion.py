@@ -86,6 +86,7 @@ def get_input_shape(model_name):
         return (224, 224, 3)
     elif model_name == "InceptionV3":
         return (299, 299, 3)
+        # return (384, 384, 3)
     elif model_name == "EfficientNetB3":
         return (255, 255, 3)
     else:
@@ -127,6 +128,11 @@ def ordinal_categorical_cross_entropy(y_true, y_pred):
     true_labels = tf.argmax(y_true, axis=-1)
     pred_labels = tf.argmax(y_pred, axis=-1)
     weights = tf.abs(tf.cast(pred_labels - true_labels, tf.float32)) / (num_classes - 1.0)
+
+    # Apply label smoothing
+    # smooth_y_true = y_true * (1.0 - 0.1) + 0.1 / num_classes
+
+    # base_loss = tf.keras.losses.sparse_categorical_crossentropy(smooth_y_true, y_pred)
     base_loss = tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred)
     loss = (1.0 + weights) * base_loss
     return loss
@@ -271,12 +277,20 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
             preds = model.predict(val_ds_batched, verbose=0)
             preds_years = preds * (max_year - min_year) + min_year
             preds_years_rounded = np.round(preds_years).astype(int)
+
+            # Get image paths from the test file
+            test_df = pd.read_csv(test_file)
+            image_paths = [p if p.startswith("data/") else os.path.join("data", p) for p in test_df["file"].tolist()]
+
+            # Collect true labels from the batched dataset
             y_true = []
             for _, label in val_ds_batched.unbatch():
                 y_true.append(label.numpy())
+
             y_true = np.array(y_true)
             y_true_years = y_true * (max_year - min_year) + min_year
             y_true_years_rounded = np.round(y_true_years).astype(int)
+
             exact_matches = np.sum(preds_years_rounded.flatten() == y_true_years_rounded.flatten())
             total = len(y_true_years_rounded)
             mae = np.mean(np.abs(preds_years_rounded.flatten() - y_true_years_rounded.flatten()))
@@ -287,6 +301,22 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
             os.makedirs("plots", exist_ok=True)
 
             plot_metrics(history, fold_str, plot_dir, regression, class_to_idx)
+
+            # Perform misclassification analysis
+            misclass_analysis = analyze_misclassifications(y_true_years_rounded, preds_years_rounded, image_paths)
+
+            # Print analysis results
+            print(f"\n{fold_print}Misclassification Analysis:")
+            print(
+                f"Near misses (within 2 years): {misclass_analysis['num_near_misses']} out of {misclass_analysis['num_misclassified']} misclassifications ({misclass_analysis['percent_near_misses']:.2f}%)"
+            )
+            print(f"MAE with outliers: {misclass_analysis['original_mae']:.2f}")
+            print(
+                f"MAE without outliers: {misclass_analysis['non_outlier_mae']:.2f} (improvement: {misclass_analysis['mae_improvement']:.2f})"
+            )
+            print(f"\n5 Worst misclassifications:")
+            for img_path, true_year, pred_year, error in misclass_analysis["worst_misclassifications"]:
+                print(f"Image: {img_path}, True: {true_year}, Predicted: {pred_year}, Error: {error}")
 
     else:
         BATCH_SIZE = config["training"]["batch_size"]
@@ -371,12 +401,19 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
             preds = model.predict(val_ds_batched, verbose=0)
             preds_years = preds * (max_year - min_year) + min_year
             preds_years_rounded = np.round(preds_years).astype(int)
+
+            # Get image paths from the test file
+            test_df = pd.read_csv(test_file)
+            image_paths = [p if p.startswith("data/") else os.path.join("data", p) for p in test_df["file"].tolist()]
+
             y_true = []
             for _, label in val_ds_batched.unbatch():
                 y_true.append(label.numpy())
+
             y_true = np.array(y_true)
             y_true_years = y_true * (max_year - min_year) + min_year
             y_true_years_rounded = np.round(y_true_years).astype(int)
+
             exact_matches = np.sum(preds_years_rounded.flatten() == y_true_years_rounded.flatten())
             total = len(y_true_years_rounded)
             mae = np.mean(np.abs(preds_years_rounded.flatten() - y_true_years_rounded.flatten()))
@@ -387,6 +424,22 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
             os.makedirs("plots", exist_ok=True)
 
             plot_metrics(history, fold_str, plot_dir, regression, class_to_idx)
+
+            # Perform misclassification analysis
+            misclass_analysis = analyze_misclassifications(y_true_years_rounded, preds_years_rounded, image_paths)
+
+            # Print analysis results
+            print(f"\n{fold_print}Misclassification Analysis:")
+            print(
+                f"Near misses (within 2 years): {misclass_analysis['num_near_misses']} out of {misclass_analysis['num_misclassified']} misclassifications ({misclass_analysis['percent_near_misses']:.2f}%)"
+            )
+            print(f"MAE with outliers: {misclass_analysis['original_mae']:.2f}")
+            print(
+                f"MAE without outliers: {misclass_analysis['non_outlier_mae']:.2f} (improvement: {misclass_analysis['mae_improvement']:.2f})"
+            )
+            print(f"\n5 Worst misclassifications:")
+            for img_path, true_year, pred_year, error in misclass_analysis["worst_misclassifications"]:
+                print(f"Image: {img_path}, True: {true_year}, Predicted: {pred_year}, Error: {error}")
 
         else:
             # Collect predictions
@@ -411,8 +464,79 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
                 mae_years = np.mean(np.abs(y_true_years - y_pred_years))
                 print(f"Classification MAE (in years): {mae_years:.2f}")
 
+                # Get image paths from the test file
+                test_df = pd.read_csv(test_file)
+                image_paths = [
+                    p if p.startswith("data/") else os.path.join("data", p) for p in test_df["file"].tolist()
+                ]
+
+                # Perform misclassification analysis
+                misclass_analysis = analyze_misclassifications(y_true_years, y_pred_years, image_paths)
+
+                # Print analysis results
+                print(f"\n{fold_print}Misclassification Analysis:")
+                print(
+                    f"Near misses (within 2 years): {misclass_analysis['num_near_misses']} out of {misclass_analysis['num_misclassified']} misclassifications ({misclass_analysis['percent_near_misses']:.2f}%)"
+                )
+                print(f"MAE with outliers: {misclass_analysis['original_mae']:.2f}")
+                print(
+                    f"MAE without outliers: {misclass_analysis['non_outlier_mae']:.2f} (improvement: {misclass_analysis['mae_improvement']:.2f})"
+                )
+                print(f"\n5 Worst misclassifications:")
+                for img_path, true_year, pred_year, error in misclass_analysis["worst_misclassifications"]:
+                    print(f"Image: {img_path}, True: {true_year}, Predicted: {pred_year}, Error: {error}")
+
             metrics = {"accuracy": results[1], "mae_years": mae_years, "mcc": mcc}
     return metrics
+
+
+def analyze_misclassifications(y_true, y_pred, image_paths, threshold=2, num_worst=5):
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    image_paths = np.array(image_paths)
+
+    errors = np.abs(y_true - y_pred)
+
+    # Get misclassifications and near misses
+    misclassified_idx = np.where(errors > 0)[0]
+    near_misses_idx = np.where((errors > 0) & (errors <= threshold))[0]
+
+    total_samples = len(y_true)
+    num_misclassified = len(misclassified_idx)
+    num_near_misses = len(near_misses_idx)
+
+    # Get the worst misclassifications
+    worst_idx = np.argsort(errors)[-num_worst:][::-1]
+    worst_errors = [(image_paths[i], int(y_true[i]), int(y_pred[i]), int(errors[i])) for i in worst_idx]
+
+    # Calculate MAE with and without outliers
+    original_mae = np.mean(errors)
+
+    # Define outliers as samples with errors greater than mean + 2*std
+    mean_error = np.mean(errors)
+    std_error = np.std(errors)
+    outlier_threshold = mean_error + 2 * std_error
+    outliers_idx = np.where(errors > outlier_threshold)[0]
+
+    # Calculate MAE without outliers
+    if len(outliers_idx) > 0:
+        non_outlier_mae = np.mean(errors[errors <= outlier_threshold])
+    else:
+        non_outlier_mae = original_mae
+
+    return {
+        "total_samples": total_samples,
+        "num_misclassified": num_misclassified,
+        "num_near_misses": num_near_misses,
+        "percent_near_misses": 100 * num_near_misses / num_misclassified if num_misclassified > 0 else 0,
+        "worst_misclassifications": worst_errors,
+        "original_mae": original_mae,
+        "outlier_threshold": outlier_threshold,
+        "num_outliers": len(outliers_idx),
+        "non_outlier_mae": non_outlier_mae,
+        "mae_improvement": original_mae - non_outlier_mae,
+        "outliers": [(image_paths[i], int(y_true[i]), int(y_pred[i]), int(errors[i])) for i in outliers_idx],
+    }
 
 
 def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
@@ -448,6 +572,8 @@ def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
         base_model.trainable = False
         x = base_model.output
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
+        x = tf.keras.layers.Dense(128, activation="relu")(x)
+        x = tf.keras.layers.BatchNormalization()(x)
     else:
         raise ValueError(f"Unsupported model name: {model_name}")
 
