@@ -1,0 +1,90 @@
+now processing task id:: 4334 on worker4.slurm.hj.se
+2025-05-12 06:37:25.308394: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1747031848.208818 2354484 gpu_device.cc:2018] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 8098 MB memory:  -> device: 0, name: NVIDIA A100 80GB PCIe MIG 1g.10gb, pci bus id: 0000:81:00.0, compute capability: 8.0
+2025-05-12 06:37:47.279464: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 1917 of 11303
+2025-05-12 06:38:07.203169: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 7305 of 11303
+2025-05-12 06:38:17.280944: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 10164 of 11303
+2025-05-12 06:38:21.595157: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+2025-05-12 06:38:21.628581: I external/local_xla/xla/service/service.cc:152] XLA service 0x7fc658004370 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2025-05-12 06:38:21.628664: I external/local_xla/xla/service/service.cc:160]   StreamExecutor device (0): NVIDIA A100 80GB PCIe MIG 1g.10gb, Compute Capability 8.0
+2025-05-12 06:38:21.839356: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1747031903.476670 2355128 cuda_dnn.cc:529] Loaded cuDNN version 90300
+2025-05-12 06:38:32.136214: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_8566', 88 bytes spill stores, 88 bytes spill loads
+
+2025-05-12 06:38:32.740668: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_9284', 8 bytes spill stores, 8 bytes spill loads
+
+2025-05-12 06:38:32.865908: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_8566', 16 bytes spill stores, 16 bytes spill loads
+
+2025-05-12 06:38:34.989303: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_9284', 4 bytes spill stores, 4 bytes spill loads
+
+2025-05-12 06:38:35.409557: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_9575', 4 bytes spill stores, 4 bytes spill loads
+
+2025-05-12 06:38:35.944671: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_9198', 16 bytes spill stores, 16 bytes spill loads
+
+2025-05-12 06:38:35.956734: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_9198', 96 bytes spill stores, 96 bytes spill loads
+
+I0000 00:00:1747031927.014442 2355128 device_compiler.h:196] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+2025-05-12 06:39:41.475131: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_9284', 4 bytes spill stores, 4 bytes spill loads
+
+2025-05-12 06:39:43.681137: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_9575', 4 bytes spill stores, 4 bytes spill loads
+
+2025-05-12 06:39:43.881141: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_9284', 8 bytes spill stores, 8 bytes spill loads
+
+2025-05-12 06:39:44.170526: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_9198', 96 bytes spill stores, 96 bytes spill loads
+
+2025-05-12 06:39:44.180246: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_9198', 16 bytes spill stores, 16 bytes spill loads
+
+2025-05-12 06:39:44.231974: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_8566', 88 bytes spill stores, 88 bytes spill loads
+
+2025-05-12 06:39:44.294198: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_8566', 16 bytes spill stores, 16 bytes spill loads
+
+2025-05-12 06:40:02.487818: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_2465', 4 bytes spill stores, 4 bytes spill loads
+
+2025-05-12 06:40:02.954107: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_2465', 28 bytes spill stores, 28 bytes spill loads
+
+2025-05-12 06:40:03.118048: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_2458', 296 bytes spill stores, 296 bytes spill loads
+
+2025-05-12 06:40:03.189654: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_2458', 240 bytes spill stores, 240 bytes spill loads
+
+2025-05-12 06:40:25.679865: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 2326 of 11303
+2025-05-12 06:40:46.086195: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 7696 of 11303
+2025-05-12 06:40:58.388243: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+2025-05-12 06:42:04.479170: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 2301 of 11303
+2025-05-12 06:42:24.773387: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 7810 of 11303
+2025-05-12 06:42:36.001065: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+2025-05-12 06:43:40.587290: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 2263 of 11303
+2025-05-12 06:44:00.572883: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 8020 of 11303
+2025-05-12 06:44:10.573381: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 10704 of 11303
+2025-05-12 06:44:11.806049: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+2025-05-12 06:45:16.274030: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 2535 of 11303
+2025-05-12 06:45:36.165866: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 8250 of 11303
+2025-05-12 06:45:46.269858: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 11029 of 11303
+2025-05-12 06:45:46.578983: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+2025-05-12 06:46:49.705080: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 2538 of 11303
+2025-05-12 06:47:09.701588: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 8261 of 11303
+2025-05-12 06:47:19.891132: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+2025-05-12 06:48:23.178124: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 2654 of 11303
+2025-05-12 06:48:43.178764: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 8509 of 11303
+2025-05-12 06:48:52.632549: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+2025-05-12 06:49:56.083253: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 2560 of 11303
+2025-05-12 06:50:06.090424: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 5408 of 11303
+2025-05-12 06:50:16.285544: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 8288 of 11303
+2025-05-12 06:50:26.402234: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+2025-05-12 06:51:29.981595: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 2419 of 11303
+2025-05-12 06:51:39.986023: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 5221 of 11303
+2025-05-12 06:51:59.973146: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 10757 of 11303
+2025-05-12 06:52:01.203511: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+2025-05-12 06:53:05.870968: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 2455 of 11303
+2025-05-12 06:53:25.784692: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 7903 of 11303
+2025-05-12 06:53:35.806509: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 10913 of 11303
+2025-05-12 06:53:36.502516: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+2025-05-12 06:54:41.192019: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 2470 of 11303
+2025-05-12 06:54:51.196087: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 5521 of 11303
+2025-05-12 06:55:09.927880: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+2025-05-12 06:56:14.275257: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 2524 of 11303
+2025-05-12 06:56:24.301596: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 5414 of 11303
+2025-05-12 06:56:42.996929: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+2025-05-12 06:57:46.692644: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 2552 of 11303
+2025-05-12 06:57:56.697674: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 5427 of 11303
