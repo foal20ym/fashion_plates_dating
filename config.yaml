@@ -2,27 +2,29 @@ task: classification
 
 model:
   # name: NASNetMobile
-  name: InceptionV3
+  # name: InceptionV3
   # name: ResNet101
   # name: EfficientNetB3
+  name: "ConvNeXtTiny"
+  # name: "EfficientNetV2S"
   include_top: false
   fine_tune:
     layers: 7
     use: true
   save_model: false
   l2_regularization:
-    value: 0.01
-    use: false
+    value: 0.0001
+    use: true
   dropout:
     value: 0.1
     use: true
-  dense_layers: 2
-  dense_units: 512
+  dense_layers: 1
+  dense_units: 128
 
 training:
   batch_size: 8
   epochs: 300
-  learning_rate: 0.0006875077116166043
+  learning_rate: 0.00020478841554215328
   early_stopping_patience: 16
   reduce_lr_patience: 8
   class_balancing:
@@ -32,7 +34,7 @@ training:
 cross_validation: false
 
 hyperparameter_tuning:
-  enabled: true
+  enabled: false
   method: "bayesian" # Options: "random", "bayesian", "hyperband"
   max_trials: 15
   executions_per_trial: 1
