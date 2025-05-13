@@ -55,14 +55,23 @@ def load_and_preprocess_image(path, label, image_size, augment=False):
         # image = data_augmentation(image)  # Optionally add your other augmentations here
     else:
         image = tf.cast(image, tf.float32) / 255.0
-    return image, label
+    return image
 
 
 def get_tf_dataset(
-    files, regression=False, class_to_idx=None, min_year=None, max_year=None, augment=False, image_size=(224, 224)
+    files,
+    regression=False,
+    class_to_idx=None,
+    min_year=None,
+    max_year=None,
+    augment=False,
+    image_size=(224, 224),
+    shuffle=True,
+    include_paths=False,
 ):
     image_paths, labels = create_dataset(files)
     image_paths = tf.constant(image_paths)
+
     if regression:
         labels = [(y - min_year) / (max_year - min_year) for y in labels]
         labels = tf.constant(labels, dtype=tf.float32)
@@ -71,11 +80,19 @@ def get_tf_dataset(
         labels = tf.constant(labels, dtype=tf.int32)
         # One-hot
         # labels = tf.one_hot(indices=labels_idx, depth=len(class_to_idx))
-    ds = tf.data.Dataset.from_tensor_slices((image_paths, labels))
+
+    ds = tf.data.Dataset.from_tensor_slices((image_paths, labels, image_paths))
+
     ds = ds.map(
-        lambda x, y: load_and_preprocess_image(x, y, image_size, augment=augment), num_parallel_calls=tf.data.AUTOTUNE
+        lambda x, y, z: (load_and_preprocess_image(x, y, image_size, augment=augment), y, z),
+        num_parallel_calls=tf.data.AUTOTUNE,
     )
-    ds = ds.shuffle(buffer_size=len(image_paths))
+    if shuffle:
+        ds = ds.shuffle(buffer_size=len(image_paths))
+
+    if not include_paths:
+        ds = ds.map(lambda x, y, z: (x, y))
+
     return ds
 
 
@@ -83,12 +100,17 @@ def get_input_shape(model_name):
     if model_name == "NASNetMobile":
         return (224, 224, 3)
     elif model_name == "ResNet101":
-        return (224, 224, 3)
+        # return (224, 224, 3)
+        return (384, 384, 3)
     elif model_name == "InceptionV3":
         return (299, 299, 3)
         # return (384, 384, 3)
     elif model_name == "EfficientNetB3":
         return (255, 255, 3)
+    elif model_name == "ConvNeXtTiny":
+        return (224, 224, 3)
+    elif model_name == "EfficientNetV2S":
+        return (384, 384, 3)
     else:
         raise ValueError(f"Unsupported model name: {model_name}")
 
@@ -179,6 +201,18 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         image_size=input_shape[:2],
     )
 
+    val_ds_unshuffled = get_tf_dataset(
+        [test_file],
+        regression=regression,
+        class_to_idx=class_to_idx,
+        min_year=min_year,
+        max_year=max_year,
+        augment=False,
+        image_size=input_shape[:2],
+        shuffle=False,
+        include_paths=True,
+    )
+
     # Calculate class weights for classification tasks
     class_weights = None
     if not regression and config.get("training", {}).get("class_balancing", {}).get("enabled", True):
@@ -209,6 +243,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         BATCH_SIZE = config["training"]["batch_size"]
         train_ds_batched = train_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
         val_ds_batched = val_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+        val_ds_unshuffled_batched = val_ds_unshuffled.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
         # Build and compile model
         model = build_model(
@@ -274,18 +309,16 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
 
         # Collect predictions and metrics for reporting
         if regression:
-            preds = model.predict(val_ds_batched, verbose=0)
+            preds = model.predict(val_ds_unshuffled_batched, verbose=0)
             preds_years = preds * (max_year - min_year) + min_year
             preds_years_rounded = np.round(preds_years).astype(int)
 
-            # Get image paths from the test file
-            test_df = pd.read_csv(test_file)
-            image_paths = [p if p.startswith("data/") else os.path.join("data", p) for p in test_df["file"].tolist()]
-
             # Collect true labels from the batched dataset
             y_true = []
-            for _, label in val_ds_batched.unbatch():
-                y_true.append(label.numpy())
+            image_paths = []
+            for _, labels_batch, paths_batch in val_ds_unshuffled_batched:
+                y_true.extend(labels_batch.numpy())
+                image_paths.extend([p.numpy().decode("utf-8") for p in paths_batch])
 
             y_true = np.array(y_true)
             y_true_years = y_true * (max_year - min_year) + min_year
@@ -314,7 +347,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
             print(
                 f"MAE without outliers: {misclass_analysis['non_outlier_mae']:.2f} (improvement: {misclass_analysis['mae_improvement']:.2f})"
             )
-            print(f"\n5 Worst misclassifications:")
+            print(f"\n10 Worst misclassifications:")
             for img_path, true_year, pred_year, error in misclass_analysis["worst_misclassifications"]:
                 print(f"Image: {img_path}, True: {true_year}, Predicted: {pred_year}, Error: {error}")
 
@@ -322,6 +355,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         BATCH_SIZE = config["training"]["batch_size"]
         train_ds_batched = train_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
         val_ds_batched = val_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+        val_ds_unshuffled_batched = val_ds_unshuffled.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
         # Build and compile model
         model = build_model(
@@ -398,21 +432,16 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
 
         # Collect predictions and metrics for reporting
         if regression:
-            preds = model.predict(val_ds_batched, verbose=0)
+            preds = model.predict(val_ds_unshuffled_batched, verbose=0)
             preds_years = preds * (max_year - min_year) + min_year
             preds_years_rounded = np.round(preds_years).astype(int)
 
-            # Get image paths from the test file
-            test_df = pd.read_csv(test_file)
-            image_paths = [p if p.startswith("data/") else os.path.join("data", p) for p in test_df["file"].tolist()]
-
+            # Collect true labels from the batched dataset
             y_true = []
-            for _, label in val_ds_batched.unbatch():
-                y_true.append(label.numpy())
-
-            y_true = np.array(y_true)
-            y_true_years = y_true * (max_year - min_year) + min_year
-            y_true_years_rounded = np.round(y_true_years).astype(int)
+            image_paths = []
+            for _, labels_batch, paths_batch in val_ds_unshuffled_batched:
+                y_true.extend(labels_batch.numpy())
+                image_paths.extend([p.numpy().decode("utf-8") for p in paths_batch])
 
             exact_matches = np.sum(preds_years_rounded.flatten() == y_true_years_rounded.flatten())
             total = len(y_true_years_rounded)
@@ -443,14 +472,16 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
 
         else:
             # Collect predictions
+            image_paths = []
             y_score = []
             y_true = []
             y_pred = []
-            for images, labels in val_ds_batched:
+            for images, labels, paths in val_ds_unshuffled_batched:
                 preds = model.predict(images, verbose=0)
                 y_true.extend(labels.numpy())
                 y_pred.extend(np.argmax(preds, axis=1))
                 y_score.extend(preds)
+                image_paths.extend([p.numpy().decode("utf-8") for p in paths])
             y_score = np.array(y_score)
 
             mcc = matthews_corrcoef(y_true, y_pred)
@@ -463,12 +494,6 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
                 y_pred_years = np.array([idx_to_class[idx] for idx in y_pred])
                 mae_years = np.mean(np.abs(y_true_years - y_pred_years))
                 print(f"Classification MAE (in years): {mae_years:.2f}")
-
-                # Get image paths from the test file
-                test_df = pd.read_csv(test_file)
-                image_paths = [
-                    p if p.startswith("data/") else os.path.join("data", p) for p in test_df["file"].tolist()
-                ]
 
                 # Perform misclassification analysis
                 misclass_analysis = analyze_misclassifications(y_true_years, y_pred_years, image_paths)
@@ -490,7 +515,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
     return metrics
 
 
-def analyze_misclassifications(y_true, y_pred, image_paths, threshold=2, num_worst=5):
+def analyze_misclassifications(y_true, y_pred, image_paths, threshold=2, num_worst=10):
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
     image_paths = np.array(image_paths)
@@ -568,6 +593,27 @@ def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
     elif model_name == "EfficientNetB3":
         base_model = tf.keras.applications.EfficientNetB3(
             weights="imagenet", input_shape=input_shape, include_top=False
+        )
+        base_model.trainable = False
+        x = base_model.output
+        x = tf.keras.layers.GlobalAveragePooling2D()(x)
+        x = tf.keras.layers.Dense(128, activation="relu")(x)
+        x = tf.keras.layers.BatchNormalization()(x)
+    elif model_name == "ConvNeXtTiny":
+        base_model = tf.keras.applications.ConvNeXtTiny(
+            weights="imagenet", input_shape=input_shape, include_top=False, include_preprocessing=True
+        )
+        base_model.trainable = False
+        x = base_model.output
+        x = tf.keras.layers.GlobalAveragePooling2D()(x)
+        x = tf.keras.layers.Dense(128, activation="relu")(x)
+        x = tf.keras.layers.BatchNormalization()(x)
+    elif model_name == "EfficientNetV2S":
+        base_model = tf.keras.applications.EfficientNetV2S(
+            weights="imagenet",
+            input_shape=input_shape,
+            include_top=False,
+            include_preprocessing=True,  # Let TF handle the preprocessing
         )
         base_model.trainable = False
         x = base_model.output
