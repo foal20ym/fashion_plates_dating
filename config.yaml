@@ -16,7 +16,7 @@ model:
     value: 0.0001
     use: true
   dropout:
-    value: 0.1
+    value: 0.4
     use: true
   dense_layers: 1
   dense_units: 128
@@ -72,3 +72,8 @@ hyperparameter_tuning:
       step: 1
       default: 1
       tune: true
+
+null_hypothesis_testing:
+  use: true
+  model_1: InceptionV3
+  model_2: NASNetMobile
