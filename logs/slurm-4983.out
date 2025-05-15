@@ -1,0 +1,11 @@
+now processing task id:: 4983 on worker7.slurm.hj.se
+2025-05-15 13:01:49.130877: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1747314112.341772 3922205 gpu_device.cc:2018] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 8098 MB memory:  -> device: 0, name: NVIDIA A100 80GB PCIe MIG 1g.10gb, pci bus id: 0000:81:00.0, compute capability: 8.0
+2025-05-15 13:01:56.687535: I external/local_xla/xla/service/service.cc:152] XLA service 0x7fe4440059f0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2025-05-15 13:01:56.687637: I external/local_xla/xla/service/service.cc:160]   StreamExecutor device (0): NVIDIA A100 80GB PCIe MIG 1g.10gb, Compute Capability 8.0
+2025-05-15 13:01:56.815245: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1747314117.638707 3922850 cuda_dnn.cc:524] Loaded cuDNN version 90300
+I0000 00:00:1747314123.962134 3922850 device_compiler.h:196] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+finished task with id:: 4983
