@@ -11,6 +11,7 @@ import os
 import yaml
 from plotting import plot_cv_metrics_summary, plot_metrics, plot_class_distribution
 import keras_cv  # Had to run: pip install --upgrade keras-cv-nightly tf-nightly
+from keras.saving import register_keras_serializable
 
 
 def load_config(config_path="config.yaml"):
@@ -145,6 +146,7 @@ def get_class_weights(labels, method="balanced", max_weight=0.75):
     return capped_weights
 
 
+@register_keras_serializable()
 def ordinal_categorical_cross_entropy(y_true, y_pred):
     num_classes = tf.cast(tf.shape(y_pred)[-1], tf.float32)
     true_labels = tf.argmax(y_true, axis=-1)
@@ -191,6 +193,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         augment=True,
         image_size=input_shape[:2],
     )
+
     val_ds = get_tf_dataset(
         [test_file],
         regression=regression,
@@ -287,12 +290,6 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
 
         callbacks.append(reduce_lr_callback)
 
-        if config["model"]["save_model"]:
-            if not os.path.exists("trained_models"):
-                os.makedirs("trained_models")
-            version = get_highest_version_for_saved_model(model_name)
-            model.save(f"trained_models/{model_name}_version_{version}.keras")
-
         # Train
         history = model.fit(
             train_ds_batched,
@@ -306,6 +303,14 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         # Evaluate
         results = model.evaluate(val_ds_batched, verbose=0)
         print(f"{fold_print}Evaluation results:", results)
+
+        # Save the model
+        if config["model"]["save_model"]:
+            if not os.path.exists("trained_models"):
+                os.makedirs("trained_models")
+            version = get_highest_version_for_saved_model(model_name)
+            model.save(f"trained_models/{model_name}_version_{version}.keras")
+
 
         # Collect predictions and metrics for reporting
         if regression:
@@ -409,13 +414,6 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         #     initial_value_threshold=None,
         # )
 
-        if config["model"]["save_model"]:
-            # callbacks.append(model_checkpoint)
-            if not os.path.exists("trained_models"):
-                os.makedirs("trained_models")
-            version = get_highest_version_for_saved_model(model_name)
-            model.save(f"trained_models/{model_name}_version_{version}.keras")
-
         # Train
         history = model.fit(
             train_ds_batched,
@@ -430,25 +428,32 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         results = model.evaluate(val_ds_batched, verbose=0)
         print(f"{fold_print}Evaluation results:", results)
 
-        # Collect predictions and metrics for reporting
-        if regression:
-            preds = model.predict(val_ds_unshuffled_batched, verbose=0)
-            preds_years = preds * (max_year - min_year) + min_year
-            preds_years_rounded = np.round(preds_years).astype(int)
+        # Saving the model
+        if config["model"]["save_model"]:
+            # callbacks.append(model_checkpoint)
+            if not os.path.exists("trained_models"):
+                os.makedirs("trained_models")
+            version = get_highest_version_for_saved_model(model_name)
+            model.save(f"trained_models/{model_name}_version_{version}.keras")
 
-            # Collect true labels from the batched dataset
-            y_true = []
-            image_paths = []
-            for _, labels_batch, paths_batch in val_ds_unshuffled_batched:
-                y_true.extend(labels_batch.numpy())
-                image_paths.extend([p.numpy().decode("utf-8") for p in paths_batch])
-
-            exact_matches = np.sum(preds_years_rounded.flatten() == y_true_years_rounded.flatten())
-            total = len(y_true_years_rounded)
-            mae = np.mean(np.abs(preds_years_rounded.flatten() - y_true_years_rounded.flatten()))
-            print(f"{fold_print}Exactly correct year predictions: {exact_matches} out of {total}")
-            print(f"{fold_print}Final MAE (rounded to years): {mae:.2f}")
-            metrics = {"mae": mae, "exact": exact_matches, "total": total}
+    # Collect predictions and metrics for reporting
+    metrics = {}
+    if regression:
+        preds = model.predict(val_ds_batched, verbose=0)
+        preds_years = preds * (max_year - min_year) + min_year
+        preds_years_rounded = np.round(preds_years).astype(int)
+        y_true = []
+        for _, label in val_ds_batched.unbatch():
+            y_true.append(label.numpy())
+        y_true = np.array(y_true)
+        y_true_years = y_true * (max_year - min_year) + min_year
+        y_true_years_rounded = np.round(y_true_years).astype(int)
+        exact_matches = np.sum(preds_years_rounded.flatten() == y_true_years_rounded.flatten())
+        total = len(y_true_years_rounded)
+        mae = np.mean(np.abs(preds_years_rounded.flatten() - y_true_years_rounded.flatten()))
+        print(f"{fold_print}Exactly correct year predictions: {exact_matches} out of {total}")
+        print(f"{fold_print}Final MAE (rounded to years): {mae:.2f}")
+        metrics = {"mae": mae, "exact": exact_matches, "total": total}
 
             os.makedirs("plots", exist_ok=True)
 
