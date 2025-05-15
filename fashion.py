@@ -438,6 +438,7 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
 
     # Collect predictions and metrics for reporting
     metrics = {}
+    
     if regression:
         preds = model.predict(val_ds_batched, verbose=0)
         preds_years = preds * (max_year - min_year) + min_year
