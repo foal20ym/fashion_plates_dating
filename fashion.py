@@ -11,6 +11,7 @@ import os
 import yaml
 from plotting import plot_cv_metrics_summary, plot_metrics, plot_class_distribution
 import keras_cv  # Had to run: pip install --upgrade keras-cv-nightly tf-nightly
+from keras.saving import register_keras_serializable
 
 
 def load_config(config_path="config.yaml"):
@@ -145,6 +146,7 @@ def get_class_weights(labels, method="balanced", max_weight=0.75):
     return capped_weights
 
 
+@register_keras_serializable()
 def ordinal_categorical_cross_entropy(y_true, y_pred):
     num_classes = tf.cast(tf.shape(y_pred)[-1], tf.float32)
     true_labels = tf.argmax(y_true, axis=-1)
