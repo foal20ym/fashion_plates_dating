@@ -1,0 +1,113 @@
+TensorFlow Version: 2.20.0-dev20250508
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+
+=== Using model: InceptionV3. ===
+RUN ID: 2025-05-16_10:00:53
+Test fold: 0
+
+===== Fine Tuning 9 layers! =====
+Epoch 1/2
+1413/1413 - 196s - 138ms/step - accuracy: 0.1284 - loss: 4.3082 - val_accuracy: 0.2635 - val_loss: 3.6824 - learning_rate: 2.5974e-04
+Epoch 2/2
+1413/1413 - 146s - 103ms/step - accuracy: 0.2051 - loss: 3.8769 - val_accuracy: 0.3113 - val_loss: 3.2524 - learning_rate: 2.5974e-04
+Restoring model weights from the end of the best epoch: 2.
+Fold 0 Evaluation results: [3.2562007904052734, 0.3113057315349579]
+              precision    recall  f1-score   support
+
+        1820       0.36      0.16      0.22        62
+        1821       0.21      0.05      0.08        57
+        1822       0.00      0.00      0.00         1
+        1823       0.00      0.00      0.00         1
+        1824       0.00      0.00      0.00         1
+        1825       0.00      0.00      0.00         3
+        1826       0.00      0.00      0.00         2
+        1827       0.00      0.00      0.00        25
+        1828       0.00      0.00      0.00         1
+        1829       0.00      0.00      0.00         5
+        1830       0.50      0.02      0.03        56
+        1831       0.48      0.99      0.64       134
+        1832       0.20      0.97      0.34        67
+        1833       0.00      0.00      0.00        19
+        1834       0.00      0.00      0.00        29
+        1835       0.00      0.00      0.00         2
+        1836       0.00      0.00      0.00         4
+        1837       0.00      0.00      0.00         6
+        1838       0.00      0.00      0.00         3
+        1839       0.00      0.00      0.00         1
+        1840       0.33      0.09      0.15        43
+        1841       0.43      0.24      0.31       108
+        1842       0.00      0.00      0.00         6
+        1843       0.00      0.00      0.00         6
+        1844       0.00      0.00      0.00         1
+        1845       0.00      0.00      0.00         1
+        1846       0.00      0.00      0.00         6
+        1847       0.00      0.00      0.00         2
+        1848       0.00      0.00      0.00         5
+        1849       0.00      0.00      0.00         6
+        1850       0.26      0.52      0.34        48
+        1851       0.39      0.77      0.52        77
+        1852       0.00      0.00      0.00         7
+        1853       0.00      0.00      0.00         7
+        1854       0.00      0.00      0.00         3
+        1855       0.00      0.00      0.00        23
+        1856       0.00      0.00      0.00        12
+        1857       1.00      0.03      0.06        30
+        1858       0.00      0.00      0.00         2
+        1859       0.00      0.00      0.00         2
+        1860       0.12      0.46      0.20        65
+        1861       0.67      0.38      0.48        85
+        1862       0.00      0.00      0.00        19
+        1863       0.00      0.00      0.00        19
+        1864       0.00      0.00      0.00        17
+        1865       0.00      0.00      0.00         7
+        1866       0.00      0.00      0.00         5
+        1867       0.00      0.00      0.00        11
+        1868       0.00      0.00      0.00         7
+        1869       0.00      0.00      0.00         5
+        1870       0.00      0.00      0.00        31
+        1871       0.38      0.06      0.11        49
+        1872       0.00      0.00      0.00         7
+        1873       0.00      0.00      0.00        10
+        1874       0.00      0.00      0.00         5
+        1875       0.00      0.00      0.00        14
+        1876       0.00      0.00      0.00        10
+        1877       0.00      0.00      0.00         5
+        1878       0.00      0.00      0.00         9
+        1879       0.00      0.00      0.00         2
+
+    accuracy                           0.31      1256
+   macro avg       0.09      0.08      0.06      1256
+weighted avg       0.28      0.31      0.23      1256
+
+Matthews Correlation Coefficient: 0.276
+Macro avg F1: 0.058
+Weighted avg F1: 0.228
+Micro avg F1: 0.311
+Top-3 Accuracy: 0.592
+Top-5 Accuracy: 0.691
+Micro ROC AUC  = 0.93
+Macro ROC AUC (present classes) = 0.85
+Classification MAE (in years): 8.12
+
+Fold 0 Misclassification Analysis:
+Near misses (within 2 years): 138 out of 865 misclassifications (15.95%)
+Big misses (greater than 10 years): 504
+MAE with outliers: 8.12
+MAE without outliers: 5.89 (improvement: 2.24)
+
+10 Worst misclassifications:
+Image: data/datasets/public/1870/1878_030met.jpg, True: 1878, Predicted: 1832, Error: 46
+Image: data/datasets/public/1870/1878_036met.jpg, True: 1878, Predicted: 1832, Error: 46
+Image: data/datasets/public/1870/1876_447vna.jpg, True: 1876, Predicted: 1832, Error: 44
+Image: data/datasets/public/1870/1876_375vna.jpg, True: 1876, Predicted: 1832, Error: 44
+Image: data/datasets/public/1870/1876_418vna.jpg, True: 1876, Predicted: 1832, Error: 44
+Image: data/datasets/public/1870/1876_433vna.jpg, True: 1876, Predicted: 1832, Error: 44
+Image: data/datasets/public/1870/1876_415vna.jpg, True: 1876, Predicted: 1832, Error: 44
+Image: data/datasets/public/1870/1876_396vna.jpg, True: 1876, Predicted: 1832, Error: 44
+Image: data/datasets/public/1870/1876_430vna.jpg, True: 1876, Predicted: 1832, Error: 44
+Image: data/datasets/private/1870/1875_72et.jpg, True: 1875, Predicted: 1832, Error: 43
+Metrics: {'accuracy': 0.3113057315349579, 'mae_years': np.float64(8.124203821656051), 'mcc': np.float64(0.2763862465298956)}
+
+=== Total running time: 0 hours, 6 minutes, 50 seconds ===
+

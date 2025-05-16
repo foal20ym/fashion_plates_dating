@@ -3,29 +3,7 @@ import yaml
 import tensorflow as tf
 from kerastuner import BayesianOptimization, RandomSearch, Hyperband
 from kerastuner.engine.hyperparameters import HyperParameters
-
-
-def get_input_shape(model_name):
-    if model_name == "NASNetMobile":
-        return (224, 224, 3)  # larges size
-    elif model_name == "ResNet101":
-        return (224, 224, 3)  # optional, can be larger
-    elif model_name == "InceptionV3":
-        return (299, 299, 3)  # optional, can be larger
-    elif model_name == "EfficientNetB3":
-        return (255, 255, 3)  # larges size
-    else:
-        raise ValueError(f"Unsupported model name: {model_name}")
-
-
-def ordinal_categorical_cross_entropy(y_true, y_pred):
-    num_classes = tf.cast(tf.shape(y_pred)[-1], tf.float32)
-    true_labels = tf.argmax(y_true, axis=-1)
-    pred_labels = tf.argmax(y_pred, axis=-1)
-    weights = tf.abs(tf.cast(pred_labels - true_labels, tf.float32)) / (num_classes - 1.0)
-    base_loss = tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred)
-    loss = (1.0 + weights) * base_loss
-    return loss
+from models import ordinal_categorical_cross_entropy, ordinal_regression_loss, get_input_shape
 
 
 def create_hypermodel(hp, config, num_classes=None, input_shape=(224, 224, 3)):
@@ -94,6 +72,10 @@ def create_hypermodel(hp, config, num_classes=None, input_shape=(224, 224, 3)):
         base_model = tf.keras.applications.EfficientNetB3(
             weights="imagenet", input_shape=input_shape, include_top=False
         )
+    elif model_name == "ConvNeXtTiny":
+        base_model = tf.keras.applications.ConvNeXtTiny(
+            weights="imagenet", input_shape=input_shape, include_top=False, include_preprocessing=True
+        )
     else:
         raise ValueError(f"Unsupported model name: {model_name}")
 
@@ -113,12 +95,12 @@ def create_hypermodel(hp, config, num_classes=None, input_shape=(224, 224, 3)):
         if l2_reg > 0:
             predictions = tf.keras.layers.Dense(
                 1,
-                activation="sigmoid",
+                activation="linear",  # Changed from sigmoid to linear
                 name="PREDICTIONS",
                 kernel_regularizer=tf.keras.regularizers.l2(l2_reg),
             )(x)
         else:
-            predictions = tf.keras.layers.Dense(1, activation="sigmoid", name="PREDICTIONS")(x)
+            predictions = tf.keras.layers.Dense(1, activation="linear", name="PREDICTIONS")(x)
     else:
         if l2_reg > 0:
             predictions = tf.keras.layers.Dense(
@@ -139,7 +121,7 @@ def create_hypermodel(hp, config, num_classes=None, input_shape=(224, 224, 3)):
 
     # Compile with tunable learning rate
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-    loss = "mean_squared_error" if regression else ordinal_categorical_cross_entropy
+    loss = ordinal_regression_loss if regression else ordinal_categorical_cross_entropy
     metrics = ["mae", "mse"] if regression else ["accuracy"]
     model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
 

@@ -1,0 +1,42 @@
+TensorFlow Version: 2.20.0-dev20250508
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+
+=== Using model: InceptionV3. ===
+RUN ID: 2025-05-16_08:44:11
+Test fold: 0
+
+===== Fine Tuning 9 layers! =====
+Epoch 1/2
+1413/1413 - 260s - 184ms/step - classification_output_accuracy: 0.1328 - classification_output_loss: 4.2473 - loss: 3.0096 - regression_output_loss: 0.1218 - regression_output_mae: 0.2861 - regression_output_mse: 0.1218 - regression_output_year_mae: 16.8707 - val_classification_output_accuracy: 0.2317 - val_classification_output_loss: 3.9011 - val_loss: 2.7597 - val_regression_output_loss: 0.0964 - val_regression_output_mae: 0.2565 - val_regression_output_mse: 0.0964 - val_regression_output_year_mae: 15.1514 - learning_rate: 2.5974e-04
+Epoch 2/2
+1413/1413 - 222s - 157ms/step - classification_output_accuracy: 0.2068 - classification_output_loss: 3.9443 - loss: 2.7893 - regression_output_loss: 0.0948 - regression_output_mae: 0.2610 - regression_output_mse: 0.0948 - regression_output_year_mae: 15.3324 - val_classification_output_accuracy: 0.3288 - val_classification_output_loss: 3.3200 - val_loss: 2.3485 - val_regression_output_loss: 0.0817 - val_regression_output_mae: 0.2468 - val_regression_output_mse: 0.0817 - val_regression_output_year_mae: 14.5760 - learning_rate: 2.5974e-04
+Restoring model weights from the end of the best epoch: 2.
+Fold 0 Evaluation results: [2.3590550422668457, 3.335486888885498, 0.080713652074337, 0.32882165908813477, 0.24618899822235107, 0.080713652074337, 14.565779685974121]
+
+Fold 0 Results comparison:
+Classification MAE: 8.08
+Regression MAE: 13.45
+Combined MAE: 13.44
+
+Fold 0 Misclassification Analysis:
+Near misses (within 2 years): 72 out of 1240 misclassifications (5.81%)
+Big misses (greater than 10 years): 797
+MAE with outliers: 13.44
+MAE without outliers: 12.61 (improvement: 0.84)
+
+10 Worst misclassifications:
+Image: data/datasets/public/1870/1878_036met.jpg, True: 1878, Predicted: 1840, Error: 38
+Image: data/datasets/public/1870/1877_73washington.jpg, True: 1877, Predicted: 1841, Error: 36
+Image: data/datasets/public/1870/1879_1476vna.jpg, True: 1879, Predicted: 1844, Error: 35
+Image: data/datasets/public/1870/1878_042met.jpg, True: 1878, Predicted: 1843, Error: 35
+Image: data/datasets/public/1870/1877_005met.jpg, True: 1877, Predicted: 1842, Error: 35
+Image: data/datasets/public/1870/1877_029met.jpg, True: 1877, Predicted: 1842, Error: 35
+Image: data/datasets/public/1870/1876_415vna.jpg, True: 1876, Predicted: 1841, Error: 35
+Image: data/datasets/public/1870/1878_030met.jpg, True: 1878, Predicted: 1843, Error: 35
+Image: data/datasets/public/1870/1876_418vna.jpg, True: 1876, Predicted: 1841, Error: 35
+Image: data/datasets/public/1870/1876_433vna.jpg, True: 1876, Predicted: 1841, Error: 35
+Metrics: {'classification_output': ['accuracy'], 'regression_output': ['mae', 'mse', <function train_and_evaluate.<locals>.year_mae at 0x7f431c07fd90>]}
+
+=== Total running time: 0 hours, 9 minutes, 20 seconds ===
+

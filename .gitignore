@@ -4,3 +4,6 @@ run_job.sh
 *.h5
 __pycache__/
 requirements.txt
+fashion_old.py
+hybrid.py
+statistical_tests.py
