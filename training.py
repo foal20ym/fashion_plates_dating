@@ -2,9 +2,7 @@ import tensorflow as tf
 import os
 import pandas as pd
 import numpy as np
-from sklearn.metrics import matthews_corrcoef
 
-# Import from other modules
 from data import get_tf_dataset, prepare_datasets
 from models import setup_model, get_input_shape
 from metrics import (
@@ -29,7 +27,7 @@ def create_callbacks(config, log_dir):
             min_delta=1e-4,
             verbose=1,
         ),
-        tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1),
+        # tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1),
         tf.keras.callbacks.ReduceLROnPlateau(
             monitor="val_loss",
             factor=0.5,
@@ -42,12 +40,13 @@ def create_callbacks(config, log_dir):
 
     # Add cosine decay learning rate schedule for regression if configured
     if config.get("task", "classification") == "regression" and config.get("training", {}).get("cosine_decay", False):
-        callbacks.append(
-            tf.keras.callbacks.LearningRateScheduler(
-                lambda epoch: config["training"]["learning_rate"]
-                * (0.1 + 0.9 * tf.math.cos(epoch / config["training"]["epochs"] * 3.14159))
-            )
+        initial_lr = float(config["training"]["learning_rate"])
+        cosine_schedule = tf.keras.optimizers.schedules.CosineDecay(
+            initial_learning_rate=initial_lr,
+            decay_steps=config["training"]["epochs"],
+            alpha=0.1,  # Minimum learning rate factor (same as your 0.1 in the formula)
         )
+        callbacks.append(tf.keras.callbacks.LearningRateScheduler(lambda epoch: float(cosine_schedule(epoch))))
 
     return callbacks
 
@@ -64,7 +63,7 @@ def prepare_directories(config, run_id, model_name, fold_idx):
         log_dir = os.path.join("logs", "tensorboard", f"fit_{run_id}_{model_name}_fit_fold{fold_idx}")
 
     os.makedirs(plot_dir, exist_ok=True)
-    os.makedirs(log_dir, exist_ok=True)
+    # os.makedirs(log_dir, exist_ok=True)
     os.makedirs("plots", exist_ok=True)
 
     return plot_dir, log_dir, fold_str
@@ -176,24 +175,26 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
     results = model.evaluate(val_ds_batched, verbose=0)
     print(f"{fold_print}Evaluation results:", results)
 
-    metrics = {}
-
     # Process predictions and calculate metrics
     if regression:
+        print(f"Debug - Year range: {min_year} to {max_year}")
+
+        # Check a few examples from your training data
+        sample_df = pd.read_csv(train_files[0]).sample(5)
+        print(f"Debug - Sample years from training: {sample_df['year'].tolist()}")
+
+        # Verify normalization formula
+        sample_normalized = (sample_df["year"] - min_year) / (max_year - min_year)
+        print(f"Debug - Sample normalized values: {sample_normalized.tolist()}")
         # Handle regression task
         y_true_years_rounded, preds_years_rounded, image_paths = collect_regression_predictions(
             model, val_ds_unshuffled_batched, min_year, max_year
         )
 
-        # Calculate metrics
-        exact_matches = np.sum(preds_years_rounded.flatten() == y_true_years_rounded.flatten())
-        total = len(y_true_years_rounded)
-        mae = np.mean(np.abs(preds_years_rounded.flatten() - y_true_years_rounded.flatten()))
+        metrics = calculate_metrics(y_true_years_rounded, preds_years_rounded, regression=True)
 
-        print(f"{fold_print}Exactly correct year predictions: {exact_matches} out of {total}")
-        print(f"{fold_print}Final MAE (rounded to years): {mae:.2f}")
-
-        metrics = {"mae": mae, "exact": exact_matches, "total": total}
+        print(f"{fold_print}Exactly correct year predictions: {metrics['exact']} out of {metrics['total']}")
+        print(f"{fold_print}Final MAE (rounded to years): {metrics['mae']:.2f}")
 
         # Plot metrics
         plot_metrics(history, fold_str, plot_dir, regression, class_to_idx)
@@ -205,7 +206,6 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
     else:
         # Handle classification task
         y_true, y_pred, y_score, image_paths = collect_classification_predictions(model, val_ds_unshuffled_batched)
-        mcc = matthews_corrcoef(y_true, y_pred)
 
         # Plot metrics
         plot_metrics(history, fold_str, plot_dir, regression, class_to_idx, y_true, y_pred, y_score)
@@ -214,14 +214,19 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
             idx_to_class = {v: k for k, v in class_to_idx.items()}
             y_true_years = np.array([idx_to_class[idx] for idx in y_true])
             y_pred_years = np.array([idx_to_class[idx] for idx in y_pred])
-            mae_years = np.mean(np.abs(y_true_years - y_pred_years))
 
-            print(f"Classification MAE (in years): {mae_years:.2f}")
+            metrics = calculate_metrics(
+                y_true,
+                y_pred,
+                regression=False,
+                class_to_idx=class_to_idx,
+                accuracy=results[1],
+            )
+
+            print(f"Classification MAE (in years): {metrics['mae_years']:.2f}")
 
             # Analyze misclassifications
             misclass_analysis = analyze_misclassifications(y_true_years, y_pred_years, image_paths)
             print_misclassification_analysis(misclass_analysis, fold_print)
-
-            metrics = {"accuracy": results[1], "mae_years": mae_years, "mcc": mcc}
 
     return metrics

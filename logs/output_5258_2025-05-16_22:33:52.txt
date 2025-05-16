@@ -1,0 +1,64 @@
+TensorFlow Version: 2.20.0-dev20250508
+Num GPUs Available: 1
+Physical devices cannot be modified after being initialized
+
+=== Using model: ConvNeXtTiny. ===
+RUN ID: 2025-05-16_22:33:57
+Task: Classification
+Test fold: 0
+DEBUG: Test file (data/datasets/fold0.csv) year range: 1820 to 1879
+DEBUG: Test file columns: ['year', 'file']
+DEBUG: Sample from test file:
+   year                                               file
+0  1844         datasets/public/1840/1844_33washington.jpg
+1  1839              datasets/public/1830/1839_2663vna.jpg
+2  1824  datasets/private/1820/1824_034_Zrzut ekranu 20...
+3  1845              datasets/public/1840/1845_2691vna.jpg
+4  1823              datasets/public/1820/1823_2530vna.jpg
+Fold 0 Running hyperparameter tuning...
+Using Bayesian Optimization for hyperparameter tuning
+
+===== Starting Hyperparameter Tuning with bayesian search =====
+Max trials: 15, Executions per trial: 1
+
+Tuning with batch size: 8
+
+Search: Running Trial #1
+
+Value             |Best Value So Far |Hyperparameter
+0.4               |0.4               |dropout
+0.00028061        |0.00028061        |learning_rate
+0.01              |0.01              |l2_regularization
+6                 |6                 |fine_tune_layers
+128               |128               |dense_units
+3                 |3                 |dense_layers
+
+Epoch 1/300
+1413/1413 - 337s - 238ms/step - accuracy: 0.0831 - loss: 5.0474 - val_accuracy: 0.1075 - val_loss: 4.2066 - learning_rate: 2.8061e-04
+Epoch 2/300
+1413/1413 - 247s - 175ms/step - accuracy: 0.0944 - loss: 4.4744 - val_accuracy: 0.1298 - val_loss: 4.3773 - learning_rate: 2.8061e-04
+Epoch 3/300
+1413/1413 - 246s - 174ms/step - accuracy: 0.1059 - loss: 4.3689 - val_accuracy: 0.1521 - val_loss: 4.4116 - learning_rate: 2.8061e-04
+Epoch 4/300
+1413/1413 - 252s - 179ms/step - accuracy: 0.1196 - loss: 4.3832 - val_accuracy: 0.1640 - val_loss: 3.8870 - learning_rate: 2.8061e-04
+Epoch 5/300
+1413/1413 - 243s - 172ms/step - accuracy: 0.1346 - loss: 4.2158 - val_accuracy: 0.1640 - val_loss: 3.9980 - learning_rate: 2.8061e-04
+Epoch 6/300
+1413/1413 - 244s - 173ms/step - accuracy: 0.1485 - loss: 4.1812 - val_accuracy: 0.1696 - val_loss: 3.8228 - learning_rate: 2.8061e-04
+Epoch 7/300
+1413/1413 - 250s - 177ms/step - accuracy: 0.1672 - loss: 4.0916 - val_accuracy: 0.2540 - val_loss: 3.8748 - learning_rate: 2.8061e-04
+Epoch 8/300
+1413/1413 - 246s - 174ms/step - accuracy: 0.1720 - loss: 4.0613 - val_accuracy: 0.2333 - val_loss: 3.6097 - learning_rate: 2.8061e-04
+Epoch 9/300
+1413/1413 - 250s - 177ms/step - accuracy: 0.1865 - loss: 3.9864 - val_accuracy: 0.2142 - val_loss: 3.5268 - learning_rate: 2.8061e-04
+Epoch 10/300
+1413/1413 - 245s - 174ms/step - accuracy: 0.1952 - loss: 3.9561 - val_accuracy: 0.2516 - val_loss: 3.5883 - learning_rate: 2.8061e-04
+Epoch 11/300
+1413/1413 - 246s - 174ms/step - accuracy: 0.1969 - loss: 3.8773 - val_accuracy: 0.2946 - val_loss: 3.4261 - learning_rate: 2.8061e-04
+Epoch 12/300
+1413/1413 - 247s - 175ms/step - accuracy: 0.2039 - loss: 3.8586 - val_accuracy: 0.2914 - val_loss: 3.3054 - learning_rate: 2.8061e-04
+Epoch 13/300
+1413/1413 - 228s - 161ms/step - accuracy: 0.2113 - loss: 3.8225 - val_accuracy: 0.2938 - val_loss: 3.6088 - learning_rate: 2.8061e-04
+Epoch 14/300
+1413/1413 - 228s - 161ms/step - accuracy: 0.2161 - loss: 3.7603 - val_accuracy: 0.3527 - val_loss: 3.1423 - learning_rate: 2.8061e-04
+Epoch 15/300

@@ -2636,7 +2636,6 @@ Epoch 52/300
 Epoch 53/300
 1413/1413 - 96s - 68ms/step - accuracy: 0.4390 - loss: 2.6142 - val_accuracy: 0.5932 - val_loss: 1.8678 - learning_rate: 3.4375e-04
 Epoch 54/300
-<<<<<<< HEAD
 1413/1413 - 95s - 67ms/step - accuracy: 0.4407 - loss: 2.6109 - val_accuracy: 0.5939 - val_loss: 1.8872 - learning_rate: 3.4375e-04
 Epoch 55/300
 1413/1413 - 95s - 68ms/step - accuracy: 0.4362 - loss: 2.6459 - val_accuracy: 0.5900 - val_loss: 1.8947 - learning_rate: 3.4375e-04
@@ -3790,5 +3789,3 @@ Mean Matthews Correlation Coefficient over 10 folds: 0.6100
 
 === Total running time: 35 hours, 53 minutes, 56 seconds ===
 
-=======
->>>>>>> 0bbc263646c36694c8f849d7abb22150418546af

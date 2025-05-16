@@ -1,14 +1,14 @@
-task: classification
+task: regression
 
 model:
   # name: NASNetMobile
-  # name: InceptionV3
+  name: InceptionV3
   # name: ResNet101
   # name: EfficientNetB3
   # name: "ConvNeXtTiny"
   # name: "EfficientNetV2S"
-  normalize_years: false
-  normalization_method: "standardize" # Options: "minmax", "standardize", "scale_to_range"
+  normalize_years: true
+  normalization_method: "minmax" # Options: "minmax", "standardize", "scale_to_range"
   include_top: false
   fine_tune:
     layers: 9
@@ -25,13 +25,17 @@ model:
 
 training:
   batch_size: 8
-  epochs: 1
+  epochs: 300
   learning_rate: 0.00025973809360934377
   early_stopping_patience: 16
   reduce_lr_patience: 8
   class_balancing:
     enabled: false
     method: "balanced"
+  cosine_decay: false
+  label_smoothing:
+    enabled: false
+    factor: 0.01
 
 cross_validation: false
 

@@ -1,11 +1,8 @@
-import tensorflow as tf
 import pandas as pd
 import numpy as np
 import time
 import os
 
-from models import build_model
-from data import get_tf_dataset
 from training import train_and_evaluate
 from utils import load_config, setup_gpu, format_time
 from plotting import plot_cv_metrics_summary
@@ -16,6 +13,11 @@ def prepare_data_for_fold(train_folds, test_fold, fold_nums, regression=False):
     """Prepare data files and class mapping for a specific fold."""
     train_files = [f"data/datasets/fold{fold}.csv" for fold in train_folds]
     test_file = f"data/datasets/fold{test_fold}.csv"
+
+    test_df = pd.read_csv(test_file)
+    print(f"DEBUG: Test file ({test_file}) year range: {test_df['year'].min()} to {test_df['year'].max()}")
+    print(f"DEBUG: Test file columns: {test_df.columns.tolist()}")
+    print(f"DEBUG: Sample from test file:\n{test_df.head()}")
 
     if not regression:
         # Classification: Create class mapping
