@@ -4,12 +4,12 @@ import numpy as np
 import time
 import os
 
-# Import from our modules
 from models import build_model
 from data import get_tf_dataset
 from training import train_and_evaluate
 from utils import load_config, setup_gpu, format_time
 from plotting import plot_cv_metrics_summary
+from model_comparison import run_5x2_cross_validation
 
 
 def prepare_data_for_fold(train_folds, test_fold, fold_nums, regression=False):
@@ -153,10 +153,19 @@ def main():
     print(f"RUN ID: {run_id}")
     print(f"Task: {'Regression' if regression else 'Classification'}")
 
-    # Run cross-validation or single fold based on config
-    if config["cross_validation"]:
+    if config.get("null_hypothesis_testing", {}).get("use", False):
+        # Can't run both cross-validation and model comparison
+        if config.get("cross_validation", False):
+            print("WARNING: Both cross_validation and null_hypothesis_testing are enabled.")
+            print("Model comparison (null hypothesis testing) will take precedence.")
+
+        # Run statistical model comparison (5x2cv)
+        comparison_results = run_5x2_cross_validation(config, run_id, fold_nums)
+    elif config.get("cross_validation", False):
+        # Run standard cross-validation
         all_metrics = run_cross_validation(config, run_id, fold_nums)
     else:
+        # Run single fold evaluation
         metrics = run_single_fold(config, run_id, fold_nums)
 
     # Print execution time

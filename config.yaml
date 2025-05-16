@@ -75,3 +75,8 @@ hyperparameter_tuning:
       step: 1
       default: 1
       tune: true
+
+null_hypothesis_testing:
+  use: true
+  model_1: InceptionV3
+  model_2: NASNetMobile

@@ -4,18 +4,31 @@ from sklearn.metrics import matthews_corrcoef
 
 
 def collect_regression_predictions(model, val_ds_unshuffled_batched, min_year, max_year):
-    """Collect predictions and true labels for regression tasks"""
-    preds = model.predict(val_ds_unshuffled_batched, verbose=0)
+    """Collect predictions and true labels for regression tasks."""
+    # Collect true labels and image paths from the batched dataset
+    y_true = []
+    image_paths = []
+    model_inputs = []
+
+    # Extract data from the dataset
+    for images, labels, paths in val_ds_unshuffled_batched:
+        model_inputs.append(images)
+        y_true.extend(labels.numpy())
+        image_paths.extend([p.numpy().decode("utf-8") for p in paths])
+
+    # Predict on batches separately and concatenate results
+    preds = []
+    for inputs in model_inputs:
+        batch_preds = model.predict(inputs, verbose=0)
+        preds.append(batch_preds)
+
+    preds = np.vstack(preds)
+
+    # Convert predictions to year values
     preds_years = preds * (max_year - min_year) + min_year
     preds_years_rounded = np.round(preds_years).astype(int)
 
-    # Collect true labels from the batched dataset
-    y_true = []
-    image_paths = []
-    for _, labels_batch, paths_batch in val_ds_unshuffled_batched:
-        y_true.extend(labels_batch.numpy())
-        image_paths.extend([p.numpy().decode("utf-8") for p in paths_batch])
-
+    # Convert labels to year values
     y_true = np.array(y_true)
     y_true_years = y_true * (max_year - min_year) + min_year
     y_true_years_rounded = np.round(y_true_years).astype(int)

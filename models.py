@@ -1,4 +1,5 @@
 import tensorflow as tf
+from keras.saving import register_keras_serializable
 
 
 def get_input_shape(model_name):
@@ -20,6 +21,7 @@ def get_input_shape(model_name):
         raise ValueError(f"Unsupported model name: {model_name}")
 
 
+@register_keras_serializable()
 def ordinal_categorical_cross_entropy(y_true, y_pred):
     """Custom loss function for classification that penalizes larger classification errors more."""
     num_classes = tf.cast(tf.shape(y_pred)[-1], tf.float32)
@@ -32,6 +34,7 @@ def ordinal_categorical_cross_entropy(y_true, y_pred):
     return loss
 
 
+@register_keras_serializable()
 def ordinal_regression_loss(y_true, y_pred):
     """Custom loss function for regression that penalizes larger year differences more"""
     base_loss = tf.abs(y_true - y_pred)  # MAE base
