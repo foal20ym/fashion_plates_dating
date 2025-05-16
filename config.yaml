@@ -1,4 +1,4 @@
-task: regression
+task: classification
 
 model:
   # name: NASNetMobile
@@ -7,7 +7,6 @@ model:
   # name: EfficientNetB3
   # name: "ConvNeXtTiny"
   # name: "EfficientNetV2S"
-  hybrid: false
   normalize_years: false
   normalization_method: "standardize" # Options: "minmax", "standardize", "scale_to_range"
   include_top: false
@@ -77,6 +76,6 @@ hyperparameter_tuning:
       tune: true
 
 null_hypothesis_testing:
-  use: true
+  use: false
   model_1: InceptionV3
   model_2: NASNetMobile

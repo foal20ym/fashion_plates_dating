@@ -4,9 +4,7 @@ run_job.sh
 *.h5
 __pycache__/
 requirements.txt
-<<<<<<< HEAD
 fashion_old.py
 hybrid.py
 statistical_tests.py
-=======
->>>>>>> 0bbc263646c36694c8f849d7abb22150418546af
+logs/tensorboard/fit_2025-05-13_18:16:03_EfficientNetV2S_fit_fold0/train/

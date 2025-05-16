@@ -6,7 +6,7 @@ from sklearn.metrics import matthews_corrcoef
 
 # Import from other modules
 from data import get_tf_dataset, prepare_datasets
-from models import setup_model
+from models import setup_model, get_input_shape
 from metrics import (
     collect_regression_predictions,
     collect_classification_predictions,
