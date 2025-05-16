@@ -2,7 +2,7 @@ task: regression
 
 model:
   # name: NASNetMobile
-  name: InceptionV3
+  # name: InceptionV3
   # name: ResNet101
   # name: EfficientNetB3
   # name: "ConvNeXtTiny"
@@ -39,7 +39,7 @@ cross_validation: false
 hyperparameter_tuning:
   enabled: false
   method: "bayesian" # Options: "random", "bayesian", "hyperband"
-  max_trials: 10
+  max_trials: 15
   executions_per_trial: 1
   directory: "hyperparameter_tuning"
   project_name: "fashion_plates_dating"

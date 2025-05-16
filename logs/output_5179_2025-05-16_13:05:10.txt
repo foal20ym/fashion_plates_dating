@@ -1,0 +1,37 @@
+TensorFlow Version: 2.20.0-dev20250508
+Num GPUs Available: 1
+Physical devices cannot be modified after being initialized
+
+=== Using model: InceptionV3. ===
+RUN ID: 2025-05-16_13:05:15
+Task: Regression
+Test fold: 0
+
+===== Fine Tuning 9 layers! =====
+1413/1413 - 241s - 171ms/step - loss: 3379493.5000 - mae: 1837.7631 - mse: 3377657.2500 - val_loss: 3320281.0000 - val_mae: 1821.6288 - val_mse: 3318459.0000 - learning_rate: 2.5974e-04
+Restoring model weights from the end of the best epoch: 1.
+Fold 0 Evaluation results: [3320280.75, 1821.6285400390625, 3318459.0]
+Fold 0 Exactly correct year predictions: 0 out of 1256
+Fold 0 Final MAE (rounded to years): 107476.11
+
+Fold 0 Misclassification Analysis:
+Near misses (within 2 years): 0 out of 1256 misclassifications (0.00%)
+Big misses (greater than 10 years): 1256
+MAE with outliers: 107476.11
+MAE without outliers: 107426.95 (improvement: 49.16)
+
+10 Worst misclassifications:
+Image: data/datasets/private/1870/1871_412etsy.jpg, True: 112209, Predicted: 2539, Error: 109670
+Image: data/datasets/private/1870/1871_398etsy.jpg, True: 112209, Predicted: 2564, Error: 109645
+Image: data/datasets/private/1860/1860_123et.jpg, True: 111560, Predicted: 2003, Error: 109557
+Image: data/datasets/private/1870/1871_376etsy.jpg, True: 112209, Predicted: 2703, Error: 109506
+Image: data/datasets/public/1870/1876_415vna.jpg, True: 112504, Predicted: 3094, Error: 109410
+Image: data/datasets/public/1870/1876_430vna.jpg, True: 112504, Predicted: 3170, Error: 109334
+Image: data/datasets/private/1870/1871_85etsy.jpg, True: 112209, Predicted: 2889, Error: 109320
+Image: data/datasets/public/1870/1876_418vna.jpg, True: 112504, Predicted: 3211, Error: 109293
+Image: data/datasets/private/1870/1871_267etsy.jpg, True: 112209, Predicted: 2981, Error: 109228
+Image: data/datasets/public/1870/1876_447vna.jpg, True: 112504, Predicted: 3298, Error: 109206
+Metrics: {'mae': np.float64(107476.11146496815), 'exact': np.int64(0), 'total': 1256}
+
+=== Total running time: 0 hours, 5 minutes, 25 seconds ===
+

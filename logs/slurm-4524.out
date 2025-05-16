@@ -3286,6 +3286,7 @@ I0000 00:00:1747069217.732571 3525284 device_compiler.h:196] Compiled cluster us
 2025-05-13 17:55:59.669268: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:15458: Filling up shuffle buffer (this may take a while): 5384 of 11303
 2025-05-13 17:56:09.711234: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:15458: Filling up shuffle buffer (this may take a while): 8285 of 11303
 2025-05-13 17:56:19.426202: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+<<<<<<< HEAD
 2025-05-13 17:57:24.966534: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:15458: Filling up shuffle buffer (this may take a while): 2450 of 11303
 2025-05-13 17:57:34.976072: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:15458: Filling up shuffle buffer (this may take a while): 5279 of 11303
 2025-05-13 17:57:54.980671: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:15458: Filling up shuffle buffer (this may take a while): 11042 of 11303
@@ -4771,3 +4772,5 @@ I0000 00:00:1747069217.732571 3525284 device_compiler.h:196] Compiled cluster us
 /home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/sklearn/metrics/_ranking.py:1188: UndefinedMetricWarning: No positive samples in y_true, true positive value should be meaningless
   warnings.warn(
 finished task with id:: 4524
+=======
+>>>>>>> 0bbc263646c36694c8f849d7abb22150418546af
