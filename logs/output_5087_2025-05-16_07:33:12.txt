@@ -1,0 +1,15 @@
+TensorFlow Version: 2.20.0-dev20250508
+Num GPUs Available: 1
+Using GPU: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+
+=== Using model: InceptionV3. ===
+RUN ID: 2025-05-16_07:33:17
+Test fold: 0
+
+===== Fine Tuning 9 layers! =====
+Epoch 1/2
+1413/1413 - 280s - 198ms/step - classification_output_accuracy: 0.1384 - classification_output_loss: 4.1611 - loss: 2.9508 - regression_output_loss: 0.1270 - regression_output_mae: 0.2898 - regression_output_mse: 0.1270 - regression_output_year_mae: 17.1448 - val_classification_output_accuracy: 0.2389 - val_classification_output_loss: 3.7430 - val_loss: 2.6445 - val_regression_output_loss: 0.0811 - val_regression_output_mae: 0.2457 - val_regression_output_mse: 0.0811 - val_regression_output_year_mae: 14.5704 - learning_rate: 2.5974e-04
+Epoch 2/2
+1413/1413 - 236s - 167ms/step - classification_output_accuracy: 0.2097 - classification_output_loss: 3.8663 - loss: 2.7358 - regression_output_loss: 0.0979 - regression_output_mae: 0.2640 - regression_output_mse: 0.0979 - regression_output_year_mae: 15.5494 - val_classification_output_accuracy: 0.3137 - val_classification_output_loss: 3.1912 - val_loss: 2.2591 - val_regression_output_loss: 0.0841 - val_regression_output_mae: 0.2494 - val_regression_output_mse: 0.0841 - val_regression_output_year_mae: 14.6632 - learning_rate: 2.5974e-04
+Restoring model weights from the end of the best epoch: 2.
+Fold 0 Evaluation results: [2.258730888366699, 3.190239667892456, 0.08521108329296112, 0.3136942684650421, 0.2505303621292114, 0.08521108329296112, 14.679443359375]

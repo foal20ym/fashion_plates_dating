@@ -5,26 +5,28 @@ model:
   # name: InceptionV3
   # name: ResNet101
   # name: EfficientNetB3
-  name: "ConvNeXtTiny"
+  # name: "ConvNeXtTiny"
   # name: "EfficientNetV2S"
+  normalize_years: false
+  normalization_method: "standardize" # Options: "minmax", "standardize", "scale_to_range"
   include_top: false
   fine_tune:
-    layers: 7
+    layers: 9
     use: true
   save_model: false
   l2_regularization:
-    value: 0.0001
+    value: 1e-5
     use: true
   dropout:
     value: 0.4
     use: true
-  dense_layers: 1
-  dense_units: 128
+  dense_layers: 2
+  dense_units: 256
 
 training:
   batch_size: 8
-  epochs: 300
-  learning_rate: 0.00020478841554215328
+  epochs: 1
+  learning_rate: 0.00025973809360934377
   early_stopping_patience: 16
   reduce_lr_patience: 8
   class_balancing:
@@ -74,6 +76,6 @@ hyperparameter_tuning:
       tune: true
 
 null_hypothesis_testing:
-  use: true
+  use: false
   model_1: InceptionV3
   model_2: NASNetMobile

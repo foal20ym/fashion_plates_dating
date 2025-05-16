@@ -1,0 +1,9 @@
+Ten Fold CV!
+=== Using model: InceptionV3. ===
+RUN ID: 2025-05-12_16:58:57
+
+Mean MAE over 10 folds: 3.0346
+
+Mean accuracy over 10 folds: 0.6287
+
+Mean Matthews Correlation Coefficient over 10 folds: 0.6100

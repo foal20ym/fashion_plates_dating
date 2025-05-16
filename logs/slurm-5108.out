@@ -1,0 +1,132 @@
+now processing task id:: 5108 on worker1.slurm.hj.se
+2025-05-16 08:45:19.722991: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1747385122.985255 2920492 gpu_device.cc:2018] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 8098 MB memory:  -> device: 0, name: NVIDIA A100 80GB PCIe MIG 1g.10gb, pci bus id: 0000:81:00.0, compute capability: 8.0
+2025-05-16 08:45:42.900036: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 1437 of 11303
+2025-05-16 08:46:02.787102: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 5600 of 11303
+2025-05-16 08:46:13.173316: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 7729 of 11303
+2025-05-16 08:46:31.341951: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+2025-05-16 08:46:31.491875: I external/local_xla/xla/service/service.cc:152] XLA service 0x7f10c0002560 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2025-05-16 08:46:31.491939: I external/local_xla/xla/service/service.cc:160]   StreamExecutor device (0): NVIDIA A100 80GB PCIe MIG 1g.10gb, Compute Capability 8.0
+2025-05-16 08:46:31.864601: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1747385193.492145 2921138 cuda_dnn.cc:529] Loaded cuDNN version 90300
+2025-05-16 08:46:38.883345: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_8552', 88 bytes spill stores, 88 bytes spill loads
+
+2025-05-16 08:46:38.934511: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_8552', 16 bytes spill stores, 16 bytes spill loads
+
+I0000 00:00:1747385211.544216 2921138 device_compiler.h:196] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+2025-05-16 08:48:07.700310: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_8552', 88 bytes spill stores, 88 bytes spill loads
+
+2025-05-16 08:48:07.769819: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_8552', 16 bytes spill stores, 16 bytes spill loads
+
+2025-05-16 08:48:25.936077: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_2444', 188 bytes spill stores, 188 bytes spill loads
+
+2025-05-16 08:48:26.007089: I external/local_xla/xla/stream_executor/cuda/subprocess_compilation.cc:346] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_dot_2444', 220 bytes spill stores, 220 bytes spill loads
+
+2025-05-16 08:48:54.088955: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 2222 of 11303
+2025-05-16 08:49:04.092026: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 4406 of 11303
+2025-05-16 08:49:14.275322: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 6537 of 11303
+2025-05-16 08:49:34.067499: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:453] ShuffleDatasetV3:2: Filling up shuffle buffer (this may take a while): 10618 of 11303
+2025-05-16 08:49:36.337056: I tensorflow/core/kernels/data/shuffle_dataset_op.cc:483] Shuffle buffer filled.
+2025-05-16 08:51:17.322067: W tensorflow/core/framework/op_kernel.cc:1856] OP_REQUIRES failed at xla_ops.cc:590 : INVALID_ARGUMENT: Detected unsupported operations when trying to compile graph __inference_one_step_on_data_182302[] on XLA_GPU_JIT: _Arg (No registered '_Arg' OpKernel for XLA_GPU_JIT devices compatible with node {{node data_2}}
+	 (OpKernel was found, but attributes didn't match) Requested Attributes: T=DT_STRING, _output_shapes=[[8]], _user_specified_name="data", index=2){{node data_2}}
+The op is created at: 
+File "fashion_plates_dating/fashion.py", line 1268, in <module>
+File "fashion_plates_dating/fashion.py", line 1246, in main
+File "fashion_plates_dating/fashion.py", line 767, in train_and_evaluate
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/keras/src/backend/tensorflow/trainer.py", line 560, in predict
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/keras/src/backend/tensorflow/trainer.py", line 259, in one_step_on_data_distributed
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/polymorphism/function_type.py", line 356, in placeholder_arguments
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/trace_type/default_types.py", line 250, in placeholder_value
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/trace_type/default_types.py", line 251, in <listcomp>
+	tf2xla conversion failed while converting __inference_one_step_on_data_182302[]. Run with TF_DUMP_GRAPH_PREFIX=/path/to/dump/dir and --vmodule=xla_compiler=2 to obtain a dump of the compiled functions.
+2025-05-16 08:51:17.322188: I tensorflow/core/framework/local_rendezvous.cc:407] Local rendezvous is aborting with status: INVALID_ARGUMENT: Detected unsupported operations when trying to compile graph __inference_one_step_on_data_182302[] on XLA_GPU_JIT: _Arg (No registered '_Arg' OpKernel for XLA_GPU_JIT devices compatible with node {{node data_2}}
+	 (OpKernel was found, but attributes didn't match) Requested Attributes: T=DT_STRING, _output_shapes=[[8]], _user_specified_name="data", index=2){{node data_2}}
+The op is created at: 
+File "fashion_plates_dating/fashion.py", line 1268, in <module>
+File "fashion_plates_dating/fashion.py", line 1246, in main
+File "fashion_plates_dating/fashion.py", line 767, in train_and_evaluate
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/keras/src/backend/tensorflow/trainer.py", line 560, in predict
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/keras/src/backend/tensorflow/trainer.py", line 259, in one_step_on_data_distributed
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/polymorphism/function_type.py", line 356, in placeholder_arguments
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/trace_type/default_types.py", line 250, in placeholder_value
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/trace_type/default_types.py", line 251, in <listcomp>
+	tf2xla conversion failed while converting __inference_one_step_on_data_182302[]. Run with TF_DUMP_GRAPH_PREFIX=/path/to/dump/dir and --vmodule=xla_compiler=2 to obtain a dump of the compiled functions.
+	 [[StatefulPartitionedCall]]
+Traceback (most recent call last):
+  File "/home/anjo19go/fashion_plates_dating/fashion.py", line 1268, in <module>
+    main()
+  File "/home/anjo19go/fashion_plates_dating/fashion.py", line 1246, in main
+    metrics = train_and_evaluate(
+  File "/home/anjo19go/fashion_plates_dating/fashion.py", line 767, in train_and_evaluate
+    preds = model.predict(val_ds_unshuffled_batched, verbose=0)
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/keras/src/utils/traceback_utils.py", line 122, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/python/eager/execute.py", line 53, in quick_execute
+    tensors = pywrap_tfe.TFE_Py_Execute(ctx._handle, device_name, op_name,
+tensorflow.python.framework.errors_impl.InvalidArgumentError: Graph execution error:
+
+Detected at node data_2 defined at (most recent call last):
+  File "/home/anjo19go/fashion_plates_dating/fashion.py", line 1268, in <module>
+
+  File "/home/anjo19go/fashion_plates_dating/fashion.py", line 1246, in main
+
+  File "/home/anjo19go/fashion_plates_dating/fashion.py", line 767, in train_and_evaluate
+
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/keras/src/backend/tensorflow/trainer.py", line 560, in predict
+
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/polymorphism/function_type.py", line 356, in placeholder_arguments
+
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/trace_type/default_types.py", line 346, in placeholder_value
+
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/trace_type/default_types.py", line 250, in placeholder_value
+
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/trace_type/default_types.py", line 251, in <listcomp>
+
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/trace_type/default_types.py", line 250, in placeholder_value
+
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/trace_type/default_types.py", line 251, in <listcomp>
+
+Detected at node data_2 defined at (most recent call last):
+  File "/home/anjo19go/fashion_plates_dating/fashion.py", line 1268, in <module>
+
+  File "/home/anjo19go/fashion_plates_dating/fashion.py", line 1246, in main
+
+  File "/home/anjo19go/fashion_plates_dating/fashion.py", line 767, in train_and_evaluate
+
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/keras/src/backend/tensorflow/trainer.py", line 560, in predict
+
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/polymorphism/function_type.py", line 356, in placeholder_arguments
+
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/trace_type/default_types.py", line 346, in placeholder_value
+
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/trace_type/default_types.py", line 250, in placeholder_value
+
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/trace_type/default_types.py", line 251, in <listcomp>
+
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/trace_type/default_types.py", line 250, in placeholder_value
+
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/trace_type/default_types.py", line 251, in <listcomp>
+
+Detected unsupported operations when trying to compile graph __inference_one_step_on_data_182302[] on XLA_GPU_JIT: _Arg (No registered '_Arg' OpKernel for XLA_GPU_JIT devices compatible with node {{node data_2}}
+	 (OpKernel was found, but attributes didn't match) Requested Attributes: T=DT_STRING, _output_shapes=[[8]], _user_specified_name="data", index=2){{node data_2}}
+The op is created at: 
+File "fashion_plates_dating/fashion.py", line 1268, in <module>
+File "fashion_plates_dating/fashion.py", line 1246, in main
+File "fashion_plates_dating/fashion.py", line 767, in train_and_evaluate
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/keras/src/backend/tensorflow/trainer.py", line 560, in predict
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/keras/src/backend/tensorflow/trainer.py", line 259, in one_step_on_data_distributed
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/polymorphism/function_type.py", line 356, in placeholder_arguments
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/trace_type/default_types.py", line 250, in placeholder_value
+File "micromamba/envs/tf_new/lib/python3.10/site-packages/tensorflow/core/function/trace_type/default_types.py", line 251, in <listcomp>
+	tf2xla conversion failed while converting __inference_one_step_on_data_182302[]. Run with TF_DUMP_GRAPH_PREFIX=/path/to/dump/dir and --vmodule=xla_compiler=2 to obtain a dump of the compiled functions.
+	 [[StatefulPartitionedCall]] [Op:__inference_one_step_on_data_distributed_183069]
+finished task with id:: 5108
