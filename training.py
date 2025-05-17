@@ -177,15 +177,10 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
 
     # Process predictions and calculate metrics
     if regression:
-        print(f"Debug - Year range: {min_year} to {max_year}")
-
         # Check a few examples from your training data
         sample_df = pd.read_csv(train_files[0]).sample(5)
-        print(f"Debug - Sample years from training: {sample_df['year'].tolist()}")
-
         # Verify normalization formula
         sample_normalized = (sample_df["year"] - min_year) / (max_year - min_year)
-        print(f"Debug - Sample normalized values: {sample_normalized.tolist()}")
         # Handle regression task
         y_true_years_rounded, preds_years_rounded, image_paths = collect_regression_predictions(
             model, val_ds_unshuffled_batched, min_year, max_year

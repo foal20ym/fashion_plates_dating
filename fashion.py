@@ -14,11 +14,6 @@ def prepare_data_for_fold(train_folds, test_fold, fold_nums, regression=False):
     train_files = [f"data/datasets/fold{fold}.csv" for fold in train_folds]
     test_file = f"data/datasets/fold{test_fold}.csv"
 
-    test_df = pd.read_csv(test_file)
-    print(f"DEBUG: Test file ({test_file}) year range: {test_df['year'].min()} to {test_df['year'].max()}")
-    print(f"DEBUG: Test file columns: {test_df.columns.tolist()}")
-    print(f"DEBUG: Sample from test file:\n{test_df.head()}")
-
     if not regression:
         # Classification: Create class mapping
         all_years = []

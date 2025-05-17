@@ -1,0 +1,32 @@
+now processing task id:: 5359 on worker4.slurm.hj.se
+2025-05-17 17:45:39.950155: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1747503943.435200 3996557 gpu_device.cc:2018] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 8098 MB memory:  -> device: 0, name: NVIDIA A100 80GB PCIe MIG 1g.10gb, pci bus id: 0000:81:00.0, compute capability: 8.0
+Traceback (most recent call last):
+  File "/home/anjo19go/fashion_plates_dating/fashion.py", line 181, in <module>
+    main()
+  File "/home/anjo19go/fashion_plates_dating/fashion.py", line 171, in main
+    metrics = run_single_fold(config, run_id, fold_nums)
+  File "/home/anjo19go/fashion_plates_dating/fashion.py", line 102, in run_single_fold
+    metrics = train_and_evaluate(
+  File "/home/anjo19go/fashion_plates_dating/training.py", line 138, in train_and_evaluate
+    best_params = run_hyperparameter_tuning(train_ds, val_ds, config, num_classes, run_id, fold_idx)
+  File "/home/anjo19go/fashion_plates_dating/tuning.py", line 179, in run_hyperparameter_tuning
+    tuner = BayesianOptimization(
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/keras_tuner/src/tuners/bayesian.py", line 394, in __init__
+    super().__init__(oracle=oracle, hypermodel=hypermodel, **kwargs)
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/keras_tuner/src/engine/tuner.py", line 122, in __init__
+    super().__init__(
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/keras_tuner/src/engine/base_tuner.py", line 132, in __init__
+    self._populate_initial_space()
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/keras_tuner/src/engine/base_tuner.py", line 192, in _populate_initial_space
+    self._activate_all_conditions()
+  File "/home/anjo19go/micromamba/envs/tf_new/lib/python3.10/site-packages/keras_tuner/src/engine/base_tuner.py", line 149, in _activate_all_conditions
+    self.hypermodel.build(hp)
+  File "/home/anjo19go/fashion_plates_dating/tuning.py", line 164, in build_hypermodel
+    return create_hypermodel(hp, config, num_classes, input_shape)
+  File "/home/anjo19go/fashion_plates_dating/tuning.py", line 80, in create_hypermodel
+    raise ValueError(f"Unsupported model name: {model_name}")
+ValueError: Unsupported model name: EfficientNetV2S
+finished task with id:: 5359

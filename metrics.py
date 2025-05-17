@@ -19,10 +19,6 @@ def collect_regression_predictions(model, val_ds_unshuffled_batched, min_year, m
     preds = np.array(preds)
     y_true = np.array(y_true)
 
-    print(f"Debug - min_year: {min_year}, max_year: {max_year}")
-    print(f"Debug - predictions range: {np.min(preds):.4f} to {np.max(preds):.4f}")
-    print(f"Debug - true normalized values range: {np.min(y_true):.4f} to {np.max(y_true):.4f}")
-
     # Add clipping to ensure predictions stay within [0,1] range
     preds_clipped = np.clip(preds, 0, 1)
     y_true_clipped = np.clip(y_true, 0, 1)
@@ -38,23 +34,7 @@ def collect_regression_predictions(model, val_ds_unshuffled_batched, min_year, m
     y_true_years = y_true_clipped * year_span + min_year
     y_true_years_rounded = np.round(y_true_years).astype(int)
 
-    print(f"Debug - Sample true years (first 5): {y_true_years_rounded[:5]}")
-    print(f"Debug - Sample predicted years (first 5): {preds_years_rounded[:5]}")
-
     return y_true_years_rounded, preds_years_rounded, image_paths
-
-    # # Convert normalized predictions to year values
-    # preds_years = preds * (max_year - min_year) + min_year
-    # preds_years_rounded = np.round(preds_years).astype(int)
-
-    # # Convert normalized labels to year values
-    # y_true_years = y_true * (max_year - min_year) + min_year
-    # y_true_years_rounded = np.round(y_true_years).astype(int)
-
-    # print(f"Debug - Sample true years: {y_true_years_rounded[:5]}")
-    # print(f"Debug - Sample predicted years: {preds_years_rounded[:5]}")
-
-    # return y_true_years_rounded, preds_years_rounded, image_paths
 
 
 def collect_classification_predictions(model, val_ds_unshuffled_batched):
