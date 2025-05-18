@@ -5,7 +5,7 @@ model:
   # name: InceptionV3
   # name: ResNet101
   # name: EfficientNetB3
-  # name: "ConvNeXtTiny"
+  name: "ConvNeXtTiny"
   # name: "EfficientNetV2S"
   normalize_years: false
   normalization_method: "standardize" # Options: "minmax", "standardize", "scale_to_range"
@@ -25,7 +25,7 @@ model:
 
 training:
   batch_size: 8
-  epochs: 1
+  epochs: 300
   learning_rate: 0.00025973809360934377
   early_stopping_patience: 16
   reduce_lr_patience: 8
