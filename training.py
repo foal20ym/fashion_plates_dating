@@ -154,13 +154,6 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
     # Create callbacks
     callbacks = create_callbacks(config, log_dir)
 
-    # Save model if needed
-    if config["model"]["save_model"]:
-        if not os.path.exists("trained_models"):
-            os.makedirs("trained_models")
-        version = get_highest_version_for_saved_model(model_name)
-        model.save(f"trained_models/{model_name}_version_{version}.keras")
-
     # Train
     history = model.fit(
         train_ds_batched,
@@ -170,6 +163,14 @@ def train_and_evaluate(train_files, test_file, class_to_idx, num_classes, min_ye
         verbose=2,
         class_weight=class_weights,
     )
+
+    # Save model if needed
+    if config["model"]["save_model"]:
+        if not os.path.exists("trained_models"):
+            os.makedirs("trained_models")
+        version = get_highest_version_for_saved_model(model_name)
+        model.save(f"trained_models/{model_name}_version_{version}.keras")
+
 
     # Evaluate
     results = model.evaluate(val_ds_batched, verbose=0)
