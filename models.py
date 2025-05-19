@@ -81,7 +81,8 @@ def setup_model(config, num_classes, input_shape, regression=False):
     else:
         optimizer = tf.keras.optimizers.Adam(learning_rate=config["training"]["learning_rate"])
 
-    loss = ordinal_regression_loss if regression else ordinal_categorical_cross_entropy
+    # loss = ordinal_regression_loss if regression else ordinal_categorical_cross_entropy
+    loss = tf.keras.losses.MeanAbsoluteError() if regression else ordinal_categorical_cross_entropy
     metrics_list = ["mae", "mse"] if regression else ["accuracy"]
 
     model.compile(optimizer=optimizer, loss=loss, metrics=metrics_list)

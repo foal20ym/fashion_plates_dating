@@ -1,0 +1,39 @@
+TensorFlow Version: 2.20.0-dev20250508
+Num GPUs Available: 1
+Physical devices cannot be modified after being initialized
+
+=== Using model: EfficientNetV2S. ===
+RUN ID: 2025-05-19_08:24:41
+Task: Classification
+Test fold: 0
+Fold 0 Running hyperparameter tuning...
+Using Bayesian Optimization for hyperparameter tuning
+
+===== Starting Hyperparameter Tuning with bayesian search =====
+Max trials: 15, Executions per trial: 1
+
+Tuning with batch size: 8
+
+Search: Running Trial #1
+
+Value             |Best Value So Far |Hyperparameter
+0.5               |0.5               |dropout
+4.772e-05         |4.772e-05         |learning_rate
+1e-05             |1e-05             |l2_regularization
+2                 |2                 |fine_tune_layers
+32                |32                |dense_units
+2                 |2                 |dense_layers
+
+Epoch 1/300
+1413/1413 - 226s - 160ms/step - accuracy: 0.0605 - loss: 5.2572 - val_accuracy: 0.1170 - val_loss: 4.7235 - learning_rate: 4.7720e-05
+Epoch 2/300
+1413/1413 - 150s - 106ms/step - accuracy: 0.0806 - loss: 4.8517 - val_accuracy: 0.1123 - val_loss: 4.1445 - learning_rate: 4.7720e-05
+Epoch 3/300
+1413/1413 - 149s - 106ms/step - accuracy: 0.0833 - loss: 4.6791 - val_accuracy: 0.1067 - val_loss: 3.8729 - learning_rate: 4.7720e-05
+Epoch 4/300
+1413/1413 - 140s - 99ms/step - accuracy: 0.0875 - loss: 4.6212 - val_accuracy: 0.1123 - val_loss: 3.9122 - learning_rate: 4.7720e-05
+Epoch 5/300
+1413/1413 - 143s - 101ms/step - accuracy: 0.0917 - loss: 4.5308 - val_accuracy: 0.1083 - val_loss: 3.8047 - learning_rate: 4.7720e-05
+Epoch 6/300
+1413/1413 - 143s - 101ms/step - accuracy: 0.0952 - loss: 4.5224 - val_accuracy: 0.1083 - val_loss: 3.7531 - learning_rate: 4.7720e-05
+Epoch 7/300

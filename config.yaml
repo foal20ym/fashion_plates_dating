@@ -5,8 +5,8 @@ model:
   # name: InceptionV3
   # name: ResNet101
   # name: EfficientNetB3
-  # name: "ConvNeXtTiny"
-  name: "EfficientNetV2S"
+  name: "ConvNeXtTiny"
+  # name: "EfficientNetV2S"
   normalize_years: false
   normalization_method: "minmax" # Options: "minmax", "standardize", "scale_to_range"
   include_top: false

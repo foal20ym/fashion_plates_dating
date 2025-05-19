@@ -1,0 +1,25 @@
+TensorFlow Version: 2.20.0-dev20250508
+Num GPUs Available: 1
+Physical devices cannot be modified after being initialized
+
+=== Using model: InceptionV3. ===
+RUN ID: 2025-05-19_08:21:11
+Task: Regression
+Test fold: 0
+
+===== Fine Tuning 9 layers! =====
+Epoch 1/300
+1413/1413 - 213s - 150ms/step - loss: 0.5612 - mae: 0.5612 - mse: 0.5333 - val_loss: 0.3709 - val_mae: 0.3709 - val_mse: 0.1985 - learning_rate: 2.5974e-04
+Epoch 2/300
+1413/1413 - 146s - 103ms/step - loss: 0.3513 - mae: 0.3513 - mse: 0.1921 - val_loss: 0.2463 - val_mae: 0.2463 - val_mse: 0.0777 - learning_rate: 2.5974e-04
+Epoch 3/300
+1413/1413 - 157s - 111ms/step - loss: 0.2900 - mae: 0.2900 - mse: 0.1257 - val_loss: 0.2500 - val_mae: 0.2500 - val_mse: 0.0796 - learning_rate: 2.5974e-04
+Epoch 4/300
+1413/1413 - 156s - 110ms/step - loss: 0.2642 - mae: 0.2642 - mse: 0.1009 - val_loss: 0.2346 - val_mae: 0.2346 - val_mse: 0.0721 - learning_rate: 2.5974e-04
+Epoch 5/300
+1413/1413 - 154s - 109ms/step - loss: 0.2496 - mae: 0.2496 - mse: 0.0890 - val_loss: 0.1915 - val_mae: 0.1915 - val_mse: 0.0555 - learning_rate: 2.5974e-04
+Epoch 6/300
+1413/1413 - 153s - 109ms/step - loss: 0.2181 - mae: 0.2181 - mse: 0.0723 - val_loss: 0.1449 - val_mae: 0.1449 - val_mse: 0.0357 - learning_rate: 2.5974e-04
+Epoch 7/300
+1413/1413 - 151s - 107ms/step - loss: 0.1962 - mae: 0.1962 - mse: 0.0611 - val_loss: 0.1325 - val_mae: 0.1325 - val_mse: 0.0311 - learning_rate: 2.5974e-04
+Epoch 8/300

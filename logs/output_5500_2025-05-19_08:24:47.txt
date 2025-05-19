@@ -1,0 +1,35 @@
+TensorFlow Version: 2.20.0-dev20250508
+Num GPUs Available: 1
+Physical devices cannot be modified after being initialized
+
+=== Using model: ConvNeXtTiny. ===
+RUN ID: 2025-05-19_08:24:52
+Task: Classification
+Test fold: 0
+Fold 0 Running hyperparameter tuning...
+Using Bayesian Optimization for hyperparameter tuning
+
+===== Starting Hyperparameter Tuning with bayesian search =====
+Max trials: 15, Executions per trial: 1
+
+Tuning with batch size: 8
+
+Search: Running Trial #1
+
+Value             |Best Value So Far |Hyperparameter
+0.5               |0.5               |dropout
+1.4372e-07        |1.4372e-07        |learning_rate
+0.001             |0.001             |l2_regularization
+4                 |4                 |fine_tune_layers
+128               |128               |dense_units
+1                 |1                 |dense_layers
+
+Epoch 1/300
+1413/1413 - 286s - 202ms/step - accuracy: 0.0090 - loss: 7.7645 - val_accuracy: 0.0040 - val_loss: 6.8472 - learning_rate: 1.4372e-07
+Epoch 2/300
+1413/1413 - 220s - 156ms/step - accuracy: 0.0097 - loss: 7.6955 - val_accuracy: 0.0064 - val_loss: 6.9860 - learning_rate: 1.4372e-07
+Epoch 3/300
+1413/1413 - 221s - 156ms/step - accuracy: 0.0088 - loss: 7.6453 - val_accuracy: 0.0072 - val_loss: 7.3554 - learning_rate: 1.4372e-07
+Epoch 4/300
+1413/1413 - 221s - 156ms/step - accuracy: 0.0100 - loss: 7.5829 - val_accuracy: 0.0080 - val_loss: 7.6715 - learning_rate: 1.4372e-07
+Epoch 5/300
