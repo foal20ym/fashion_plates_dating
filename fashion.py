@@ -9,10 +9,15 @@ from plotting import plot_cv_metrics_summary
 from model_comparison import run_5x2_cross_validation
 
 
-def prepare_data_for_fold(train_folds, test_fold, fold_nums, regression=False):
+def prepare_data_for_fold(train_folds, test_fold, regression=False):
     """Prepare data files and class mapping for a specific fold."""
+    # All data (public and private)
     train_files = [f"data/datasets/fold{fold}.csv" for fold in train_folds]
     test_file = f"data/datasets/fold{test_fold}.csv"
+    # Public data only
+    # print("=== Running on Public Data ===")
+    # train_files = [f"data/datasets/public/fold{fold}.csv" for fold in train_folds]
+    # test_file = f"data/datasets/public/fold{test_fold}.csv"
 
     if not regression:
         # Classification: Create class mapping
@@ -51,7 +56,7 @@ def run_cross_validation(config, run_id, fold_nums):
 
         # Prepare data for this fold
         train_files, test_file, class_to_idx, num_classes, min_year, max_year = prepare_data_for_fold(
-            train_folds, test_fold, fold_nums, regression
+            train_folds, test_fold, regression
         )
 
         # Train and evaluate on this fold
@@ -90,7 +95,7 @@ def run_single_fold(config, run_id, fold_nums):
 
     # Prepare data
     train_files, test_file, class_to_idx, num_classes, min_year, max_year = prepare_data_for_fold(
-        train_folds, test_fold, fold_nums, regression
+        train_folds, test_fold, regression
     )
 
     # Train and evaluate
