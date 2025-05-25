@@ -76,7 +76,7 @@ def create_hypermodel(hp, config, num_classes=None, input_shape=(224, 224, 3)):
         base_model = tf.keras.applications.ConvNeXtTiny(
             weights="imagenet", input_shape=input_shape, include_top=False, include_preprocessing=True
         )
-    elif model_name == "EfficientNetV2S":  # Add this block
+    elif model_name == "EfficientNetV2S":
         base_model = tf.keras.applications.EfficientNetV2S(
             weights="imagenet",
             input_shape=input_shape,
