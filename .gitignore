@@ -1,9 +1,0 @@
-/data
-run_job.sh
-*.h5
-__pycache__/
-requirements.txt
-fashion_old.py
-hybrid.py
-statistical_tests.py
-logs/tensorboard/fit_2025-05-13_18:16:03_EfficientNetV2S_fit_fold0/train/
