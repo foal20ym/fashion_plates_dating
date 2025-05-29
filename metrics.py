@@ -1,36 +1,37 @@
 import numpy as np
-import tensorflow as tf
 from sklearn.metrics import matthews_corrcoef
 
 
 def collect_regression_predictions(model, val_ds_unshuffled_batched, min_year, max_year):
     """Collect predictions and true labels for regression tasks."""
-    # Collect true labels and image paths from the batched dataset
+    # Extract data from the dataset
+    preds = []
     y_true = []
     image_paths = []
-    model_inputs = []
 
-    # Extract data from the dataset
+    # Process each batch separately
     for images, labels, paths in val_ds_unshuffled_batched:
-        model_inputs.append(images)
+        batch_preds = model.predict(images, verbose=0)
+        preds.extend(batch_preds.flatten())
         y_true.extend(labels.numpy())
         image_paths.extend([p.numpy().decode("utf-8") for p in paths])
 
-    # Predict on batches separately and concatenate results
-    preds = []
-    for inputs in model_inputs:
-        batch_preds = model.predict(inputs, verbose=0)
-        preds.append(batch_preds)
+    preds = np.array(preds)
+    y_true = np.array(y_true)
 
-    preds = np.vstack(preds)
+    # Add clipping to ensure predictions stay within [0,1] range
+    preds_clipped = np.clip(preds, 0, 1)
+    y_true_clipped = np.clip(y_true, 0, 1)
+    if np.any(preds != preds_clipped):
+        print(f"Warning: {np.sum(preds != preds_clipped)} predictions were outside [0,1] range and had to be clipped")
 
-    # Convert predictions to year values
-    preds_years = preds * (max_year - min_year) + min_year
+    # Convert normalized predictions to year values
+    year_span = max_year - min_year
+    preds_years = preds_clipped * year_span + min_year
     preds_years_rounded = np.round(preds_years).astype(int)
 
-    # Convert labels to year values
-    y_true = np.array(y_true)
-    y_true_years = y_true * (max_year - min_year) + min_year
+    # Convert normalized labels to year values
+    y_true_years = y_true_clipped * year_span + min_year
     y_true_years_rounded = np.round(y_true_years).astype(int)
 
     return y_true_years_rounded, preds_years_rounded, image_paths
@@ -122,21 +123,41 @@ def print_misclassification_analysis(misclass_analysis, fold_print=""):
         print(f"Image: {img_path}, True: {true_year}, Predicted: {pred_year}, Error: {error}")
 
 
-def calculate_metrics(results, y_true, y_pred, y_true_years=None, y_pred_years=None):
-    """Calculate metrics for the model performance."""
-    metrics = {}
+def calculate_metrics(y_true, y_pred, regression=False, class_to_idx=None, accuracy=None):
+    """Calculate metrics for model evaluation based on task type."""
+    if regression:
+        # For regression tasks
+        y_true_flat = np.array(y_true).flatten()
+        y_pred_flat = np.array(y_pred).flatten()
 
-    if y_true_years is not None and y_pred_years is not None:
-        # For both regression and classification with year conversion
-        mae_years = np.mean(np.abs(y_true_years - y_pred_years))
-        exact_matches = np.sum(y_pred_years == y_true_years)
-        total = len(y_true_years)
+        if len(y_true_flat) != len(y_pred_flat):
+            print(
+                f"WARNING: y_true_flat ({len(y_true_flat)}) and y_pred_flat ({len(y_pred_flat)}) have different lengths!"
+            )
+            # Use the shorter length
+            min_len = min(len(y_true_flat), len(y_pred_flat))
+            y_true_flat = y_true_flat[:min_len]
+            y_pred_flat = y_pred_flat[:min_len]
 
-        metrics = {"mae": mae_years, "exact": exact_matches, "total": total}
+        exact_matches = np.sum(np.round(y_pred_flat).astype(int) == np.round(y_true_flat).astype(int))
+        total = len(y_true_flat)
+        mae = np.mean(np.abs(np.round(y_pred_flat).astype(int) - np.round(y_true_flat).astype(int)))
 
-        if len(results) > 1:  # Classification metrics
-            metrics["accuracy"] = results[1]
-            metrics["mcc"] = matthews_corrcoef(y_true, y_pred)
-            metrics["mae_years"] = mae_years
+        return {"mae": mae, "exact": exact_matches, "total": total}
+    else:
+        # For classification tasks
+        if class_to_idx is not None:
+            idx_to_class = {v: k for k, v in class_to_idx.items()}
+            y_true_years = np.array([idx_to_class[idx] for idx in y_true])
+            y_pred_years = np.array([idx_to_class[idx] for idx in y_pred])
+            mae_years = np.mean(np.abs(y_true_years - y_pred_years))
+        else:
+            mae_years = 0.0
 
-    return metrics
+        mcc = matthews_corrcoef(y_true, y_pred)
+
+        return {
+            "accuracy": accuracy if accuracy is not None else np.mean(y_true == y_pred),
+            "mae_years": mae_years,
+            "mcc": mcc,
+        }

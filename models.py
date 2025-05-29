@@ -1,5 +1,6 @@
 import tensorflow as tf
 from keras.saving import register_keras_serializable
+import numpy as np
 
 
 def get_input_shape(model_name):
@@ -8,9 +9,10 @@ def get_input_shape(model_name):
     elif model_name == "ResNet101":
         return (224, 224, 3)  # optional, can be larger
     elif model_name == "InceptionV3":
+        return (224, 224, 3)
         # return (299, 299, 3)  # optional, can be larger
         # return (384, 384, 3)
-        return (448, 448, 3)
+        # return (448, 448, 3)
     elif model_name == "ConvNeXtTiny":
         # return (224, 224, 3)
         # return (384, 384, 3)
@@ -103,13 +105,11 @@ def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
         base_model.trainable = False
         x = base_model.output
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
-        x = tf.keras.layers.Dense(76, activation="relu")(x)
     elif model_name == "ResNet101":
         base_model = tf.keras.applications.ResNet101(weights="imagenet", input_shape=input_shape, include_top=False)
         base_model.trainable = False
         x = base_model.output
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
-        x = tf.keras.layers.Dense(10, activation="relu")(x)
     elif model_name == "InceptionV3":
         base_model = tf.keras.applications.InceptionV3(weights="imagenet", input_shape=input_shape, include_top=False)
         base_model.trainable = False
@@ -122,7 +122,6 @@ def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
         base_model.trainable = False
         x = base_model.output
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
-        x = tf.keras.layers.Dense(128, activation="relu")(x)
         x = tf.keras.layers.BatchNormalization()(x)
     elif model_name == "ConvNeXtTiny":
         base_model = tf.keras.applications.ConvNeXtTiny(
@@ -131,7 +130,6 @@ def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
         base_model.trainable = False
         x = base_model.output
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
-        x = tf.keras.layers.Dense(128, activation="relu")(x)
         x = tf.keras.layers.BatchNormalization()(x)
     elif model_name == "EfficientNetV2S":
         base_model = tf.keras.applications.EfficientNetV2S(
@@ -143,23 +141,19 @@ def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
         base_model.trainable = False
         x = base_model.output
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
-        x = tf.keras.layers.Dense(128, activation="relu")(x)
         x = tf.keras.layers.BatchNormalization()(x)
     else:
         raise ValueError(f"Unsupported model name: {model_name}")
 
-    # Add dense layers based on config
-    for _ in range(dense_layers):
-        x = tf.keras.layers.Dense(dense_units, activation="relu")(x)
-        # Optional dropout after each dense layer
-        if config["model"].get("dropout", {}).get("use", False):
-            x = tf.keras.layers.Dropout(config["model"].get("dropout", {}).get("value", 0))(x)
-
-    # Output layer
     if regression:
         x = tf.keras.layers.Dense(128, activation="relu")(x)
+        if config["model"].get("dropout", {}).get("use", False):
+            x = tf.keras.layers.Dropout(config["model"].get("dropout", {}).get("value", 0))(x)
         x = tf.keras.layers.BatchNormalization()(x)
+
         x = tf.keras.layers.Dense(64, activation="relu")(x)
+        if config["model"].get("dropout", {}).get("use", False):
+            x = tf.keras.layers.Dropout(config["model"].get("dropout", {}).get("value", 0))(x)
         x = tf.keras.layers.BatchNormalization()(x)
 
         if config["model"].get("l2_regularization", {}).get("use", False):
@@ -174,6 +168,13 @@ def build_model(config, num_classes=None, input_shape=(224, 224, 3)):
         else:
             predictions = tf.keras.layers.Dense(1, activation="linear", name="PREDICTIONS")(x)
     else:
+        # Add dense layers based on config
+        for _ in range(dense_layers):
+            x = tf.keras.layers.Dense(dense_units, activation="relu")(x)
+            # Optional dropout after each dense layer
+            if config["model"].get("dropout", {}).get("use", False):
+                x = tf.keras.layers.Dropout(config["model"].get("dropout", {}).get("value", 0))(x)
+
         if config["model"].get("l2_regularization", {}).get("use", False):
             predictions = tf.keras.layers.Dense(
                 num_classes,
