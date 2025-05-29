@@ -1,0 +1,17 @@
+5x2 Cross-Validation Results
+===========================
+Base model: InceptionV3 with 256 units
+Alt model: InceptionV3 with 256 units
+
+Base model average accuracy: 0.5921
+Alternative model average accuracy: 0.5949
+Mean difference: 0.0040
+Specialized 5x2cv t-test ( Dietterich 1998):
+t-statistic: 0.3613
+p-value: 0.7327
+Statistically significant difference: No (alpha=0.05)
+
+Standard paired t-test:
+t-statistic: -0.7132
+p-value: 0.4938
+Statistically significant difference: No (alpha=0.05)

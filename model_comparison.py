@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 import copy
-
 from training import train_and_evaluate
 
 
@@ -18,11 +17,21 @@ def run_5x2_cross_validation(config, run_id, fold_nums, train_and_evaluate_fn=No
 
     print("\n===== Running 5x2 Cross-Validation for Model Comparison =====")
 
-    # Load all data
-    all_files = [f"data/datasets/fold{fold}.csv" for fold in fold_nums]
-    all_df = pd.concat([pd.read_csv(file) for file in all_files])
+    # Base model dataset directory
+    base_dataset_dir = "data/datasets/"
+    # Alternative model dataset directory
+    alt_dataset_dir = "data/datasets_cleaned/"
 
-    # Choose different models for comparison
+    print(f"Base model using dataset from: {base_dataset_dir}")
+    print(f"Alternative model using dataset from: {alt_dataset_dir}")
+
+    # Load all data for base model
+    base_files = [f"{base_dataset_dir}fold{fold}.csv" for fold in fold_nums]
+    base_df = pd.concat([pd.read_csv(file) for file in base_files])
+    
+    # Load all data for alternative model
+    alt_files = [f"{alt_dataset_dir}fold{fold}.csv" for fold in fold_nums]
+    alt_df = pd.concat([pd.read_csv(file) for file in alt_files])
 
     # Create deep copies to ensure no shared references
     base_config = copy.deepcopy(config)
@@ -50,20 +59,32 @@ def run_5x2_cross_validation(config, run_id, fold_nums, train_and_evaluate_fn=No
     for iteration in range(5):
         print(f"\n===== Iteration {iteration+1}/5 =====")
 
-        # Shuffle and split data into two folds
-        all_df_shuffled = all_df.sample(frac=1, random_state=iteration).reset_index(drop=True)
-        split_idx = len(all_df_shuffled) // 2
-        fold1 = all_df_shuffled.iloc[:split_idx]
-        fold2 = all_df_shuffled.iloc[split_idx:]
+        # Shuffle and split data into two folds for base model
+        base_df_shuffled = base_df.sample(frac=1, random_state=iteration).reset_index(drop=True)
+        base_split_idx = len(base_df_shuffled) // 2
+        base_fold1 = base_df_shuffled.iloc[:base_split_idx]
+        base_fold2 = base_df_shuffled.iloc[base_split_idx:]
 
-        # Save temporary fold files
-        temp_fold1_path = "data/datasets/temp_fold1.csv"
-        temp_fold2_path = "data/datasets/temp_fold2.csv"
-        fold1.to_csv(temp_fold1_path, index=False)
-        fold2.to_csv(temp_fold2_path, index=False)
+        # Shuffle and split data into two folds for alternative model
+        alt_df_shuffled = alt_df.sample(frac=1, random_state=iteration).reset_index(drop=True)
+        alt_split_idx = len(alt_df_shuffled) // 2
+        alt_fold1 = alt_df_shuffled.iloc[:alt_split_idx]
+        alt_fold2 = alt_df_shuffled.iloc[alt_split_idx:]
 
-        # Get unique years and setup for classification
-        all_years = all_df_shuffled["year"].unique().tolist()
+        # Save temporary fold files for base model
+        base_temp_fold1_path = f"{base_dataset_dir}temp_fold1.csv"
+        base_temp_fold2_path = f"{base_dataset_dir}temp_fold2.csv"
+        base_fold1.to_csv(base_temp_fold1_path, index=False)
+        base_fold2.to_csv(base_temp_fold2_path, index=False)
+
+        # Save temporary fold files for alternative model
+        alt_temp_fold1_path = f"{alt_dataset_dir}temp_fold1.csv"
+        alt_temp_fold2_path = f"{alt_dataset_dir}temp_fold2.csv"
+        alt_fold1.to_csv(alt_temp_fold1_path, index=False)
+        alt_fold2.to_csv(alt_temp_fold2_path, index=False)
+
+        # Get unique years and setup for classification - use base model data for consistency
+        all_years = base_df_shuffled["year"].unique().tolist()
         classes = sorted(list(set(all_years)))
         class_to_idx = {y: i for i, y in enumerate(classes)}
         num_classes = len(classes)
@@ -74,8 +95,8 @@ def run_5x2_cross_validation(config, run_id, fold_nums, train_and_evaluate_fn=No
         print("=== Training Base Model ===")
         # Train on fold1, test on fold2
         metrics_base_1 = train_and_evaluate(
-            [temp_fold1_path],
-            temp_fold2_path,
+            [base_temp_fold1_path],
+            base_temp_fold2_path,
             class_to_idx,
             num_classes,
             min_year,
@@ -87,8 +108,8 @@ def run_5x2_cross_validation(config, run_id, fold_nums, train_and_evaluate_fn=No
 
         # Train on fold2, test on fold1
         metrics_base_2 = train_and_evaluate(
-            [temp_fold2_path],
-            temp_fold1_path,
+            [base_temp_fold2_path],
+            base_temp_fold1_path,
             class_to_idx,
             num_classes,
             min_year,
@@ -102,8 +123,8 @@ def run_5x2_cross_validation(config, run_id, fold_nums, train_and_evaluate_fn=No
         print("=== Training Alternative Model ===")
         # Train on fold1, test on fold2
         metrics_alt_1 = train_and_evaluate(
-            [temp_fold1_path],
-            temp_fold2_path,
+            [alt_temp_fold1_path],
+            alt_temp_fold2_path,
             class_to_idx,
             num_classes,
             min_year,
@@ -115,8 +136,8 @@ def run_5x2_cross_validation(config, run_id, fold_nums, train_and_evaluate_fn=No
 
         # Train on fold2, test on fold1
         metrics_alt_2 = train_and_evaluate(
-            [temp_fold2_path],
-            temp_fold1_path,
+            [alt_temp_fold2_path],
+            alt_temp_fold1_path,
             class_to_idx,
             num_classes,
             min_year,
@@ -135,8 +156,10 @@ def run_5x2_cross_validation(config, run_id, fold_nums, train_and_evaluate_fn=No
         difference_metrics.append((diff1, diff2))
 
         # Clean up temp files
-        os.remove(temp_fold1_path)
-        os.remove(temp_fold2_path)
+        os.remove(base_temp_fold1_path)
+        os.remove(base_temp_fold2_path)
+        os.remove(alt_temp_fold1_path)
+        os.remove(alt_temp_fold2_path)
 
     # Calculate 5x2cv paired t-test statistic
     mean_diff = np.mean([d[0] for d in difference_metrics])
