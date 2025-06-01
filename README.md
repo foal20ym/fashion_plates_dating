@@ -120,7 +120,7 @@ hyperparameter_tuning:
 Run a single training session:
 
 ```bash
-python fashion.py
+python3 src/fashion.py
 ```
 
 ### 2. Cross-Validation
@@ -134,7 +134,7 @@ cross_validation: true
 Then run:
 
 ```bash
-python fashion.py
+python3 src/fashion.py
 ```
 
 ### 3. Hyperparameter Tuning
@@ -151,7 +151,7 @@ hyperparameter_tuning:
 Then run:
 
 ```bash
-python fashion.py
+python3 src/fashion.py
 ```
 
 ### 4. Model Comparison
