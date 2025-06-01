@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.utils.class_weight import compute_class_weight
 
 
-def load_config(config_path="../config.yaml"):
+def load_config(config_path="/config.yaml"):
     """Load configuration from YAML file."""
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
