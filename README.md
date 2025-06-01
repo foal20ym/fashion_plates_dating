@@ -191,11 +191,11 @@ The project supports multiple pre-trained CNN architectures:
 
 | Model           | Input Size | Memory Usage | Performance |
 | --------------- | ---------- | ------------ | ----------- |
-| InceptionV3     | 224x224    | Medium       | Excellent   |
-| ResNet101       | 224x224    | Medium       | Good        |
-| EfficientNetV2S | 384x384    | High         | Good        |
-| ConvNeXtTiny    | 448x448    | Very High    | Excellent   |
-| NASNetMobile    | 224x224    | Low          | Moderate    |
+| InceptionV3     | 384x384    | Medium       | Excellent   |
+| ResNet101       | 384x384    | Medium       | Good        |
+| EfficientNetV2S | 384x384    | High         | Moderate    |
+| ConvNeXtTiny    | 384x384    | Very High    | Excellent   |
+| NASNetMobile    | 384x384    | Low          | Moderate    |
 
 ## 📈 Output and Results
 
